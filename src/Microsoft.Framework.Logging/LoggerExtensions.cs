@@ -32,6 +32,44 @@ namespace Microsoft.Framework.Logging
         }
 
         /// <summary>
+        /// Writes a start log message.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        /// <param name="eventType">The event type.</param>
+        /// <param name="message">The message to be written.</param>
+        /// <returns>
+        /// Returns an IDisposable that calls <see cref="WriteEnd(ILogger, TraceType, string)"/> on dispose.
+        /// </returns>
+        public static IDisposable WriteStart(this ILogger logger, TraceType eventType, string message)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException("logger"); 
+            }
+
+            logger.WriteCore(eventType | TraceType.Start, 0, message, null, TheMessage);
+
+            return new LogicalOperation(logger, eventType, message);
+        }
+
+        /// <summary>
+        /// Writes an stop log message.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        /// <param name="eventType">The event type.</param>
+        /// <param name="message">The message to be written.</param>
+        /// <returns></returns>
+        public static void WriteStop(this ILogger logger, TraceType eventType, string message)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException("logger");
+            }
+
+            logger.WriteCore(eventType | TraceType.Stop, 0, message, null, TheMessage);
+        }
+
+        /// <summary>
         /// Writes a verbose log message.
         /// </summary>
         /// <param name="logger"></param>
