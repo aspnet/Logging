@@ -14,6 +14,7 @@ namespace Microsoft.Framework.Logging
     {
         private static readonly Func<object, Exception, string> TheMessage = (message, error) => (string)message;
         private static readonly Func<object, Exception, string> TheMessageAndError = (message, error) => string.Format(CultureInfo.CurrentCulture, "{0}\r\n{1}", message, error);
+        private static readonly IDisposable NullLogicalOperation = new NullLogicalOperation();
 
         /// <summary>
         /// Checks if the given TraceEventType is enabled.
@@ -47,7 +48,10 @@ namespace Microsoft.Framework.Logging
                 throw new ArgumentNullException("logger"); 
             }
 
-            logger.WriteCore(eventType | TraceType.Start, 0, message, null, TheMessage);
+            if(!logger.WriteCore(eventType | TraceType.Start, 0, message, null, TheMessage))
+            {
+                return NullLogicalOperation;
+            }
 
             return new LogicalOperation(logger, eventType, message);
         }
