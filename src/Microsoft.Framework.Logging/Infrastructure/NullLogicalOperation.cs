@@ -3,10 +3,12 @@
 
 using System;
 
-namespace Microsoft.Framework.Logging
+namespace Microsoft.Framework.Logging.Infrastructure
 {
     public class NullLogicalOperation : IDisposable
     {
+        public static readonly NullLogicalOperation Instance = new NullLogicalOperation();
+
         public void Dispose()
         {
             // intentionally does nothing
