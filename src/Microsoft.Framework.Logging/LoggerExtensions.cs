@@ -4,7 +4,6 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
-using Microsoft.Framework.Logging.Infrastructure;
 
 namespace Microsoft.Framework.Logging
 {
@@ -30,104 +29,6 @@ namespace Microsoft.Framework.Logging
             }
 
             return logger.WriteCore(eventType, 0, null, null, null);
-        }
-
-        /// <summary>
-        /// Writes a start event.
-        /// </summary>        
-        /// <param name="logger">The logger.</param>
-        /// <param name="message">The message to write to the log.</param>
-        /// <returns> 
-        /// An IDisposable that writes a stop message by calling 
-        /// <see cref="WriteStop(ILogger, int, object, Exception, Func{object, Exception, string})"/> on dispose.
-        /// </returns>
-        public static IDisposable WriteStart(this ILogger logger, string message)
-        {
-            return logger.WriteStart(0, message);
-        }
-
-        /// <summary>
-        /// Writes a stop event.
-        /// </summary>
-        /// <param name="logger">The logger.</param>
-        /// <param name="message">The message to write to the log.</param>
-        /// <returns></returns>
-        public static void WriteStop(this ILogger logger, string message)
-        {
-            logger.WriteStop(0, message);
-        }
-
-        /// <summary>
-        /// Writes a start event.
-        /// </summary>
-        /// <param name="logger">The logger.</param>
-        /// <param name="eventId">The event id.</param>
-        /// <param name="message">The message to write to the log.</param>
-        /// <returns> 
-        /// An IDisposable that writes a stop message by calling 
-        /// <see cref="WriteStop(ILogger, int, object, Exception, Func{object, Exception, string})"/> on dispose.
-        /// </returns>
-        public static IDisposable WriteStart(this ILogger logger, int eventId, string message)
-        {
-            return logger.WriteStart(eventId, message, null, TheMessage);
-        }
-
-        /// <summary>
-        /// Writes a stop event.
-        /// </summary>
-        /// <param name="logger">The logger.</param>
-        /// <param name="eventId">The event id.</param>
-        /// <param name="message">The message to write to the log.</param>
-        /// <returns></returns>
-        public static void WriteStop(this ILogger logger, int eventId, string message)
-        {
-            logger.WriteStop(eventId, message, null, TheMessage);
-        }
-
-        /// <summary>
-        /// Writes a start event.
-        /// </summary>
-        /// <param name="logger">The logger.</param>
-        /// <param name="eventId">The event id.</param>
-        /// <param name="state">The object to write to the log.</param>
-        /// <param name="exception">The exception.</param>
-        /// <param name="formatter">The formatter to be used on the object.</param>
-        /// <returns> 
-        /// An IDisposable that writes a stop message by calling 
-        /// <see cref="WriteStop(ILogger, int, object, Exception, Func{object, Exception, string})"/> on dispose.
-        /// </returns>
-        public static IDisposable WriteStart(this ILogger logger, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
-        {
-            if (logger == null)
-            {
-                throw new ArgumentNullException("logger");
-            }
-
-            if (!logger.WriteCore(TraceType.Start, eventId, state, exception, formatter))
-            {
-                return NullLogicalOperation.Instance;
-            }
-
-            return new LogicalOperation(logger, eventId, state, exception, formatter);
-        }
-
-        /// <summary>
-        /// Writes a stop event.
-        /// </summary>
-        /// <param name="logger">The logger.</param>
-        /// <param name="eventId">The event id.</param>
-        /// <param name="state">The object to write to the log.</param>
-        /// <param name="exception">The exception.</param>
-        /// <param name="formatter">The formatter to be used on the object.</param>
-        /// <returns></returns>
-        public static void WriteStop(this ILogger logger, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
-        {
-            if (logger == null)
-            {
-                throw new ArgumentNullException("logger");
-            }
-
-            logger.WriteCore(TraceType.Stop, eventId, state, exception, formatter);
         }
 
         /// <summary>

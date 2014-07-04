@@ -11,7 +11,5 @@ namespace Microsoft.Framework.Logging
         Warning = 4,
         Information = 8,
         Verbose = 16,
-        Start = 256,
-        Stop = 512,
     }
 }
