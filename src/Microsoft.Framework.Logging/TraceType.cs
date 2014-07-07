@@ -3,7 +3,6 @@
 
 namespace Microsoft.Framework.Logging
 {
-    // This enum intentionally mirrors System.Diagnostics.TraceEventType
     public enum TraceType
     {
         Critical = 1,
