@@ -6,7 +6,6 @@ using Moq;
 #endif
 using Xunit;
 
-
 namespace Microsoft.Framework.Logging.Test
 {
     public class LoggerFactoryExtensionsTest
