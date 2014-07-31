@@ -14,7 +14,7 @@ namespace Microsoft.Framework.Logging
         /// Creates a new ILogger instance using the full name of the given type.
         /// </summary>
         /// <typeparam name="T">The type.</typeparam>
-        /// <param name="factory"></param>
+        /// <param name="factory">The factory.</param>
         public static ILogger Create<T>(this ILoggerFactory factory)
         {
             if (factory == null)
