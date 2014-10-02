@@ -10,12 +10,7 @@ namespace Microsoft.Framework.Logging.Test
 {
     public class TraceTypeEnumTest
     {
-        private static readonly List<int> _values;
-
-        static TraceTypeEnumTest()
-        {
-            _values = Enum.GetValues(typeof(TraceType)).Cast<int>().ToList();
-        }
+        private static readonly List<int> _values = Enum.GetValues(typeof(TraceType)).Cast<int>().ToList();
 
         [Fact]
         public static void EnumStartsAtOne()

@@ -18,7 +18,7 @@ namespace Microsoft.Framework.Logging
 
         public bool WriteCore(TraceType traceType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
-            var eventType = GetEventType(TraceType);
+            var eventType = DiagnosticsLogger.GetEventType(traceType);
 
             if (!_traceSource.Switch.ShouldTrace(eventType))
             {
@@ -31,7 +31,7 @@ namespace Microsoft.Framework.Logging
             return true;
         }
 
-        private TraceEventType GetEventType(TraceType traceType)
+        private static TraceEventType GetEventType(TraceType traceType)
         {
             switch (traceType)
             {
