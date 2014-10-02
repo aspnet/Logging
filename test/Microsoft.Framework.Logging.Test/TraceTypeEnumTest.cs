@@ -21,9 +21,8 @@ namespace Microsoft.Framework.Logging.Test
         [Fact]
         public static void EnumValuesAreUniqueAndConsecutive()
         {
-            var uniqueValues = new HashSet<int>(_values);
-            Assert.Equal(_values.Count, uniqueValues.Count);
-            Assert.Equal(_values.Count, _values.Max() - _values.Min() + 1);
+            _values.Sort();
+            Assert.Equal(new[] { 1, 2, 3, 4, 5 }, _values);
         }
     }
 }
