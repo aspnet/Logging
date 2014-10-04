@@ -25,15 +25,26 @@ namespace Microsoft.Framework.Logging
             }
         }
 
-        public bool WriteCore(TraceType eventType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public void Write(TraceType eventType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
-            var result = false;
             var count = _loggers.Length;
             for (var index = 0; index != count; index++)
             {
-                result |= _loggers[index].WriteCore(eventType, eventId, state, exception, formatter);
+                _loggers[index].Write(eventType, eventId, state, exception, formatter);
             }
-            return result;
+        }
+
+        public bool IsEnabled(TraceType eventType)
+        {
+            var count = _loggers.Length;
+            for (var index = 0; index != count; index++)
+            {
+                if (!_loggers[index].IsEnabled(eventType))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public IDisposable BeginScope(object state)

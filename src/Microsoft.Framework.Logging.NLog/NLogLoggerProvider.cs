@@ -29,7 +29,7 @@ namespace Microsoft.Framework.Logging.NLog
                 _logger = logger;
             }
 
-            public bool WriteCore(
+            public void Write(
                 TraceType eventType,
                 int eventId,
                 object state,
@@ -37,19 +37,18 @@ namespace Microsoft.Framework.Logging.NLog
                 Func<object, Exception, string> formatter)
             {
                 var logLevel = GetLogLevel(eventType);
-                if (!_logger.IsEnabled(logLevel))
+                if (formatter != null)
                 {
-                    return false;
+                    var message = formatter(state, exception);
+                    var eventInfo = LogEventInfo.Create(logLevel, _logger.Name, message, exception);
+                    eventInfo.Properties["EventId"] = eventId;
+                    _logger.Log(eventInfo);
                 }
-                if (formatter == null)
-                {
-                    return true;
-                }
-                var message = formatter(state, exception);
-                var eventInfo = LogEventInfo.Create(logLevel, _logger.Name, message, exception);
-                eventInfo.Properties["EventId"] = eventId;
-                _logger.Log(eventInfo);
-                return true;
+            }
+
+            public bool IsEnabled(TraceType eventType)
+            {
+                return _logger.IsEnabled(GetLogLevel(eventType));
             }
 
             private LogLevel GetLogLevel(TraceType eventType)
