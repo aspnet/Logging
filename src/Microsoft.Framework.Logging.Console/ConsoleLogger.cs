@@ -20,11 +20,11 @@ namespace Microsoft.Framework.Logging.Console
 
         public IConsole Console { get; set; }
 
-        public bool WriteCore(TraceType traceType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public void Write(TraceType traceType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
-            if (!_filter(_name, traceType))
+            if (!IsEnabled(traceType))
             {
-                return false;
+                return;
             }
             var message = string.Empty;
             if (formatter != null)
@@ -44,7 +44,7 @@ namespace Microsoft.Framework.Logging.Console
             }
             if (string.IsNullOrEmpty(message))
             {
-                return false;
+                return;
             }
             var foregroundColor = Console.ForegroundColor;  // save current colors
             var backgroundColor = Console.BackgroundColor;
@@ -66,7 +66,11 @@ namespace Microsoft.Framework.Logging.Console
                 Console.ForegroundColor = foregroundColor;  // reset initial colors
                 Console.BackgroundColor = backgroundColor;
             }
-            return true;
+        }
+
+        public bool IsEnabled(TraceType traceType)
+        {
+            return _filter(_name, traceType);
         }
 
         // sets the console text color to reflect the given TraceType

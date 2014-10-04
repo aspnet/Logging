@@ -32,7 +32,7 @@ namespace Microsoft.Framework.Logging.Test
             var sink = t.Item2;
 
             // Act
-            logger.WriteCore(TraceType.Information, 0, _state, null, null);
+            logger.Write(TraceType.Information, 0, _state, null, null);
 
             // Assert
             Assert.Equal(1, sink.Writes.Count);
@@ -47,13 +47,13 @@ namespace Microsoft.Framework.Logging.Test
             var sink = t.Item2;
 
             // Act
-            logger.WriteCore(TraceType.Warning, 0, _state, null, null);
+            logger.Write(TraceType.Warning, 0, _state, null, null);
 
             // Assert
             Assert.Equal(0, sink.Writes.Count);
 
             // Act
-            logger.WriteCore(TraceType.Critical, 0, _state, null, null);
+            logger.Write(TraceType.Critical, 0, _state, null, null);
 
             // Assert
             Assert.Equal(1, sink.Writes.Count);
@@ -68,13 +68,13 @@ namespace Microsoft.Framework.Logging.Test
             var sink = t.Item2;
 
             // Act
-            logger.WriteCore(TraceType.Warning, 0, _state, null, null);
+            logger.Write(TraceType.Warning, 0, _state, null, null);
 
             // Assert
             Assert.Equal(0, sink.Writes.Count);
 
             // Act
-            logger.WriteCore(TraceType.Error, 0, _state, null, null);
+            logger.Write(TraceType.Error, 0, _state, null, null);
 
             // Assert
             Assert.Equal(1, sink.Writes.Count);
@@ -89,13 +89,13 @@ namespace Microsoft.Framework.Logging.Test
             var sink = t.Item2;
 
             // Act
-            logger.WriteCore(TraceType.Information, 0, _state, null, null);
+            logger.Write(TraceType.Information, 0, _state, null, null);
 
             // Assert
             Assert.Equal(0, sink.Writes.Count);
 
             // Act
-            logger.WriteCore(TraceType.Warning, 0, _state, null, null);
+            logger.Write(TraceType.Warning, 0, _state, null, null);
 
             // Assert
             Assert.Equal(1, sink.Writes.Count);
@@ -110,13 +110,13 @@ namespace Microsoft.Framework.Logging.Test
             var sink = t.Item2;
 
             // Act
-            logger.WriteCore(TraceType.Verbose, 0, _state, null, null);
+            logger.Write(TraceType.Verbose, 0, _state, null, null);
 
             // Assert
             Assert.Equal(0, sink.Writes.Count);
 
             // Act
-            logger.WriteCore(TraceType.Information, 0, _state, null, null);
+            logger.Write(TraceType.Information, 0, _state, null, null);
 
             // Assert
             Assert.Equal(1, sink.Writes.Count);
@@ -131,11 +131,11 @@ namespace Microsoft.Framework.Logging.Test
             var sink = t.Item2;
 
             // Act
-            logger.WriteCore(TraceType.Critical, 0, _state, null, null);
-            logger.WriteCore(TraceType.Error, 0, _state, null, null);
-            logger.WriteCore(TraceType.Warning, 0, _state, null, null);
-            logger.WriteCore(TraceType.Information, 0, _state, null, null);
-            logger.WriteCore(TraceType.Verbose, 0, _state, null, null);
+            logger.Write(TraceType.Critical, 0, _state, null, null);
+            logger.Write(TraceType.Error, 0, _state, null, null);
+            logger.Write(TraceType.Warning, 0, _state, null, null);
+            logger.Write(TraceType.Information, 0, _state, null, null);
+            logger.Write(TraceType.Verbose, 0, _state, null, null);
 
             // Assert
             Assert.Equal(5, sink.Writes.Count);
@@ -150,7 +150,7 @@ namespace Microsoft.Framework.Logging.Test
             var sink = t.Item2;
 
             // Act
-            logger.WriteCore(TraceType.Critical, 0, _state, null, null);
+            logger.Write(TraceType.Critical, 0, _state, null, null);
 
             // Assert
             Assert.Equal(1, sink.Writes.Count);
@@ -168,7 +168,7 @@ namespace Microsoft.Framework.Logging.Test
             var sink = t.Item2;
 
             // Act
-            logger.WriteCore(TraceType.Error, 0, _state, null, null);
+            logger.Write(TraceType.Error, 0, _state, null, null);
 
             // Assert
             Assert.Equal(1, sink.Writes.Count);
@@ -186,7 +186,7 @@ namespace Microsoft.Framework.Logging.Test
             var sink = t.Item2;
 
             // Act
-            logger.WriteCore(TraceType.Warning, 0, _state, null, null);
+            logger.Write(TraceType.Warning, 0, _state, null, null);
 
             // Assert
             Assert.Equal(1, sink.Writes.Count);
@@ -204,7 +204,7 @@ namespace Microsoft.Framework.Logging.Test
             var sink = t.Item2;
 
             // Act
-            logger.WriteCore(TraceType.Information, 0, _state, null, null);
+            logger.Write(TraceType.Information, 0, _state, null, null);
 
             // Assert
             Assert.Equal(1, sink.Writes.Count);
@@ -222,7 +222,7 @@ namespace Microsoft.Framework.Logging.Test
             var sink = t.Item2;
 
             // Act
-            logger.WriteCore(TraceType.Verbose, 0, _state, null, null);
+            logger.Write(TraceType.Verbose, 0, _state, null, null);
 
             // Assert
             Assert.Equal(1, sink.Writes.Count);
@@ -241,11 +241,11 @@ namespace Microsoft.Framework.Logging.Test
             var ex = new Exception();
 
             // Act
-            logger.WriteCore(TraceType.Critical, 0, _state, ex, TheMessageAndError);
-            logger.WriteCore(TraceType.Error, 0, _state, ex, TheMessageAndError);
-            logger.WriteCore(TraceType.Warning, 0, _state, ex, TheMessageAndError);
-            logger.WriteCore(TraceType.Information, 0, _state, ex, TheMessageAndError);
-            logger.WriteCore(TraceType.Verbose, 0, _state, ex, TheMessageAndError);
+            logger.Write(TraceType.Critical, 0, _state, ex, TheMessageAndError);
+            logger.Write(TraceType.Error, 0, _state, ex, TheMessageAndError);
+            logger.Write(TraceType.Warning, 0, _state, ex, TheMessageAndError);
+            logger.Write(TraceType.Information, 0, _state, ex, TheMessageAndError);
+            logger.Write(TraceType.Verbose, 0, _state, ex, TheMessageAndError);
 
             // Assert
             Assert.Equal(5, sink.Writes.Count);
@@ -270,11 +270,11 @@ namespace Microsoft.Framework.Logging.Test
             var sink = t.Item2;
 
             // Act
-            logger.WriteCore(TraceType.Critical, 0, _state, null, null);
-            logger.WriteCore(TraceType.Error, 0, _state, null, null);
-            logger.WriteCore(TraceType.Warning, 0, _state, null, null);
-            logger.WriteCore(TraceType.Information, 0, _state, null, null);
-            logger.WriteCore(TraceType.Verbose, 0, _state, null, null);
+            logger.Write(TraceType.Critical, 0, _state, null, null);
+            logger.Write(TraceType.Error, 0, _state, null, null);
+            logger.Write(TraceType.Warning, 0, _state, null, null);
+            logger.Write(TraceType.Information, 0, _state, null, null);
+            logger.Write(TraceType.Verbose, 0, _state, null, null);
 
             // Assert
             Assert.Equal(5, sink.Writes.Count);
