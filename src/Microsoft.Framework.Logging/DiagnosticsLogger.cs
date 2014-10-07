@@ -18,13 +18,11 @@ namespace Microsoft.Framework.Logging
 
         public void Write(TraceType traceType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
-            var eventType = GetEventType(traceType);
-
-            if (!_traceSource.Switch.ShouldTrace(eventType))
+            if (!IsEnabled(traceType))
             {
                 return;
             }
-            var message = "";
+            var message = string.Empty;
             if (formatter != null)
             {
                 message = formatter(state, exception);
@@ -40,9 +38,9 @@ namespace Microsoft.Framework.Logging
                     message += Environment.NewLine + exception;
                 }
             }
-            if (!String.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
             {
-                _traceSource.TraceEvent(eventType, eventId, message);
+                _traceSource.TraceEvent(GetEventType(traceType), eventId, message);
             }
         }
 

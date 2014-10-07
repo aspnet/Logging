@@ -27,9 +27,9 @@ namespace Microsoft.Framework.Logging
 
         public void Write(TraceType eventType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
-            for (var index = 0; index < _loggers.Length; index++)
+            foreach (var logger in _loggers)
             {
-                _loggers[index].Write(eventType, eventId, state, exception, formatter);
+                logger.Write(eventType, eventId, state, exception, formatter);
             }
         }
 
@@ -42,7 +42,7 @@ namespace Microsoft.Framework.Logging
         {
             var count = _loggers.Length;
             var scope = new Scope(count);
-            for (var index = 0; index != count; index++)
+            for (var index = 0; index < count; index++)
             {
                 scope.SetDisposable(index, _loggers[index].BeginScope(state));
             }

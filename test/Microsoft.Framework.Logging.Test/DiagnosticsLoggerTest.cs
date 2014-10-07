@@ -4,26 +4,25 @@
 using System;
 using System.Diagnostics;
 using Xunit;
-#if ASPNET50
-using Moq;
-#endif
 
 namespace Microsoft.Framework.Logging.Test
 {
     public class DiagnosticsLoggerTest
     {
-#if ASPNET50
         [Fact]
         public static void IsEnabledReturnsCorrectValue()
         {
+            // Arrange
             var testSwitch = new SourceSwitch("TestSwitch", "Level will be set to warning for this test");
             testSwitch.Level = SourceLevels.Warning;
 
             var factory = new LoggerFactory();
             var logger = factory.Create("Test");
 
+            // Act
             factory.AddProvider(new DiagnosticsLoggerProvider(testSwitch, new ConsoleTraceListener()));
 
+            // Assert
             Assert.True(logger.IsEnabled(TraceType.Critical));
             Assert.True(logger.IsEnabled(TraceType.Error));
             Assert.True(logger.IsEnabled(TraceType.Warning));
@@ -38,6 +37,7 @@ namespace Microsoft.Framework.Logging.Test
         [InlineData(SourceLevels.Warning, SourceLevels.Warning, false)]
         public static void MultipleLoggers_IsEnabledReturnsCorrectValue(SourceLevels first, SourceLevels second, bool expected)
         {
+            // Arrange
             var firstSwitch = new SourceSwitch("FirstSwitch", "First Test Switch");
             firstSwitch.Level = first;
 
@@ -47,10 +47,12 @@ namespace Microsoft.Framework.Logging.Test
             var factory = new LoggerFactory();
             var logger = factory.Create("Test");
 
+            // Act
             factory.AddProvider(new DiagnosticsLoggerProvider(firstSwitch, new ConsoleTraceListener()));
             factory.AddProvider(new DiagnosticsLoggerProvider(secondSwitch, new ConsoleTraceListener()));
+
+            // Assert
             Assert.Equal(expected, logger.IsEnabled(TraceType.Information));
         }
     }
-#endif
 }
