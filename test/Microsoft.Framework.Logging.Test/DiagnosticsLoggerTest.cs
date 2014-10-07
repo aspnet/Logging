@@ -16,19 +16,19 @@ namespace Microsoft.Framework.Logging.Test
         [Fact]
         public static void IsEnabledReturnsCorrectValue()
         {
-            SourceSwitch testSwitch = new SourceSwitch("TestSwitch", "Level will be set to warning for this test");
+            var testSwitch = new SourceSwitch("TestSwitch", "Level will be set to warning for this test");
             testSwitch.Level = SourceLevels.Warning;
 
             var factory = new LoggerFactory();
-            ILogger logger = factory.Create("Test");
+            var logger = factory.Create("Test");
 
             factory.AddProvider(new DiagnosticsLoggerProvider(testSwitch, new ConsoleTraceListener()));
 
-            Assert.Equal(true, logger.IsEnabled(TraceType.Critical));
-            Assert.Equal(true, logger.IsEnabled(TraceType.Error));
-            Assert.Equal(true, logger.IsEnabled(TraceType.Warning));
-            Assert.Equal(false, logger.IsEnabled(TraceType.Information));
-            Assert.Equal(false, logger.IsEnabled(TraceType.Verbose));
+            Assert.True(logger.IsEnabled(TraceType.Critical));
+            Assert.True(logger.IsEnabled(TraceType.Error));
+            Assert.True(logger.IsEnabled(TraceType.Warning));
+            Assert.False(logger.IsEnabled(TraceType.Information));
+            Assert.False(logger.IsEnabled(TraceType.Verbose));
         }
 
         [Theory]
@@ -38,14 +38,14 @@ namespace Microsoft.Framework.Logging.Test
         [InlineData(SourceLevels.Warning, SourceLevels.Warning, false)]
         public static void MultipleLoggers_IsEnabledReturnsCorrectValue(SourceLevels first, SourceLevels second, bool expected)
         {
-            SourceSwitch firstSwitch = new SourceSwitch("FirstSwitch", "First Test Switch");
+            var firstSwitch = new SourceSwitch("FirstSwitch", "First Test Switch");
             firstSwitch.Level = first;
 
-            SourceSwitch secondSwitch = new SourceSwitch("SecondSwitch", "Second Test Switch");
+            var secondSwitch = new SourceSwitch("SecondSwitch", "Second Test Switch");
             secondSwitch.Level = second;
 
             var factory = new LoggerFactory();
-            ILogger logger = factory.Create("Test");
+            var logger = factory.Create("Test");
 
             factory.AddProvider(new DiagnosticsLoggerProvider(firstSwitch, new ConsoleTraceListener()));
             factory.AddProvider(new DiagnosticsLoggerProvider(secondSwitch, new ConsoleTraceListener()));

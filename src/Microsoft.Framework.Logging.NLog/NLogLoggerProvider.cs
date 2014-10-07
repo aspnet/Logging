@@ -50,10 +50,10 @@ namespace Microsoft.Framework.Logging.NLog
                     }
                     if (exception != null)
                     {
-                        message += "\r\n" + exception;
+                        message += Environment.NewLine + exception;
                     }
                 }
-                if (message != String.Empty)
+                if (!String.IsNullOrEmpty(message))
                 {
                     var eventInfo = LogEventInfo.Create(logLevel, _logger.Name, message, exception);
                     eventInfo.Properties["EventId"] = eventId;

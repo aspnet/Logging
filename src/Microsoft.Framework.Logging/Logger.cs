@@ -27,8 +27,7 @@ namespace Microsoft.Framework.Logging
 
         public void Write(TraceType eventType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
-            var count = _loggers.Length;
-            for (var index = 0; index != count; index++)
+            for (var index = 0; index < _loggers.Length; index++)
             {
                 _loggers[index].Write(eventType, eventId, state, exception, formatter);
             }
@@ -36,15 +35,7 @@ namespace Microsoft.Framework.Logging
 
         public bool IsEnabled(TraceType eventType)
         {
-            var count = _loggers.Length;
-            for (var index = 0; index != count; index++)
-            {
-                if (_loggers[index].IsEnabled(eventType))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return _loggers.Any(l => l.IsEnabled(eventType));
         }
 
         public IDisposable BeginScope(object state)

@@ -37,10 +37,10 @@ namespace Microsoft.Framework.Logging
                 }
                 if (exception != null)
                 {
-                    message += "\r\n" + exception;
+                    message += Environment.NewLine + exception;
                 }
             }
-            if (message != String.Empty)
+            if (!String.IsNullOrEmpty(message))
             {
                 _traceSource.TraceEvent(eventType, eventId, message);
             }
