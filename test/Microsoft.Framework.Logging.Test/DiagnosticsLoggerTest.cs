@@ -10,14 +10,11 @@ using Moq;
 
 namespace Microsoft.Framework.Logging.Test
 {
-    /// <summary>
-    /// Summary description for DiagnosticsLoggerTest
-    /// </summary>
     public class DiagnosticsLoggerTest
     {
 #if ASPNET50
         [Fact]
-        public static void DiagnosticsLoggerIsEnabledReturnsCorrectValue()
+        public static void IsEnabledReturnsCorrectValue()
         {
             SourceSwitch testSwitch = new SourceSwitch("TestSwitch", "Level will be set to warning for this test");
             testSwitch.Level = SourceLevels.Warning;
@@ -32,6 +29,27 @@ namespace Microsoft.Framework.Logging.Test
             Assert.Equal(true, logger.IsEnabled(TraceType.Warning));
             Assert.Equal(false, logger.IsEnabled(TraceType.Information));
             Assert.Equal(false, logger.IsEnabled(TraceType.Verbose));
+        }
+
+        [Theory]
+        [InlineData(SourceLevels.Warning, SourceLevels.Information, true)]
+        [InlineData(SourceLevels.Information, SourceLevels.Information, true)]
+        [InlineData(SourceLevels.Information, SourceLevels.Warning, true)]
+        [InlineData(SourceLevels.Warning, SourceLevels.Warning, false)]
+        public static void MultipleLoggers_IsEnabledReturnsCorrectValue(SourceLevels first, SourceLevels second, bool expected)
+        {
+            SourceSwitch firstSwitch = new SourceSwitch("FirstSwitch", "First Test Switch");
+            firstSwitch.Level = first;
+
+            SourceSwitch secondSwitch = new SourceSwitch("SecondSwitch", "Second Test Switch");
+            secondSwitch.Level = second;
+
+            var factory = new LoggerFactory();
+            ILogger logger = factory.Create("Test");
+
+            factory.AddProvider(new DiagnosticsLoggerProvider(firstSwitch, new ConsoleTraceListener()));
+            factory.AddProvider(new DiagnosticsLoggerProvider(secondSwitch, new ConsoleTraceListener()));
+            Assert.Equal(expected, logger.IsEnabled(TraceType.Information));
         }
     }
 #endif

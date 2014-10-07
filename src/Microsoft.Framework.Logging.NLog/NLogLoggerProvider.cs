@@ -37,9 +37,24 @@ namespace Microsoft.Framework.Logging.NLog
                 Func<object, Exception, string> formatter)
             {
                 var logLevel = GetLogLevel(eventType);
+                var message = "";
                 if (formatter != null)
                 {
-                    var message = formatter(state, exception);
+                    message = formatter(state, exception);
+                }
+                else
+                {
+                    if (state != null)
+                    {
+                        message += state;
+                    }
+                    if (exception != null)
+                    {
+                        message += "\r\n" + exception;
+                    }
+                }
+                if (message != String.Empty)
+                {
                     var eventInfo = LogEventInfo.Create(logLevel, _logger.Name, message, exception);
                     eventInfo.Properties["EventId"] = eventId;
                     _logger.Log(eventInfo);

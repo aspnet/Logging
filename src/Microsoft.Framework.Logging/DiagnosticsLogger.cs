@@ -20,9 +20,29 @@ namespace Microsoft.Framework.Logging
         {
             var eventType = GetEventType(traceType);
 
-            if (formatter != null && _traceSource.Switch.ShouldTrace(eventType))
+            if (!_traceSource.Switch.ShouldTrace(eventType))
             {
-                _traceSource.TraceEvent(eventType, eventId, formatter(state, exception));
+                return;
+            }
+            var message = "";
+            if (formatter != null)
+            {
+                message = formatter(state, exception);
+            }
+            else
+            {
+                if (state != null)
+                {
+                    message += state;
+                }
+                if (exception != null)
+                {
+                    message += "\r\n" + exception;
+                }
+            }
+            if (message != String.Empty)
+            {
+                _traceSource.TraceEvent(eventType, eventId, message);
             }
         }
 

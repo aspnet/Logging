@@ -39,12 +39,12 @@ namespace Microsoft.Framework.Logging
             var count = _loggers.Length;
             for (var index = 0; index != count; index++)
             {
-                if (!_loggers[index].IsEnabled(eventType))
+                if (_loggers[index].IsEnabled(eventType))
                 {
-                    return false;
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
 
         public IDisposable BeginScope(object state)
