@@ -1,0 +1,15 @@
+﻿{
+    "webroot": "wwwroot",
+    "exclude": "wwwroot/**/*.*",
+    "dependencies": {
+        "Microsoft.AspNet.Server.IIS": "1.0.0-*",
+        "Microsoft.AspNet.Diagnostics": "1.0.0-*",
+        "Microsoft.AspNet.PipelineCore": "1.0.0-*",
+        "Microsoft.AspNet.Http": "1.0.0-*",
+        "Microsoft.AspNet.Logging.Elm": "1.0.0-*"
+    },
+    "frameworks" : {
+        "aspnet50" : { },
+        "aspnetcore50" : { }
+    }
+}

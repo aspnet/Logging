@@ -19,6 +19,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SampleApp", "samples\Sample
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Framework.Logging.Console", "src\Microsoft.Framework.Logging.Console\Microsoft.Framework.Logging.Console.kproj", "{75A4DE6D-BBAA-4D59-829D-94009E759A18}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.AspNet.Logging.Elm", "src\Microsoft.AspNet.Logging.Elm\Microsoft.AspNet.Logging.Elm.kproj", "{889A6055-2498-4AD0-A866-3B1638257D8B}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ElmSampleApp", "samples\ElmSampleApp\ElmSampleApp.kproj", "{55FB3329-DC96-461C-8E80-B409DF4B494C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +93,26 @@ Global
 		{75A4DE6D-BBAA-4D59-829D-94009E759A18}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{75A4DE6D-BBAA-4D59-829D-94009E759A18}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{75A4DE6D-BBAA-4D59-829D-94009E759A18}.Release|x86.ActiveCfg = Release|Any CPU
+		{889A6055-2498-4AD0-A866-3B1638257D8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{889A6055-2498-4AD0-A866-3B1638257D8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{889A6055-2498-4AD0-A866-3B1638257D8B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{889A6055-2498-4AD0-A866-3B1638257D8B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{889A6055-2498-4AD0-A866-3B1638257D8B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{889A6055-2498-4AD0-A866-3B1638257D8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{889A6055-2498-4AD0-A866-3B1638257D8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{889A6055-2498-4AD0-A866-3B1638257D8B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{889A6055-2498-4AD0-A866-3B1638257D8B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{889A6055-2498-4AD0-A866-3B1638257D8B}.Release|x86.ActiveCfg = Release|Any CPU
+		{55FB3329-DC96-461C-8E80-B409DF4B494C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55FB3329-DC96-461C-8E80-B409DF4B494C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55FB3329-DC96-461C-8E80-B409DF4B494C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{55FB3329-DC96-461C-8E80-B409DF4B494C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{55FB3329-DC96-461C-8E80-B409DF4B494C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{55FB3329-DC96-461C-8E80-B409DF4B494C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55FB3329-DC96-461C-8E80-B409DF4B494C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55FB3329-DC96-461C-8E80-B409DF4B494C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{55FB3329-DC96-461C-8E80-B409DF4B494C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{55FB3329-DC96-461C-8E80-B409DF4B494C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -96,5 +120,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{96B1D6A8-7E40-43C7-813F-898DC8192DDE} = {09920C51-6220-4D8D-94DC-E70C13446187}
 		{550E0247-0BDD-4016-A29B-250F075686FD} = {8C1F5D80-88EA-4961-84DC-7AC6E13951F4}
+		{55FB3329-DC96-461C-8E80-B409DF4B494C} = {8C1F5D80-88EA-4961-84DC-7AC6E13951F4}
 	EndGlobalSection
 EndGlobal

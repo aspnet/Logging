@@ -1,0 +1,14 @@
+﻿{
+    "version": "1.0.0-*",
+    "dependencies": {
+        "Microsoft.Framework.Logging.Interfaces": { "version": "1.0.0-*", "type": "build" },
+        "Microsoft.AspNet.Http": "1.0.0-*",
+        "Microsoft.AspNet.RequestContainer": "1.0.0-*",
+        "Microsoft.Framework.Runtime.Interfaces": { "version": "1.0.0-*", "type": "build" }
+    },
+
+    "frameworks": {
+        "aspnet50": { },
+        "aspnetcore50": { }
+    }
+}
