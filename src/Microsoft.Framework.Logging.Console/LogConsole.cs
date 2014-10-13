@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Microsoft.Framework.Logging.Console
 {
@@ -30,9 +31,14 @@ namespace Microsoft.Framework.Logging.Console
             }
         }
 
-        public void WriteLine(string format, object arg0, object arg1, object arg2)
+        public void WriteLine(string format, params object[] args)
         {
-            System.Console.WriteLine(format, arg0, arg1, arg2);
+            System.Console.WriteLine(format, args);
+        }
+
+        public void WriteError(string format, params object[] args)
+        {
+            System.Console.Error.WriteLine(format, args);
         }
     }
 }

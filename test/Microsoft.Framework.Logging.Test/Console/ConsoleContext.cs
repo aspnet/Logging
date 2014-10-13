@@ -9,5 +9,7 @@ namespace Microsoft.Framework.Logging.Test.Console
         public ConsoleColor ForegroundColor { get; set; }
 
         public string Message { get; set; }
+
+        public bool Error { get; set; }
     }
 }

@@ -4,13 +4,14 @@
         "Microsoft.Framework.Logging": "1.0.0-*",
         "Microsoft.Framework.Logging.Interfaces": "1.0.0-*"
     },
-    "configurations": {
+    "frameworks": {
         "net45": { },
         "aspnet50": {
         },
         "aspnetcore50": {
             "dependencies": {
-                "System.Runtime": "4.0.20.0"
+                "System.Runtime": "4.0.20.0",
+                "System.Console": "4.0.0-beta-*"
             }
         }
     }
