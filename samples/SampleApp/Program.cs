@@ -34,12 +34,12 @@ namespace SampleApp
             }
             catch (Exception ex)
             {
-                _logger.WriteCritical("Unexpected error starting application", ex);
-                _logger.Write(TraceType.Critical, 0, "unexpected error", ex, null);
+                _logger.WriteCritical("Unexpected critical error starting application", ex);
+                _logger.Write(TraceType.Critical, 0, "Unexpected critical error", ex, null);
                 // This write should not log anything
                 _logger.Write(TraceType.Critical, 0, null, null, null);
-                _logger.WriteError("Unexpected error starting application", ex);
-                _logger.WriteWarning("Unexpected error starting application", ex);
+                _logger.WriteError("Unexpected error", ex);
+                _logger.WriteWarning("Unexpected warning", ex);
             }
 
             using (_logger.BeginScope("Main"))
