@@ -30,13 +30,7 @@ namespace Microsoft.Framework.Logging.Console
                 System.Console.ForegroundColor = value;
             }
         }
-
         public void WriteLine(string format, params object[] args)
-        {
-            System.Console.WriteLine(format, args);
-        }
-
-        public void WriteError(string format, params object[] args)
         {
             System.Console.Error.WriteLine(format, args);
         }

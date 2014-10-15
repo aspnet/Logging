@@ -12,13 +12,6 @@
     <RootNamespace>Microsoft.Framework.Logging.Console</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(OutputType) == 'Console'">
-    <DebuggerFlavor>ConsoleDebugger</DebuggerFlavor>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(OutputType) == 'Web'">
-    <DebuggerFlavor>WebDebugger</DebuggerFlavor>
-  </PropertyGroup>
-
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>

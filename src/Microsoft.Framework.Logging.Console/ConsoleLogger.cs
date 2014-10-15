@@ -52,14 +52,7 @@ namespace Microsoft.Framework.Logging.Console
             SetConsoleColor(traceType);
             try
             {
-                if (traceType <= TraceType.Error)
-                {
-                    Console.WriteError("[{0}:{1}] {2}", severity, _name, message);
-                }
-                else
-                {
-                    Console.WriteLine("[{0}:{1}] {2}", severity, _name, message);
-                }
+                Console.WriteLine("[{0}:{1}] {2}", severity, _name, message);
             }
             finally
             {

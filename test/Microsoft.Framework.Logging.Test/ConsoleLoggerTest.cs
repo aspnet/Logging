@@ -260,29 +260,5 @@ namespace Microsoft.Framework.Logging.Test
         {
             return string.Format("[{0}:{1}] {2}", traceType.ToString().ToUpperInvariant(), _name, TheMessageAndError(_state, exception));
         }
-
-        [Fact]
-        public void LogsToCorrectStream()
-        {
-            // Arrange
-            var t = SetUp(null);
-            var logger = t.Item1;
-            var sink = t.Item2;
-
-            // Act
-            logger.Write(TraceType.Critical, 0, _state, null, null);
-            logger.Write(TraceType.Error, 0, _state, null, null);
-            logger.Write(TraceType.Warning, 0, _state, null, null);
-            logger.Write(TraceType.Information, 0, _state, null, null);
-            logger.Write(TraceType.Verbose, 0, _state, null, null);
-
-            // Assert
-            Assert.Equal(5, sink.Writes.Count);
-            Assert.True(sink.Writes[0].Error);
-            Assert.True(sink.Writes[1].Error);
-            Assert.False(sink.Writes[2].Error);
-            Assert.False(sink.Writes[3].Error);
-            Assert.False(sink.Writes[4].Error);
-        }
     }
 }

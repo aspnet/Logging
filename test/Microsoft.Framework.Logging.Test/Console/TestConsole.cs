@@ -16,25 +16,14 @@ namespace Microsoft.Framework.Logging.Test.Console
 
         public ConsoleColor ForegroundColor { get; set; }
 
-        public void WriteError(string format, params object[] args)
-        {
-            Write(true, format, args);
-        }
-
         public void WriteLine(string format, params object[] args)
-        {
-            Write(false, format, args);
-        }
-
-        private void Write(bool error, string format, params object[] args)
         {
             var message = string.Format(format, args);
             _sink.Write(new ConsoleContext()
             {
                 ForegroundColor = ForegroundColor,
                 BackgroundColor = BackgroundColor,
-                Message = message,
-                Error = error
+                Message = message
             });
         }
     }
