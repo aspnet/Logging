@@ -7,12 +7,23 @@ namespace Microsoft.Framework.Logging.Console
 {
     public static class ConsoleLoggerExtensions
     {
+        /// <summary>
+        /// Adds a console logger that is enabled for severity levels of warning or higher
+        /// </summary>
+        /// <param name="factory"></param>
+        /// <returns></returns>
         public static ILoggerFactory AddConsole(this ILoggerFactory factory)
         {
-            factory.AddProvider(new ConsoleLoggerProvider((category, traceType) => traceType < TraceType.Information));
+            factory.AddProvider(new ConsoleLoggerProvider((category, traceType) => traceType >= TraceType.Warning));
             return factory;
         }
 
+        /// <summary>
+        /// Adds a console logger that is enabled as defined by the filter function
+        /// </summary>
+        /// <param name="factory"></param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public static ILoggerFactory AddConsole(this ILoggerFactory factory, Func<string, TraceType, bool> filter)
         {
             factory.AddProvider(new ConsoleLoggerProvider(filter));
