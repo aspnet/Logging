@@ -1,0 +1,56 @@
+﻿@using System
+@using System.Globalization
+@using System.Linq
+@using Microsoft.AspNet.Logging.Elm.Views
+
+@functions
+{
+    public LogPage(LogPageModel model)
+    {
+        Model = model;
+    }
+
+    public LogPageModel Model { get; set; }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ELM</title>
+    <style>
+        <%$ include: LogPage.css %>
+    </style>
+</head>
+<body>
+    <h1>ELM</h1>
+    <table>
+        <thead>
+            <tr>
+                <th id="date">Date</th>
+                <th id="time">Time</th>
+                <th id="severity">Severity</th>
+                <th id="request">Request</th>
+                <th id="host">Host</th>
+                <th id="code">Code</th>
+                <th id="state">State</th>
+                <th id="error">Error</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model.Logs)
+            {
+                <tr>
+                    <td>@string.Format("{0:MM/dd/yy}", log.Time)</td>
+                    <td>@string.Format("{0:H:mm:ss}", log.Time)</td>
+                    <td class="@log.Severity">@log.Severity</td>
+                    <td>@log.Context.Path</td>
+                    <td>@log.Context.Host</td>
+                    <td>@log.Context.StatusCode</td>
+                    <td>@log.State</td>
+                    <td>@log.Exception</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

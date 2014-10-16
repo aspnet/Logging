@@ -1,0 +1,47 @@
+﻿body {
+    width: 800px;
+    font-family: monospace;
+    white-space: nowrap;
+}
+
+table {
+    margin: 0px auto;
+    border-spacing: 1px;
+}
+
+td {
+    padding: 4px;
+}
+
+thead {
+    background-color: #B2F0E0;
+}
+
+tr {
+    height: 23px;
+}
+
+tr:nth-child(2n) {
+    background-color: #F5F5F5;
+}
+
+.Critical {
+    background-color: red;
+    color: white;
+}
+
+.Error {
+    color: red;
+}
+
+.Information {
+    color: blue;
+}
+
+.Verbose {
+    color: black;
+}
+
+.Warning {
+    color: orange;
+}
