@@ -8,10 +8,10 @@ namespace Microsoft.Framework.Logging
 #endif
     public enum TraceType
     {
-        Critical = 5,
-        Error = 4,
-        Warning = 3,
-        Information = 2,
         Verbose = 1,
+        Information = 2,
+        Warning = 3,
+        Error = 4,
+        Critical = 5,
     }
 }
