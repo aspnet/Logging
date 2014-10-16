@@ -48,8 +48,8 @@ namespace Microsoft.Framework.Logging.Console
             }
             lock (_lock)
             {
-                var foregroundColor = Console.ForegroundColor;  // save current colors
-                var backgroundColor = Console.BackgroundColor;
+                var originalForegroundColor = Console.ForegroundColor;  // save current colors
+                var originalBackgroundColor = Console.BackgroundColor;
                 var severity = traceType.ToString().ToUpperInvariant();
                 SetConsoleColor(traceType);
                 try
@@ -58,8 +58,8 @@ namespace Microsoft.Framework.Logging.Console
                 }
                 finally
                 {
-                    Console.ForegroundColor = foregroundColor;  // reset initial colors
-                    Console.BackgroundColor = backgroundColor;
+                    Console.ForegroundColor = originalForegroundColor;  // reset initial colors
+                    Console.BackgroundColor = originalBackgroundColor;
                 }
             }
         }
