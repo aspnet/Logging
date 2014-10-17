@@ -11,30 +11,33 @@ namespace ElmSampleApp
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IElmStore, ElmStore>(); // registering the service so it can be injected into constructors
+            services.AddSingleton<IElmStore, ElmStore>(); // registering the service so it can be injected into constructors
             services.Configure<ElmOptions>(options =>
             {
                 options.Path = new PathString("/foo");
             });
+            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory factory)
         {
+            app.UseErrorPage();
             app.UseElm();
-
+            app.UseMvc();
+#pragma warning disable CS1998
             app.Run(async context =>
+#pragma warning restore CS1998
             {
-                context.Response.ContentType = "text/plain";
-                await context.Response.WriteAsync("Hello world");
-
-                var logger = factory.Create("HelloWorld");
-                context.Response.StatusCode = 200;
-                logger.WriteInformation("Hello");
-                context.Response.StatusCode = 400;
-                logger.WriteCritical("World", new Exception("Bad Request"));
-                context.Response.StatusCode = 404;
-                logger.WriteWarning("Not Found", new Exception("Existential Crisis"));
+                throw new InvalidOperationException();
             });
+        }
+    }
+
+    public class HomeController
+    {
+        public string Index()
+        {
+            return "Hello World";
         }
     }
 }

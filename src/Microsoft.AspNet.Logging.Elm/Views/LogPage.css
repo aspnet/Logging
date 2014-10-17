@@ -1,20 +1,40 @@
 ﻿body {
-    width: 800px;
-    font-family: monospace;
+    font-family: 'Segoe UI', Tahoma, Arial, Helvetica, sans-serif;
+    font-size: .813em;
+    line-height: 1.4em;
     white-space: nowrap;
+    margin: 10px;
+}
+
+col:nth-child(2) {
+    background-color: #FAFAFA;
+}
+
+h1 {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 2em;
 }
 
 table {
     margin: 0px auto;
-    border-spacing: 1px;
+    border-spacing: 0px;
+    table-layout: fixed;
+    width: 100%; 
+    border-collapse: collapse;
 }
 
 td {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+td, th {
     padding: 4px;
 }
 
 thead {
-    background-color: #B2F0E0;
+    font-size: 1em;
+    font-family: Arial;
 }
 
 tr {
@@ -22,7 +42,47 @@ tr {
 }
 
 tr:nth-child(2n) {
-    background-color: #F5F5F5;
+    background-color: #F6F6F6;
+}
+
+#requestHeader {
+    border-bottom: solid 1px gray;
+    border-top: solid 1px gray;
+    margin-bottom: 2px;
+    font-size: 1em;
+    line-height: 2em;
+}
+
+.date, .time {
+    width: 70px; 
+}
+
+.logHeader {
+    border-bottom: 1px solid lightgray;
+    color: gray;
+    text-align: left;
+}
+
+.logState {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.logTd {
+    border-left: 1px solid gray;
+    padding: 0px;
+}
+
+.logs {
+    width: 80%;
+}
+
+.requestRow>td {
+    border-bottom: solid 1px gray;
+}
+
+.severity {
+    width: 80px;
 }
 
 .Critical {

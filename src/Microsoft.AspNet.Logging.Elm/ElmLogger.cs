@@ -2,9 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using Microsoft.AspNet.Http;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
+using Microsoft.Framework.Logging.Elm;
 
 namespace Microsoft.AspNet.Logging.Elm
 {
@@ -15,39 +18,23 @@ namespace Microsoft.AspNet.Logging.Elm
         private IElmStore _store;
         private readonly IContextAccessor<HttpContext> _contextAccessor;
         private readonly object _requestIdentifierKey;
+        private readonly object _logContextKey;
 
-        public ElmLogger(string name, ElmLoggerProvider provider, IElmStore store, IContextAccessor<HttpContext> contextAccessor, object requestIdentifierKey)
+        public ElmLogger(string name, ElmLoggerProvider provider, IElmStore store,
+                         IContextAccessor<HttpContext> contextAccessor, 
+                         object requestIdentifierKey, object logContextKey)
         {
             _name = name;
             _provider = provider;
             _store = store;
             _contextAccessor = contextAccessor;
             _requestIdentifierKey = requestIdentifierKey;
+            _logContextKey = logContextKey;
         }
 
-        public void Write(TraceType traceType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public void Write(TraceType traceType, int eventId, object state, Exception exception, 
+                          Func<object, Exception, string> formatter)
         {
-            var message = string.Empty;
-            if (formatter != null)
-            {
-                message = formatter(state, exception);
-            }
-            else
-            {
-                if (state != null)
-                {
-                    message += state;
-                }
-                if (exception != null)
-                {
-                    message += Environment.NewLine + exception;
-                }
-            }
-            if (string.IsNullOrEmpty(message))
-            {
-                return;
-            }
-
             LogInfo info = new LogInfo()
             {
                 Context = GetLogContext(),
@@ -58,7 +45,17 @@ namespace Microsoft.AspNet.Logging.Elm
                 State = state,
                 Time = DateTime.Now
             };
-            _store.Write(info);
+            if (ElmScope.Counts.ContainsKey(GetLogContext().RequestID))
+            {
+                // TODO: display nested scopes nicely
+                for (var i = 0; i < ElmScope.Counts[GetLogContext().RequestID].Count; i++)
+                {
+                    state = "-----" + state;
+                }
+                info.State = state;
+                info.Scopes = new List<Guid>(ElmScope.Counts[GetLogContext().RequestID]);
+            }
+            _store.Add(info);
         }
 
         public bool IsEnabled(TraceType traceType)
@@ -68,8 +65,7 @@ namespace Microsoft.AspNet.Logging.Elm
 
         public IDisposable BeginScope(object state)
         {
-            // TODO: use NullDisposable once it's moved to this repo #33
-            return null;
+            return new ElmScope(this, state, GetLogContext().RequestID);
         }
 
         private LogContext GetLogContext()
@@ -77,11 +73,17 @@ namespace Microsoft.AspNet.Logging.Elm
             var context = _contextAccessor.Value;
             if (context == null)
             {
-                return new LogContext();
-            }
-            else
-            {
+                // TODO: group non-request logs by Thread ID
                 return new LogContext()
+                {
+                    ThreadID = Thread.CurrentThread.ManagedThreadId
+                };
+            }
+
+            var logContext = context.Items[_logContextKey] as LogContext;
+            if (logContext == null)
+            {
+                logContext = new LogContext()
                 {
                     RequestID = (Guid)context.Items[_requestIdentifierKey],
                     Host = context.Request.Host,
@@ -89,9 +91,17 @@ namespace Microsoft.AspNet.Logging.Elm
                     Path = context.Request.Path,
                     Scheme = context.Request.Scheme,
                     StatusCode = context.Response.StatusCode,
-                    User = context.User.Identity.Name
+                    User = context.User,
+                    Method = context.Request.Method,
+                    Protocol = context.Request.Protocol,
+                    Headers = context.Request.Headers,
+                    Query = context.Request.QueryString,
+                    Cookies = context.Request.Cookies
                 };
+                context.Items[_logContextKey] = logContext;
             }
+
+            return logContext;
         }
     }
 }

@@ -6,7 +6,6 @@
         "Microsoft.AspNet.RequestContainer": "1.0.0-*",
         "Microsoft.Framework.Logging.Interfaces": { "version": "1.0.0-*", "type": "build" },
         "Microsoft.Framework.Runtime.Interfaces": { "version": "1.0.0-*", "type": "build" }
-
     },
 
     "frameworks": {

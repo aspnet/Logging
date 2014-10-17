@@ -2,12 +2,15 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Security.Claims;
 using Microsoft.AspNet.Http;
 
 namespace Microsoft.AspNet.Logging.Elm
 {
     public class LogContext
     {
+        public int ThreadID { get; set; }
+
         public Guid RequestID { get; set; }
 
         public HostString Host { get; set; }
@@ -20,6 +23,16 @@ namespace Microsoft.AspNet.Logging.Elm
 
         public int StatusCode { get; set; }
         
-        public string User { get; set; }
+        public ClaimsPrincipal User { get; set; }
+
+        public string Method { get; set; }
+
+        public string Protocol { get; set; }
+
+        public IHeaderDictionary Headers { get; set; }
+
+        public QueryString Query { get; set; }
+
+        public IReadableStringCollection Cookies { get; set; }
     }
 }

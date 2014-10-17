@@ -12,17 +12,20 @@ namespace Microsoft.AspNet.Logging.Elm
         private readonly IElmStore _store;
         private readonly IContextAccessor<HttpContext> _contextAccessor;
         private readonly object _requestIdentifierKey;
+        private readonly object _logContextKey;
 
-        public ElmLoggerProvider(IElmStore store, IContextAccessor<HttpContext> contextAccessor, object requestIdentifierKey)
+        public ElmLoggerProvider(IElmStore store, IContextAccessor<HttpContext> contextAccessor, 
+                                 object requestIdentifierKey, object logContextKey)
         {
             _store = store;
             _contextAccessor = contextAccessor;
             _requestIdentifierKey = requestIdentifierKey;
+            _logContextKey = logContextKey;
         }
 
         public ILogger Create(string name)
         {
-            return new ElmLogger(name, this, _store, _contextAccessor, _requestIdentifierKey);      
+            return new ElmLogger(name, this, _store, _contextAccessor, _requestIdentifierKey, _logContextKey);      
         }
     }
 }
