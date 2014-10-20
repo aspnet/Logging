@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Threading;
 
 namespace Microsoft.Framework.Logging.Console
 {
@@ -16,7 +17,16 @@ namespace Microsoft.Framework.Logging.Console
             _name = name;
             _filter = filter ?? ((category, logLevel) => true);
             Console = new LogConsole();
+#if !ASPNETCORE50
+            AppDomain.CurrentDomain.ProcessExit += (sender, e) => OnProcessExit(sender, e, Console, this);
+#endif
+            // store original console colors
+            OriginalForegroundColor = Console.ForegroundColor;
+            OriginalBackgroundColor = Console.BackgroundColor;
         }
+
+        public ConsoleColor OriginalForegroundColor { get; private set; }
+        public ConsoleColor OriginalBackgroundColor { get; private set; }
 
         public IConsole Console { get; set; }
 
@@ -48,8 +58,6 @@ namespace Microsoft.Framework.Logging.Console
             }
             lock (_lock)
             {
-                var originalForegroundColor = Console.ForegroundColor;  // save current colors
-                var originalBackgroundColor = Console.BackgroundColor;
                 var severity = logLevel.ToString().ToUpperInvariant();
                 SetConsoleColor(logLevel);
                 try
@@ -58,8 +66,8 @@ namespace Microsoft.Framework.Logging.Console
                 }
                 finally
                 {
-                    Console.ForegroundColor = originalForegroundColor;  // reset initial colors
-                    Console.BackgroundColor = originalBackgroundColor;
+                    Console.ForegroundColor = OriginalForegroundColor;  // reset initial colors
+                    Console.BackgroundColor = OriginalBackgroundColor;
                 }
             }
         }
@@ -97,6 +105,22 @@ namespace Microsoft.Framework.Logging.Console
         public IDisposable BeginScope(object state)
         {
             return null;
+        }
+
+        // delay ending this process until console colors have been reset to their original state
+        public static void OnProcessExit(object sender, EventArgs e, IConsole Console, ConsoleLogger logger)
+        {
+            // if it takes more than a second, let it end
+            int i = 0;
+            while ((System.Console.ForegroundColor != logger.OriginalForegroundColor || 
+                   System.Console.BackgroundColor != logger.OriginalBackgroundColor) &&
+                   i < 10)
+            {
+                i++;
+#if !ASPNETCORE50
+                Thread.Sleep(100);
+#endif
+            }
         }
     }
 }
