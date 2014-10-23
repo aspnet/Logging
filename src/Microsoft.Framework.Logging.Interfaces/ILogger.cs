@@ -22,14 +22,14 @@ namespace Microsoft.Framework.Logging
         /// <param name="exception"></param>
         /// <param name="formatter"></param>
         /// <returns></returns>
-        void Write(TraceType eventType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter);
+        void Write(LogLevel eventType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter);
 
         /// <summary>
         /// Checks if the given TraceEventType is enabled.
         /// </summary>
         /// <param name="eventType"></param>
         /// <returns></returns>
-        bool IsEnabled(TraceType eventType);
+        bool IsEnabled(LogLevel eventType);
 
         /// <summary>
         /// Begins a logical operation scope.

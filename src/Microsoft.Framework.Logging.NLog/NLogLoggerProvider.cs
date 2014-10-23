@@ -30,7 +30,7 @@ namespace Microsoft.Framework.Logging.NLog
             }
 
             public void Write(
-                TraceType eventType,
+                LogLevel eventType,
                 int eventId,
                 object state,
                 Exception exception,
@@ -61,22 +61,22 @@ namespace Microsoft.Framework.Logging.NLog
                 }
             }
 
-            public bool IsEnabled(TraceType eventType)
+            public bool IsEnabled(LogLevel eventType)
             {
                 return _logger.IsEnabled(GetLogLevel(eventType));
             }
-
-            private LogLevel GetLogLevel(TraceType eventType)
+            
+            private global::NLog.LogLevel GetLogLevel(LogLevel eventType)
             {
                 switch (eventType)
                 {
-                    case TraceType.Verbose: return LogLevel.Debug;
-                    case TraceType.Information: return LogLevel.Info;
-                    case TraceType.Warning: return LogLevel.Warn;
-                    case TraceType.Error: return LogLevel.Error;
-                    case TraceType.Critical: return LogLevel.Fatal;
+                    case LogLevel.Verbose: return global::NLog.LogLevel.Debug;
+                    case LogLevel.Information: return global::NLog.LogLevel.Info;
+                    case LogLevel.Warning: return global::NLog.LogLevel.Warn;
+                    case LogLevel.Error: return global::NLog.LogLevel.Error;
+                    case LogLevel.Critical: return global::NLog.LogLevel.Fatal;
                 }
-                return LogLevel.Debug;
+                return global::NLog.LogLevel.Debug;
             }
 
             public IDisposable BeginScope(object state)

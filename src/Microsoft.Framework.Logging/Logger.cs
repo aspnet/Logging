@@ -25,7 +25,7 @@ namespace Microsoft.Framework.Logging
             }
         }
 
-        public void Write(TraceType eventType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public void Write(LogLevel eventType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
             foreach (var logger in _loggers)
             {
@@ -33,7 +33,7 @@ namespace Microsoft.Framework.Logging
             }
         }
 
-        public bool IsEnabled(TraceType eventType)
+        public bool IsEnabled(LogLevel eventType)
         {
             return _loggers.Any(l => l.IsEnabled(eventType));
         }
