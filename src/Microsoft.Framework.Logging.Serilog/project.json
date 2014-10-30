@@ -1,0 +1,22 @@
+﻿{
+    "version": "1.0.0-*",
+    "webroot": "wwwroot",
+    "exclude": [
+        "wwwroot"
+    ],
+    "dependencies": {
+        "Microsoft.AspNet.Diagnostics": "1.0.0-*",
+        "Microsoft.AspNet.Diagnostics.Entity": "7.0.0-*",
+        "Serilog": "1.4.14",
+        "Serilog.Sinks.AzureTableStorage": "1.4.14",
+        "Serilog.Sinks.ElasticSearch": "1.4.14"
+    },
+    "frameworks": {
+        "aspnet50": { },
+        "aspnetcore50": {
+            "dependencies": {
+                "System.Runtime": "4.0.20-beta-22220"
+            }
+        }
+    }
+}
