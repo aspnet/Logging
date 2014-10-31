@@ -2,11 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Framework.Logging;
 using Serilog.Events;
-using System.Linq;
-using System.Collections.Generic;
-using System.Reflection;
 using Serilog.Core;
 
 namespace Microsoft.Framework.Logging.Serilog
@@ -16,22 +12,15 @@ namespace Microsoft.Framework.Logging.Serilog
         private readonly SerilogLoggerProvider _provider;
         private readonly string _name;
         private readonly global::Serilog.ILogger _logger;
-        private readonly ILogEventPropertyFactory _propertyFactory;
 
         public SerilogLogger(
             SerilogLoggerProvider provider,
-            global::Serilog.ILogger logger,
+            [NotNull] global::Serilog.ILogger logger,
             string name)
         {
-            Check.NotNull(logger, "logger");
-
             _provider = provider;
             _name = name;
             _logger = logger.ForContext(Constants.SourceContextPropertyName, name);
-
-            var typeInfo = _logger.GetType().GetTypeInfo();
-            var fieldInfo = typeInfo.GetDeclaredField("_messageTemplateProcessor");
-            _propertyFactory = (ILogEventPropertyFactory)fieldInfo.GetValue(_logger);
         }
 
         public IDisposable BeginScope(object state)
@@ -46,15 +35,15 @@ namespace Microsoft.Framework.Logging.Serilog
 
         public void Write(TraceType eventType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
-            if (!_logger.IsEnabled(ConvertLevel(eventType)))
+            var level = ConvertLevel(eventType);
+            if (!_logger.IsEnabled(level))
             {
                 return;
             }
 
             var logger = _logger;
-
             var now = DateTimeOffset.Now;
-            var level = ConvertLevel(eventType);
+            
             var message = formatter.Invoke(state, exception);
             var structure = state as ILoggerStructure;
             if (structure != null)
@@ -67,11 +56,6 @@ namespace Microsoft.Framework.Logging.Serilog
             }
 
             logger.Write(level, "{Message:l}", message);
-        }
-
-        private LogEventProperty ToLogEventProperty(KeyValuePair<string, object> property)
-        {
-            return _propertyFactory.CreateProperty(property.Key, property.Value);
         }
 
         private LogEventLevel ConvertLevel(TraceType eventType)

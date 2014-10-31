@@ -16,10 +16,8 @@ namespace Microsoft.Framework.Logging.Serilog
     {
         private readonly global::Serilog.ILogger _logger;
 
-        public SerilogLoggerProvider(global::Serilog.LoggerConfiguration loggerConfiguration)
+        public SerilogLoggerProvider([NotNull] global::Serilog.LoggerConfiguration loggerConfiguration)
         {
-            Check.NotNull(loggerConfiguration, "loggerConfiguration");
-
             _logger = loggerConfiguration
                 .Enrich.With(this)
                 .CreateLogger();
@@ -52,8 +50,8 @@ namespace Microsoft.Framework.Logging.Serilog
         }
 
 #if ASPNETCORE50
-        private static AsyncLocal<SerilogLoggerScope> _value = new AsyncLocal<SerilogLoggerScope>();
-        public static SerilogLoggerScope CurrentScope
+        private AsyncLocal<SerilogLoggerScope> _value = new AsyncLocal<SerilogLoggerScope>();
+        public SerilogLoggerScope CurrentScope
         {
             get
             {
@@ -65,9 +63,9 @@ namespace Microsoft.Framework.Logging.Serilog
             }
         }
 #else
-        private static readonly string _currentScopeKey = nameof(SerilogLoggerScope) + "#" + Guid.NewGuid().ToString("n");
+        private readonly string _currentScopeKey = nameof(SerilogLoggerScope) + "#" + Guid.NewGuid().ToString("n");
 
-        public static SerilogLoggerScope CurrentScope
+        public SerilogLoggerScope CurrentScope
         {
             get
             {

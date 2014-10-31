@@ -35,12 +35,6 @@ namespace SerilogSampleApp
                 serilog.WriteTo.ColoredConsole();
             }
 
-            string azureTableStorageConnectionString;
-            if (loggingConfiguration.TryGet("AzureTableStorage:ConnectionString", out azureTableStorageConnectionString))
-            {
-                //serilog.WriteTo.AzureTableStorage(azureTableStorageConnectionString);
-            }
-
             string elasticSearchConnectionString;
             if (loggingConfiguration.TryGet("ElasticSearch:Server", out elasticSearchConnectionString))
             {
@@ -56,14 +50,14 @@ namespace SerilogSampleApp
             {
                 using (_logger.BeginScope(new RequestScope(ctx)))
                 {
-                    _logger.Information(new BeginRequest(ctx));
+                    _logger.WriteInformation(new BeginRequest(ctx));
                     try
                     {
                         await next(ctx);
                     }
                     finally
                     {
-                        _logger.Information(new EndRequest(ctx));
+                        _logger.WriteInformation(new EndRequest(ctx));
                     }
                 }
             });
@@ -71,7 +65,7 @@ namespace SerilogSampleApp
             _logger.WriteWarning("Boo!");
         }
 
-        private class RequestScope : LogData
+        private class RequestScope : LoggerStructureBase
         {
             private readonly HttpContext _context;
             private readonly string _activityId = Guid.NewGuid().ToString("n");
@@ -85,7 +79,7 @@ namespace SerilogSampleApp
             public string ActivityPath { get { return _context.Request.Path.Value; } }
         }
 
-        private class BeginRequest : LogData
+        private class BeginRequest : LoggerStructureBase
         {
             private readonly HttpContext _context;
 
@@ -110,7 +104,7 @@ namespace SerilogSampleApp
             }
         }
 
-        private class EndRequest : LogData
+        private class EndRequest : LoggerStructureBase
         {
             private readonly HttpContext _context;
 

@@ -16,8 +16,8 @@ namespace Microsoft.Framework.Logging.Serilog
             Name = name;
             State = state;
 
-            Parent = SerilogLoggerProvider.CurrentScope;
-            SerilogLoggerProvider.CurrentScope = this;
+            Parent = _provider.CurrentScope;
+            _provider.CurrentScope = this;
         }
 
         public SerilogLoggerScope Parent { get; private set; }
@@ -26,11 +26,11 @@ namespace Microsoft.Framework.Logging.Serilog
 
         public void RemoveScope()
         {
-            for (var scan = SerilogLoggerProvider.CurrentScope; scan != null; scan = scan.Parent)
+            for (var scan = _provider.CurrentScope; scan != null; scan = scan.Parent)
             {
                 if (ReferenceEquals(scan, this))
                 {
-                    SerilogLoggerProvider.CurrentScope = Parent;
+                    _provider.CurrentScope = Parent;
                 }
             }
         }

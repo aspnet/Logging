@@ -15,6 +15,8 @@ namespace Microsoft.Framework.Logging
         private static readonly Func<object, Exception, string> TheMessage = (message, error) => (string)message;
         private static readonly Func<object, Exception, string> TheMessageAndError = (message, error)
             => string.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", message, Environment.NewLine, error);
+        private static readonly Func<object, Exception, string> LoggerStructureFormatter = (state, ex) 
+            => ((LoggerStructureBase)state).ToString();
 
         /// <summary>
         /// Writes a verbose log message.
@@ -32,6 +34,15 @@ namespace Microsoft.Framework.Logging
             logger.Write(LogLevel.Verbose, 0, data, null, TheMessage);
         }
 
+        public static void WriteVerbose(this ILogger logger, LoggerStructureBase message, Exception exception = null)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException("logger");
+            }
+            logger.Write(TraceType.Verbose, message, exception);
+        }
+
         /// <summary>
         /// Writes an informational log message.
         /// </summary>
@@ -45,6 +56,15 @@ namespace Microsoft.Framework.Logging
             }
 
             logger.Write(LogLevel.Information, 0, message, null, TheMessage);
+        }
+
+        public static void WriteInformation(this ILogger logger, LoggerStructureBase message, Exception exception = null)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException("logger");
+            }
+            logger.Write(TraceType.Information, message, exception);
         }
 
         /// <summary>
@@ -80,6 +100,15 @@ namespace Microsoft.Framework.Logging
             logger.Write(LogLevel.Warning, 0, message, error, TheMessageAndError);
         }
 
+        public static void WriteWarning(this ILogger logger, LoggerStructureBase message, Exception exception = null)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException("logger");
+            }
+            logger.Write(TraceType.Warning, message, exception);
+        }
+
         /// <summary>
         /// Writes an error log message.
         /// </summary>
@@ -111,6 +140,15 @@ namespace Microsoft.Framework.Logging
             logger.Write(LogLevel.Error, 0, message, error, TheMessageAndError);
         }
 
+        public static void WriteError(this ILogger logger, LoggerStructureBase message, Exception exception = null)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException("logger");
+            }
+            logger.Write(TraceType.Error, message, exception);
+        }
+
         /// <summary>
         /// Writes a critical log message.
         /// </summary>
@@ -140,6 +178,20 @@ namespace Microsoft.Framework.Logging
             }
 
             logger.Write(LogLevel.Critical, 0, message, error, TheMessageAndError);
+        }
+
+        public static void WriteCritical(this ILogger logger, LoggerStructureBase message, Exception exception = null)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException("logger");
+            }
+            logger.Write(TraceType.Critical, message, exception);
+        }
+
+        private static void Write(this ILogger logger, TraceType traceType, LoggerStructureBase message, Exception exception = null)
+        {
+            logger.Write(traceType, 0, message, null, LoggerStructureFormatter);
         }
     }
 }

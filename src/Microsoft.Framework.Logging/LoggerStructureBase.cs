@@ -2,18 +2,22 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Microsoft.Framework.Logging.Serilog
+namespace Microsoft.Framework.Logging
 {
-    public abstract class LogData : ILoggerStructure
+    public abstract class LoggerStructureBase : ILoggerStructure
     {
         public virtual IEnumerable<KeyValuePair<string, object>> GetValues()
         {
+            var values = new List<KeyValuePair<string, object>>();
+#if ASPNET50 || ASPNETCORE50 || NET45
             foreach (var propertyInfo in GetType().GetTypeInfo().DeclaredProperties)
             {
-                yield return new KeyValuePair<string, object>(
+                values.Add(new KeyValuePair<string, object>(
                     propertyInfo.Name,
-                    propertyInfo.GetValue(this));
+                    propertyInfo.GetValue(this)));
             }
+#endif
+            return values;
         }
 
         public override string ToString()
