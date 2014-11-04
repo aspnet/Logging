@@ -14,7 +14,7 @@ namespace Microsoft.Framework.Logging.Serilog
         private readonly global::Serilog.ILogger _logger;
 
         public SerilogLogger(
-            SerilogLoggerProvider provider,
+            [NotNull] SerilogLoggerProvider provider,
             [NotNull] global::Serilog.ILogger logger,
             string name)
         {
@@ -97,7 +97,7 @@ namespace Microsoft.Framework.Logging.Serilog
             }
         }
 
-        private class ExceptionEnricher : ILogEventEnricher
+        sealed private class ExceptionEnricher : ILogEventEnricher
         {
             private readonly Exception _exception;
 

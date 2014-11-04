@@ -9,5 +9,7 @@ namespace Microsoft.Framework.Logging
     public interface ILoggerStructure
     {
         IEnumerable<KeyValuePair<string, object>> GetValues();
+
+        string ToString();
     }
 }

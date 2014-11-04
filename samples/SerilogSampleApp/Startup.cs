@@ -77,6 +77,11 @@ namespace SerilogSampleApp
 
             public string ActivityId { get { return _activityId; } }
             public string ActivityPath { get { return _context.Request.Path.Value; } }
+
+            public override string ToString()
+            {
+                return string.Format("Scope {0} {1}", ActivityId, ActivityPath);
+            }
         }
 
         private class BeginRequest : LoggerStructureBase

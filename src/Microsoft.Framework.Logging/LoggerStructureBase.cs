@@ -20,9 +20,6 @@ namespace Microsoft.Framework.Logging
             return values;
         }
 
-        public override string ToString()
-        {
-            return base.ToString();
-        }
+        public abstract override string ToString();
     }
 }
