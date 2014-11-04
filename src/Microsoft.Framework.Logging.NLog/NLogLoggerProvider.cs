@@ -30,13 +30,13 @@ namespace Microsoft.Framework.Logging.NLog
             }
 
             public void Write(
-                LogLevel eventType,
+                LogLevel logLevel,
                 int eventId,
                 object state,
                 Exception exception,
                 Func<object, Exception, string> formatter)
             {
-                var logLevel = GetLogLevel(eventType);
+                var nLogLogLevel = GetLogLevel(logLevel);
                 var message = string.Empty;
                 if (formatter != null)
                 {
@@ -55,20 +55,20 @@ namespace Microsoft.Framework.Logging.NLog
                 }
                 if (!string.IsNullOrEmpty(message))
                 {
-                    var eventInfo = LogEventInfo.Create(logLevel, _logger.Name, message, exception);
+                    var eventInfo = LogEventInfo.Create(nLogLogLevel, _logger.Name, message, exception);
                     eventInfo.Properties["EventId"] = eventId;
                     _logger.Log(eventInfo);
                 }
             }
 
-            public bool IsEnabled(LogLevel eventType)
+            public bool IsEnabled(LogLevel logLevel)
             {
-                return _logger.IsEnabled(GetLogLevel(eventType));
+                return _logger.IsEnabled(GetLogLevel(logLevel));
             }
             
-            private global::NLog.LogLevel GetLogLevel(LogLevel eventType)
+            private global::NLog.LogLevel GetLogLevel(LogLevel logLevel)
             {
-                switch (eventType)
+                switch (logLevel)
                 {
                     case LogLevel.Verbose: return global::NLog.LogLevel.Debug;
                     case LogLevel.Information: return global::NLog.LogLevel.Info;

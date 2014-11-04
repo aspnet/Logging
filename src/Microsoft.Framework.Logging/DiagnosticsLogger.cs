@@ -46,8 +46,8 @@ namespace Microsoft.Framework.Logging
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            var eventType = GetEventType(logLevel);
-            return _traceSource.Switch.ShouldTrace(eventType);
+            var traceEventType = GetEventType(logLevel);
+            return _traceSource.Switch.ShouldTrace(traceEventType);
         }
 
         private static TraceEventType GetEventType(LogLevel logLevel)
