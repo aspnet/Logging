@@ -97,7 +97,7 @@ namespace Microsoft.Framework.Logging.Serilog
             }
         }
 
-        sealed private class ExceptionEnricher : ILogEventEnricher
+        private class ExceptionEnricher : ILogEventEnricher
         {
             private readonly Exception _exception;
 
