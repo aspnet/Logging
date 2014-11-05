@@ -65,7 +65,7 @@ namespace Microsoft.Framework.Logging.NLog
             {
                 return _logger.IsEnabled(GetLogLevel(logLevel));
             }
-            
+
             private global::NLog.LogLevel GetLogLevel(LogLevel logLevel)
             {
                 switch (logLevel)
