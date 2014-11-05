@@ -8,9 +8,9 @@ namespace Microsoft.Framework.Logging
     public class TestLogger : ILogger
     {
         private object _scope;
-        private TestSink _sink;
-        private string _name;
-        private bool _enabled;
+        private readonly TestSink _sink;
+        private readonly string _name;
+        private readonly bool _enabled;
 
         public TestLogger(string name, TestSink sink, bool enabled)
         {

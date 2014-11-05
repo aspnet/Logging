@@ -5,8 +5,8 @@ namespace Microsoft.Framework.Logging
 {
     public class TestLoggerFactory : ILoggerFactory
     {
-        private TestSink _sink;
-        private bool _enabled;
+        private readonly TestSink _sink;
+        private readonly bool _enabled;
 
         public TestLoggerFactory(TestSink sink, bool enabled)
         {
