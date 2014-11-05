@@ -19,7 +19,5 @@ namespace Microsoft.Framework.Logging
 #endif
             return values;
         }
-
-        public abstract override string ToString();
     }
 }

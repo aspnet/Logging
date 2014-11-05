@@ -6,15 +6,7 @@
         "Serilog": "1.4.14"
     },
     "frameworks": {
-        "aspnet50": {
-            "dependencies": {
-                "Microsoft.Framework.Runtime.Interfaces": { "version": "1.0.0-*", "type": "build" }
-            }
-        },
-        "aspnetcore50": {
-            "dependencies": {
-                "System.Runtime": "4.0.20-beta-22220"
-            }
-        }
+        "aspnet50": {},
+        "aspnetcore50": {}
     }
 }

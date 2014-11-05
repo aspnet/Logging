@@ -42,7 +42,6 @@ namespace Microsoft.Framework.Logging.Serilog
             }
 
             var logger = _logger;
-            var now = DateTimeOffset.Now;
             
             var message = formatter.Invoke(state, exception);
             var structure = state as ILoggerStructure;
@@ -97,7 +96,7 @@ namespace Microsoft.Framework.Logging.Serilog
             }
         }
 
-        private class ExceptionEnricher : ILogEventEnricher
+        private sealed class ExceptionEnricher : ILogEventEnricher
         {
             private readonly Exception _exception;
 

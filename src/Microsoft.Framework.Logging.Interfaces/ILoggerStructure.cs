@@ -10,6 +10,9 @@ namespace Microsoft.Framework.Logging
     {
         IEnumerable<KeyValuePair<string, object>> GetValues();
 
+        /// <summary>
+        /// Returns a human-readable string of the structured data
+        /// </summary>
         string ToString();
     }
 }
