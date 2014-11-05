@@ -38,7 +38,6 @@ namespace Microsoft.Framework.Logging.Serilog
             }
         }
 
-        #region IDisposable Support
         private bool _disposedValue = false; // To detect redundant calls
 
         public void Dispose()
@@ -49,7 +48,5 @@ namespace Microsoft.Framework.Logging.Serilog
             }
             _disposedValue = true;
         }
-        #endregion
-
     }
 }

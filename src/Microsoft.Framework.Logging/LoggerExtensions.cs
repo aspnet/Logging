@@ -15,8 +15,8 @@ namespace Microsoft.Framework.Logging
         private static readonly Func<object, Exception, string> TheMessage = (message, error) => (string)message;
         private static readonly Func<object, Exception, string> TheMessageAndError = (message, error)
             => string.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", message, Environment.NewLine, error);
-        private static readonly Func<object, Exception, string> LoggerStructureFormatter = (state, ex) 
-            => ((LoggerStructureBase)state).ToString();
+        private static readonly Func<object, Exception, string> _loggerStructureFormatter = (state, error) 
+            => LoggerStructureFormatter((LoggerStructureBase) state, error);
 
         /// <summary>
         /// Writes a verbose log message.
@@ -137,7 +137,12 @@ namespace Microsoft.Framework.Logging
 
         private static void Write(this ILogger logger, TraceType traceType, LoggerStructureBase message, Exception exception = null)
         {
-            logger.Write(traceType, 0, message, null, LoggerStructureFormatter);
+            logger.Write(traceType, 0, message, null, _loggerStructureFormatter);
+        }
+
+        private static string LoggerStructureFormatter(LoggerStructureBase state, Exception exception)
+        {
+            return state.ToString();
         }
     }
 }
