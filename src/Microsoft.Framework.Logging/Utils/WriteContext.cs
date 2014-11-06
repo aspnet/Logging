@@ -7,7 +7,7 @@ namespace Microsoft.Framework.Logging
 {
     public class WriteContext
     {
-        public TraceType EventType { get; set; }
+        public LogLevel LogLevel { get; set; }
 
         public int EventId { get; set; }
 
