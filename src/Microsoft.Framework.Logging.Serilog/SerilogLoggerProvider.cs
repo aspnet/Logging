@@ -8,6 +8,7 @@ using System.Runtime.Remoting.Messaging;
 #else
 using System.Threading;
 #endif
+using JetBrains.Annotations;
 using Serilog.Core;
 using Serilog.Events;
 

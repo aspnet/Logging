@@ -2,8 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.Globalization;
+using JetBrains.Annotations;
 
 namespace Microsoft.Framework.Logging
 {
@@ -34,7 +34,7 @@ namespace Microsoft.Framework.Logging
             LoggerStructureBase message, 
             Exception exception = null)
         {
-            logger.Write(TraceType.Verbose, message, exception);
+            logger.Write(LogLevel.Verbose, message, exception);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Microsoft.Framework.Logging
             LoggerStructureBase message, 
             Exception exception = null)
         {
-            logger.Write(TraceType.Information, message, exception);
+            logger.Write(LogLevel.Information, message, exception);
         }
 
         /// <summary>
@@ -78,9 +78,12 @@ namespace Microsoft.Framework.Logging
             logger.Write(LogLevel.Warning, 0, message, error, TheMessageAndError);
         }
 
-        public static void WriteWarning([NotNull] this ILogger logger, LoggerStructureBase message, Exception exception = null)
+        public static void WriteWarning(
+            [NotNull] this ILogger logger, 
+            LoggerStructureBase message, 
+            Exception exception = null)
         {
-            logger.Write(TraceType.Warning, message, exception);
+            logger.Write(LogLevel.Warning, message, exception);
         }
 
         /// <summary>
@@ -104,9 +107,12 @@ namespace Microsoft.Framework.Logging
             logger.Write(LogLevel.Error, 0, message, error, TheMessageAndError);
         }
 
-        public static void WriteError([NotNull] this ILogger logger, LoggerStructureBase message, Exception exception = null)
+        public static void WriteError(
+            [NotNull] this ILogger logger, 
+            LoggerStructureBase message, 
+            Exception exception = null)
         {
-            logger.Write(TraceType.Error, message, exception);
+            logger.Write(LogLevel.Error, message, exception);
         }
 
         /// <summary>
@@ -130,14 +136,21 @@ namespace Microsoft.Framework.Logging
             logger.Write(LogLevel.Critical, 0, message, error, TheMessageAndError);
         }
 
-        public static void WriteCritical([NotNull] this ILogger logger, LoggerStructureBase message, Exception exception = null)
+        public static void WriteCritical(
+            [NotNull] this ILogger logger, 
+            LoggerStructureBase message, 
+            Exception exception = null)
         {
-            logger.Write(TraceType.Critical, message, exception);
+            logger.Write(LogLevel.Critical, message, exception);
         }
 
-        private static void Write(this ILogger logger, TraceType traceType, LoggerStructureBase message, Exception exception = null)
+        private static void Write(
+            this ILogger logger, 
+            LogLevel logLevel, 
+            LoggerStructureBase message, 
+            Exception exception = null)
         {
-            logger.Write(traceType, 0, message, null, _loggerStructureFormatter);
+            logger.Write(logLevel, 0, message, null, _loggerStructureFormatter);
         }
 
         private static string LoggerStructureFormatter(LoggerStructureBase state, Exception exception)

@@ -2,8 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using JetBrains.Annotations;
 using Serilog.Events;
 using Serilog.Core;
+
+using SLogger = Serilog.ILogger;
 
 namespace Microsoft.Framework.Logging.Serilog
 {
@@ -11,11 +14,11 @@ namespace Microsoft.Framework.Logging.Serilog
     {
         private readonly SerilogLoggerProvider _provider;
         private readonly string _name;
-        private readonly global::Serilog.ILogger _logger;
+        private readonly SLogger _logger;
 
         public SerilogLogger(
             [NotNull] SerilogLoggerProvider provider,
-            [NotNull] global::Serilog.ILogger logger,
+            [NotNull] SLogger logger,
             string name)
         {
             _provider = provider;
@@ -28,22 +31,41 @@ namespace Microsoft.Framework.Logging.Serilog
             return _provider.BeginScope(_name, state);
         }
 
-        public bool IsEnabled(TraceType eventType)
+        public bool IsEnabled(LogLevel logLevel)
         {
-            return _logger.IsEnabled(ConvertLevel(eventType));
+            return _logger.IsEnabled(ConvertLevel(logLevel));
         }
 
-        public void Write(TraceType eventType, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
-            var level = ConvertLevel(eventType);
+            var level = ConvertLevel(logLevel);
             if (!_logger.IsEnabled(level))
             {
                 return;
             }
 
             var logger = _logger;
-            
-            var message = formatter.Invoke(state, exception);
+
+            var message = string.Empty;
+            if (formatter != null)
+            {
+                message = formatter(state, exception);
+            }
+            else
+            {
+                if (state != null)
+                {
+                    message += state;
+                }
+                if (exception != null)
+                {
+                    message += Environment.NewLine + exception;
+                }
+            }
+            if (string.IsNullOrEmpty(message))
+            {
+                return;
+            }
             var structure = state as ILoggerStructure;
             if (structure != null)
             {
@@ -57,19 +79,19 @@ namespace Microsoft.Framework.Logging.Serilog
             logger.Write(level, "{Message:l}", message);
         }
 
-        private LogEventLevel ConvertLevel(TraceType eventType)
+        private LogEventLevel ConvertLevel(LogLevel logLevel)
         {
-            switch (eventType)
+            switch (logLevel)
             {
-                case TraceType.Critical:
+                case LogLevel.Critical:
                     return LogEventLevel.Fatal;
-                case TraceType.Error:
+                case LogLevel.Error:
                     return LogEventLevel.Error;
-                case TraceType.Warning:
+                case LogLevel.Warning:
                     return LogEventLevel.Warning;
-                case TraceType.Information:
+                case LogLevel.Information:
                     return LogEventLevel.Information;
-                case TraceType.Verbose:
+                case LogLevel.Verbose:
                     return LogEventLevel.Verbose;
                 default:
                     throw new NotSupportedException();

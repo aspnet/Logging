@@ -1,4 +1,4 @@
-﻿{
+{
     "webroot": "wwwroot",
     "version": "1.0.0-*",
     "exclude": [
@@ -10,12 +10,12 @@
         "**.vspscc"
     ],
     "dependencies": {
-        "Microsoft.AspNet.Server.IIS": "1.0.0-beta1",
+        "Microsoft.AspNet.Server.IIS": "1.0.0-*",
         "Microsoft.Framework.Logging.Serilog": "1.0.0-*",
         "Microsoft.Framework.ConfigurationModel.Json": "1.0.0-*",
         "Serilog.Sinks.ElasticSearch": "1.4.14"
     },
-    "frameworks" : {
-        "aspnet50" : { }
+    "frameworks": {
+        "aspnet50": { }
     }
 }

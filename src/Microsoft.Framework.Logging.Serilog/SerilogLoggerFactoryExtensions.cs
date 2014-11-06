@@ -3,10 +3,11 @@
 
 using Serilog;
 using Microsoft.Framework.Logging.Serilog;
+using JetBrains.Annotations;
 
 namespace Microsoft.Framework.Logging
 {
-    public static class ILoggerFactoryExtensions
+    public static class SerilogLoggerFactoryExtensions
     {
         public static ILoggerFactory AddSerilog(
             [NotNull] this ILoggerFactory factory, [NotNull] LoggerConfiguration loggerConfiguration)
