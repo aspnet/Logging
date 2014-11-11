@@ -155,7 +155,7 @@ namespace Microsoft.Framework.Logging
 
         private static string LoggerStructureFormatter(LoggerStructureBase state, Exception exception)
         {
-            return state.ToString();
+            return state.Format();
         }
     }
 }

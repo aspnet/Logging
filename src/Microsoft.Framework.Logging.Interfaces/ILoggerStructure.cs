@@ -13,6 +13,6 @@ namespace Microsoft.Framework.Logging
         /// <summary>
         /// Returns a human-readable string of the structured data
         /// </summary>
-        string ToString();
+        string Format();
     }
 }

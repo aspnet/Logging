@@ -78,7 +78,7 @@ namespace SerilogSampleApp
             public string ActivityId { get { return _activityId; } }
             public string ActivityPath { get { return _context.Request.Path.Value; } }
 
-            public override string ToString()
+            public override string Format()
             {
                 return string.Format("Scope {0} {1}", ActivityId, ActivityPath);
             }
@@ -101,7 +101,7 @@ namespace SerilogSampleApp
             public string Query { get { return _context.Request.QueryString.Value; } }
             public string Method { get { return _context.Request.Method; } }
 
-            public override string ToString()
+            public override string Format()
             {
                 return string.Format(
                     "Request starting {0} {1}://{2}{3}{4}{5} {6}",
@@ -121,7 +121,7 @@ namespace SerilogSampleApp
             public int StatusCode { get { return _context.Response.StatusCode; } }
             public string ContentType { get { return _context.Response.ContentType; } }
 
-            public override string ToString()
+            public override string Format()
             {
                 return string.Format(
                     "Request ending {0} {1}",

@@ -8,7 +8,6 @@ namespace Microsoft.Framework.Logging
         public virtual IEnumerable<KeyValuePair<string, object>> GetValues()
         {
             var values = new List<KeyValuePair<string, object>>();
-#if ASPNET50 || ASPNETCORE50 || NET45
             var properties = GetType().GetTypeInfo().DeclaredProperties;
             foreach (var propertyInfo in properties)
             {
@@ -16,8 +15,9 @@ namespace Microsoft.Framework.Logging
                     propertyInfo.Name,
                     propertyInfo.GetValue(this)));
             }
-#endif
             return values;
         }
+
+        public abstract string Format();
     }
 }

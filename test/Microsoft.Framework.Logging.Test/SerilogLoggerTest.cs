@@ -235,7 +235,7 @@ namespace Microsoft.Framework.Logging.Test
 
             public string Name { get { return _name; } }
 
-            public override string ToString()
+            public override string Format()
             {
                 return string.Format("Scope {0}", Name);
             }
@@ -252,7 +252,7 @@ namespace Microsoft.Framework.Logging.Test
 
             public int LuckyNumber { get { return _luckyNumber; } }
 
-            public override string ToString()
+            public override string Format()
             {
                 return string.Format("Scope {0}", LuckyNumber);
             }
