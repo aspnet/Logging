@@ -116,10 +116,7 @@ namespace Microsoft.Framework.Logging.Console
             foreach (var kvp in values)
             {
                 builder.Append("\r\n");
-                for (var i = 0; i < level; i++)
-                {
-                    builder.Append("\t");
-                }
+                builder.Append('\t', level);
                 builder.Append(kvp.Key);
                 builder.Append(": ");
                 if ((kvp.Value as IEnumerable<ILoggerStructure>) != null)
