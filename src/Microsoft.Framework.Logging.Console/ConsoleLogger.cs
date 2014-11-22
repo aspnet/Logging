@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Microsoft.Framework.Logging.Console
 {
@@ -27,7 +29,11 @@ namespace Microsoft.Framework.Logging.Console
                 return;
             }
             var message = string.Empty;
-            if (formatter != null)
+            if (state is ILoggerStructure)
+            {
+                message = FormatLoggerStructure((ILoggerStructure)state, 1);
+            }
+            else if (formatter != null)
             {
                 message = formatter(state, exception);
             }
@@ -97,6 +103,43 @@ namespace Microsoft.Framework.Logging.Console
         public IDisposable BeginScope(object state)
         {
             return null;
+        }
+
+        private string FormatLoggerStructure(ILoggerStructure structure, int level)
+        {
+            var values = structure.GetValues();
+            if (values == null)
+            {
+                return string.Empty;
+            }
+            var builder = new StringBuilder();
+            foreach (var kvp in values)
+            {
+                builder.Append("\r\n");
+                for (var i = 0; i < level; i++)
+                {
+                    builder.Append("\t");
+                }
+                builder.Append(kvp.Key);
+                builder.Append(": ");
+                if ((kvp.Value as IEnumerable<ILoggerStructure>) != null)
+                {
+                    foreach (var value in (IEnumerable<ILoggerStructure>)kvp.Value)
+                    {
+                        builder.Append(FormatLoggerStructure(value, level + 1));
+                        builder.Append("\r\n");
+                    }
+                }
+                else if ((kvp.Value as ILoggerStructure) != null)
+                {
+                    builder.Append(FormatLoggerStructure((ILoggerStructure)kvp.Value, level + 1));
+                }
+                else
+                {
+                    builder.Append(kvp.Value);
+                }
+            }
+            return builder.ToString();
         }
     }
 }
