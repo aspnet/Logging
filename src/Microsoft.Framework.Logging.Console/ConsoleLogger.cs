@@ -9,6 +9,7 @@ namespace Microsoft.Framework.Logging.Console
 {
     public class ConsoleLogger : ILogger
     {
+        private const int _indentation = 3;
         private readonly string _name;
         private Func<string, LogLevel, bool> _filter;
         private readonly object _lock = new object();
@@ -116,10 +117,10 @@ namespace Microsoft.Framework.Logging.Console
             foreach (var kvp in values)
             {
                 builder.Append("\r\n");
-                builder.Append('\t', level);
+                builder.Append(' ', level * _indentation);
                 builder.Append(kvp.Key);
                 builder.Append(": ");
-                if ((kvp.Value as IEnumerable<ILoggerStructure>) != null)
+                if (kvp.Value is IEnumerable<ILoggerStructure>)
                 {
                     foreach (var value in (IEnumerable<ILoggerStructure>)kvp.Value)
                     {
@@ -127,7 +128,7 @@ namespace Microsoft.Framework.Logging.Console
                         builder.Append("\r\n");
                     }
                 }
-                else if ((kvp.Value as ILoggerStructure) != null)
+                else if (kvp.Value is ILoggerStructure)
                 {
                     builder.Append(FormatLoggerStructure((ILoggerStructure)kvp.Value, level + 1));
                 }
