@@ -8,7 +8,7 @@ namespace Microsoft.Framework.Logging
 #endif
     public interface ILoggerStructure
     {
-        IEnumerable<KeyValuePair<string, object>> GetValues();
+        IReadOnlyDictionary<string, object> GetValues();
 
         /// <summary>
         /// Returns a human-readable string of the structured data
