@@ -9,13 +9,18 @@ namespace Microsoft.Framework.Logging.Console
     {
         private readonly string _name;
         private Func<string, LogLevel, bool> _filter;
-        private readonly object _lock = new object();
+        private static readonly object _lock = new object();
 
         public ConsoleLogger(string name, Func<string, LogLevel, bool> filter)
         {
             _name = name;
             _filter = filter ?? ((category, logLevel) => true);
             Console = new LogConsole();
+#if !ASPNETCORE50
+            AppDomain.CurrentDomain.ProcessExit += (sender, e) => OnProcessExit();
+            AppDomain.CurrentDomain.DomainUnload += (sender, e) => OnProcessExit();
+            System.Console.CancelKeyPress += (sender, e) => OnProcessExit();
+#endif
         }
 
         public IConsole Console { get; set; }
@@ -48,8 +53,6 @@ namespace Microsoft.Framework.Logging.Console
             }
             lock (_lock)
             {
-                var originalForegroundColor = Console.ForegroundColor;  // save current colors
-                var originalBackgroundColor = Console.BackgroundColor;
                 var severity = logLevel.ToString().ToUpperInvariant();
                 SetConsoleColor(logLevel);
                 try
@@ -58,8 +61,7 @@ namespace Microsoft.Framework.Logging.Console
                 }
                 finally
                 {
-                    Console.ForegroundColor = originalForegroundColor;  // reset initial colors
-                    Console.BackgroundColor = originalBackgroundColor;
+                    System.Console.ResetColor();
                 }
             }
         }
@@ -97,6 +99,15 @@ namespace Microsoft.Framework.Logging.Console
         public IDisposable BeginScope(object state)
         {
             return null;
+        }
+
+        // delay ending this process until console colors have been reset to their original state
+        public static void OnProcessExit()
+        {
+            lock (_lock)
+            {
+                System.Console.ResetColor();
+            }
         }
     }
 }
