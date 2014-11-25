@@ -35,8 +35,8 @@ namespace Microsoft.Framework.Logging.Console
             {
                 var builder = new StringBuilder();
                 FormatLoggerStructure(
-                    builder: builder,
-                    structure: (ILoggerStructure)state,
+                    builder,
+                    (ILoggerStructure)state,
                     level: 1,
                     bullet: false);
                 message = Convert.ToString(builder.ToString(), CultureInfo.InvariantCulture);
@@ -126,13 +126,15 @@ namespace Microsoft.Framework.Logging.Console
                 builder.AppendLine();
                 if (bullet && isFirst)
                 {
-                    builder.Append(' ', level * _indentation - 1).Append('-');
+                    builder.Append(' ', level * _indentation - 1)
+                           .Append('-');
                 }
                 else
                 {
                     builder.Append(' ', level * _indentation);
                 }
-                builder.Append(kvp.Key).Append(": ");
+                builder.Append(kvp.Key)
+                       .Append(": ");
                 if (kvp.Value is IEnumerable && !(kvp.Value is string))
                 {
                     foreach (var value in (IEnumerable)kvp.Value)
@@ -140,23 +142,25 @@ namespace Microsoft.Framework.Logging.Console
                         if (value is ILoggerStructure)
                         {
                             FormatLoggerStructure(
-                                builder: builder,
-                                structure: (ILoggerStructure)value,
-                                level: level + 1,
+                                builder,
+                                (ILoggerStructure)value,
+                                level + 1,
                                 bullet: true);
                         }
                         else
                         {
-                            builder.AppendLine().Append(' ', (level + 1) * _indentation).Append(value);
+                            builder.AppendLine()
+                                   .Append(' ', (level + 1) * _indentation)
+                                   .Append(value);
                         }
                     }
                 }
                 else if (kvp.Value is ILoggerStructure)
                 {
                     FormatLoggerStructure(
-                        builder: builder,
-                        structure: (ILoggerStructure)kvp.Value,
-                        level: level + 1,
+                        builder,
+                        (ILoggerStructure)kvp.Value,
+                        level + 1,
                         bullet: false);
                 }
                 else
