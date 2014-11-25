@@ -33,8 +33,9 @@ namespace Microsoft.Framework.Logging.Console
             var message = string.Empty;
             if (state is ILoggerStructure)
             {
-                var builder = FormatLoggerStructure(
-                    builder: new StringBuilder(),
+                var builder = new StringBuilder();
+                FormatLoggerStructure(
+                    builder: builder,
                     structure: (ILoggerStructure)state,
                     level: 1,
                     bullet: false);
@@ -112,12 +113,12 @@ namespace Microsoft.Framework.Logging.Console
             return null;
         }
 
-        private StringBuilder FormatLoggerStructure(StringBuilder builder, ILoggerStructure structure, int level, bool bullet)
+        private void FormatLoggerStructure(StringBuilder builder, ILoggerStructure structure, int level, bool bullet)
         {
             var values = structure.GetValues();
             if (values == null)
             {
-                return builder;
+                return;
             }
             var isFirst = true;
             foreach (var kvp in values)
@@ -138,7 +139,7 @@ namespace Microsoft.Framework.Logging.Console
                     {
                         if (value is ILoggerStructure)
                         {
-                            builder = FormatLoggerStructure(
+                            FormatLoggerStructure(
                                 builder: builder,
                                 structure: (ILoggerStructure)value,
                                 level: level + 1,
@@ -152,7 +153,7 @@ namespace Microsoft.Framework.Logging.Console
                 }
                 else if (kvp.Value is ILoggerStructure)
                 {
-                    builder = FormatLoggerStructure(
+                    FormatLoggerStructure(
                         builder: builder,
                         structure: (ILoggerStructure)kvp.Value,
                         level: level + 1,
@@ -164,7 +165,6 @@ namespace Microsoft.Framework.Logging.Console
                 }
                 isFirst = false;
             }
-            return builder;
         }
     }
 }
