@@ -31,12 +31,16 @@ namespace Microsoft.Framework.Logging.Console
                 return;
             }
             var message = string.Empty;
-            if (state is ILoggerStructure)
+            var structure = state as ILoggerStructure;
+            if (structure != null)
             {
                 var builder = new StringBuilder();
+                if (structure.Message != null) {
+                    builder.AppendLine(structure.Message);
+                }
                 FormatLoggerStructure(
                     builder,
-                    (ILoggerStructure)state,
+                    structure,
                     level: 1,
                     bullet: false);
                 message = Convert.ToString(builder.ToString(), CultureInfo.InvariantCulture);
