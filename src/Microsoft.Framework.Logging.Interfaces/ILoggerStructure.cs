@@ -10,7 +10,7 @@ namespace Microsoft.Framework.Logging
         /// <summary>
         /// A brief message to give context for the structure being logged
         /// </summary>
-        string Message { get; set; }
+        string Message { get; }
 
         /// <summary>
         /// Returns an enumerable of key value pairs mapping the name of the structured data to the data.
