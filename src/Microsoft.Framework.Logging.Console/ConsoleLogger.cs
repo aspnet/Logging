@@ -35,9 +35,6 @@ namespace Microsoft.Framework.Logging.Console
             if (structure != null)
             {
                 var builder = new StringBuilder();
-                if (structure.Message != null) {
-                    builder.AppendLine(structure.Message);
-                }
                 FormatLoggerStructure(
                     builder,
                     structure,
@@ -123,6 +120,10 @@ namespace Microsoft.Framework.Logging.Console
             if (values == null)
             {
                 return;
+            }
+            if (structure.Message != null)
+            {
+                builder.Append(structure.Message);
             }
             var isFirst = true;
             foreach (var kvp in values)
