@@ -116,14 +116,14 @@ namespace Microsoft.Framework.Logging.Console
 
         private void FormatLoggerStructure(StringBuilder builder, ILoggerStructure structure, int level, bool bullet)
         {
+            if (structure.Message != null)
+            {
+                builder.Append(structure.Message);
+            }
             var values = structure.GetValues();
             if (values == null)
             {
                 return;
-            }
-            if (structure.Message != null)
-            {
-                builder.Append(structure.Message);
             }
             var isFirst = true;
             foreach (var kvp in values)
