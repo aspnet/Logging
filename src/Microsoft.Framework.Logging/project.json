@@ -1,6 +1,9 @@
 {
     "version": "1.0.0-*",
     "description": "Logging infrastructure.",
+    "dependencies": {
+        "Newtonsoft.Json": "6.0.4"
+    },
     "compilationOptions": {
         "define": [ "TRACE" ]
     },
@@ -22,6 +25,7 @@
                 "System.Globalization": "4.0.10-beta-*",
                 "System.Linq": "4.0.0-beta-*",
                 "System.Threading": "4.0.0-beta-*",
+                "System.Threading.ExecutionContext": "4.0.0-beta-*",
                 "Microsoft.Framework.Logging.Interfaces": { "version": "1.0.0-*", "type": "build" }
             }
         },
