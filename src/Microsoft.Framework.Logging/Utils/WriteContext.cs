@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Newtonsoft.Json;
 
 namespace Microsoft.Framework.Logging
 {
@@ -13,12 +14,16 @@ namespace Microsoft.Framework.Logging
 
         public object State { get; set; }
 
+        [JsonIgnore]
         public Exception Exception { get; set; }
 
+        [JsonIgnore]
         public Func<object, Exception, string> Formatter { get; set; }
 
         public object Scope { get; set; }
 
         public string LoggerName { get; set; }
+
+        public Guid RequestId { get; set; }
     }
 }

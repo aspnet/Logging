@@ -44,7 +44,10 @@ namespace Microsoft.Framework.Logging
                 Exception = exception,
                 Formatter = formatter,
                 LoggerName = _name,
-                Scope = _scope
+                Scope = _scope,
+#if ASPNET50 || ASPNETCORE50
+                RequestId = LoggingContext.Current?.RequestId ?? Guid.Empty
+#endif
             });
         }
 
