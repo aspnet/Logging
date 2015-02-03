@@ -47,11 +47,85 @@ namespace Microsoft.Framework.Logging
         /// </summary>
         /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
         /// <param name="format">Format string of the log message.</param>
+        /// <param name="arg">The argument to format.</param>
+        public static void WriteVerbose<T>([NotNull] this ILogger logger, string format, T arg)
+        {
+            logger.Write(LogLevel.Verbose, 0, format, arg);
+        }
+
+        /// <summary>
+        /// Formats and writes a verbose log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="format">Format string of the log message.</param>
+        /// <param name="arg1">The first argument to format.</param>
+        /// <param name="arg2">The second argument to format.</param>
+        public static void WriteVerbose<T1, T2>([NotNull] this ILogger logger, string format, T1 arg1, T2 arg2)
+        {
+            logger.Write(LogLevel.Verbose, 0, format, arg1, arg2);
+        }
+
+        /// <summary>
+        /// Formats and writes a verbose log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="format">Format string of the log message.</param>
+        /// <param name="arg1">The first argument to format.</param>
+        /// <param name="arg2">The second argument to format.</param>
+        /// <param name="arg3">The third argument to format.</param>
+        public static void WriteVerbose<T1, T2, T3>([NotNull] this ILogger logger, string format, T1 arg1, T2 arg2, T3 arg3)
+        {
+            logger.Write(LogLevel.Verbose, 0, format, arg1, arg2, arg3);
+        }
+
+        /// <summary>
+        /// Formats and writes a verbose log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="format">Format string of the log message.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public static void WriteVerbose([NotNull] this ILogger logger, string format, params object[] args)
         {
-            logger.Write(LogLevel.Verbose, 0,
-                string.Format(CultureInfo.InvariantCulture, format, args), null, TheMessage);
+            logger.Write(LogLevel.Verbose, 0, format, args);
+        }
+
+        /// <summary>
+        /// Formats and writes a verbose log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="format">Format string of the log message.</param>
+        /// <param name="arg">The argument to format.</param>
+        public static void WriteVerbose<T>([NotNull] this ILogger logger, int eventId, string format, T arg)
+        {
+            logger.Write(LogLevel.Verbose, eventId, format, arg);
+        }
+
+        /// <summary>
+        /// Formats and writes a verbose log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="format">Format string of the log message.</param>
+        /// <param name="arg1">The first argument to format.</param>
+        /// <param name="arg2">The second argument to format.</param>
+        public static void WriteVerbose<T1, T2>([NotNull] this ILogger logger, int eventId, string format, T1 arg1, T2 arg2)
+        {
+            logger.Write(LogLevel.Verbose, eventId, format, arg1, arg2);
+        }
+
+        /// <summary>
+        /// Formats and writes a verbose log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="format">Format string of the log message.</param>
+        /// <param name="arg1">The first argument to format.</param>
+        /// <param name="arg2">The second argument to format.</param>
+        /// <param name="arg3">The third argument to format.</param>
+        public static void WriteVerbose<T1, T2, T3>([NotNull] this ILogger logger, int eventId, string format, T1 arg1, T2 arg2, T3 arg3)
+        {
+            logger.Write(LogLevel.Verbose, eventId, format, arg1, arg2, arg3);
         }
 
         /// <summary>
@@ -63,8 +137,7 @@ namespace Microsoft.Framework.Logging
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public static void WriteVerbose([NotNull] this ILogger logger, int eventId, string format, params object[] args)
         {
-            logger.Write(LogLevel.Verbose, eventId,
-                string.Format(CultureInfo.InvariantCulture, format, args), null, TheMessage);
+            logger.Write(LogLevel.Verbose, eventId, format, args);
         }
 
         /// <summary>
@@ -479,6 +552,42 @@ namespace Microsoft.Framework.Logging
         }
 
         //------------------------------------------HELPERS------------------------------------------//
+
+        private static void Write<T>(this ILogger logger, LogLevel logLevel, int eventId, string format, T arg)
+        {
+            if (logger.IsEnabled(logLevel))
+            {
+                logger.Write(logLevel, eventId,
+                    string.Format(CultureInfo.InvariantCulture, format, new object[] { arg }), null, TheMessage);
+            }
+        }
+
+        private static void Write<T1, T2>(this ILogger logger, LogLevel logLevel, int eventId, string format, T1 arg1, T2 arg2)
+        {
+            if (logger.IsEnabled(logLevel))
+            {
+                logger.Write(logLevel, eventId,
+                    string.Format(CultureInfo.InvariantCulture, format, new object[] { arg1, arg2 }), null, TheMessage);
+            }
+        }
+
+        private static void Write<T1, T2, T3>(this ILogger logger, LogLevel logLevel, int eventId, string format, T1 arg1, T2 arg2, T3 arg3)
+        {
+            if (logger.IsEnabled(logLevel))
+            {
+                logger.Write(logLevel, eventId,
+                    string.Format(CultureInfo.InvariantCulture, format, new object[] { arg1, arg2, arg3 }), null, TheMessage);
+            }
+        }
+
+        private static void Write(this ILogger logger, LogLevel logLevel, int eventId, string format, params object[] args)
+        {
+            if (logger.IsEnabled(logLevel))
+            {
+                logger.Write(logLevel, eventId,
+                    string.Format(CultureInfo.InvariantCulture, format, args), null, TheMessage);
+            }
+        }
 
         private static void Write(
             this ILogger logger,
