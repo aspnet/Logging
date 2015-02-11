@@ -15,13 +15,6 @@
                 "System.Runtime.Extensions": "4.0.10-beta-*",
                 "System.Runtime.InteropServices": "4.0.20-beta-*"
             }
-        },
-        ".NETPortable,Version=v4.6,Profile=Profile151": {
-            "frameworkAssemblies": {
-                "System.Globalization": "",
-                "System.Runtime": "",
-                "System.Runtime.InteropServices": ""
-            }
         }
     }
 }

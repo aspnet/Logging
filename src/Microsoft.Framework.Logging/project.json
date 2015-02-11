@@ -29,16 +29,6 @@
                 "System.Linq": "4.0.0-beta-*",
                 "System.Threading": "4.0.10-beta-*"
             }
-        },
-        ".NETPortable,Version=v4.6,Profile=Profile151": {
-            "frameworkAssemblies": {
-                "System.Collections": "",
-                "System.Collections.Concurrent": "",
-                "System.Reflection": "",
-                "System.Runtime.Extensions": "",
-                "System.Linq": "",
-                "System.Threading": ""
-            }
         }
     }
 }

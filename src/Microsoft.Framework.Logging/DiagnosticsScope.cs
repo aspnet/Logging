@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-#if NET45 || ASPNET50 || ASPNETCORE50
 using System;
 using System.Diagnostics;
 
@@ -16,13 +15,13 @@ namespace Microsoft.Framework.Logging
         private bool _isDisposed;
 
         /// <summary>
-        /// Pushes state onto the LogicalOperationStack by calling 
+        /// Pushes state onto the LogicalOperationStack by calling
         /// <see cref="Trace.CorrelationManager.StartLogicalOperation(object operationId)"/>
         /// </summary>
         /// <param name="state">The state.</param>
         public DiagnosticsScope(object state)
         {
-#if NET45 || ASPNET50
+#if !ASPNETCORE50
             Trace.CorrelationManager.StartLogicalOperation(state);
 #endif
         }
@@ -36,7 +35,7 @@ namespace Microsoft.Framework.Logging
         {
             if (!_isDisposed)
             {
-#if NET45 || ASPNET50
+#if !ASPNETCORE50
                 Trace.CorrelationManager.StopLogicalOperation();
 #endif
                 _isDisposed = true;
@@ -44,4 +43,3 @@ namespace Microsoft.Framework.Logging
         }
     }
 }
-#endif
