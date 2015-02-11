@@ -36,7 +36,7 @@ namespace Microsoft.Framework.Logging.Serilog
             return _logger.IsEnabled(ConvertLevel(logLevel));
         }
 
-        public void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, bool, string> formatter)
         {
             var level = ConvertLevel(logLevel);
             if (!_logger.IsEnabled(level))
@@ -49,7 +49,7 @@ namespace Microsoft.Framework.Logging.Serilog
             var message = string.Empty;
             if (formatter != null)
             {
-                message = formatter(state, exception);
+                message = formatter(state, exception, IsEnabled(LogLevel.Debug));
             }
             else
             {
@@ -89,6 +89,8 @@ namespace Microsoft.Framework.Logging.Serilog
                 case LogLevel.Information:
                     return LogEventLevel.Information;
                 case LogLevel.Verbose:
+                    return LogEventLevel.Debug;
+                case LogLevel.Debug:
                     return LogEventLevel.Verbose;
                 default:
                     throw new NotSupportedException();

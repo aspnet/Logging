@@ -19,7 +19,7 @@ namespace Microsoft.Framework.Logging
         /// <param name="exception"></param>
         /// <param name="formatter"></param>
         /// <returns></returns>
-        void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter);
+        void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, bool, string> formatter);
 
         /// <summary>
         /// Checks if the given LogLevel is enabled.

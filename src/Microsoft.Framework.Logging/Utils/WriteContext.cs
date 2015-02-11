@@ -15,7 +15,7 @@ namespace Microsoft.Framework.Logging
 
         public Exception Exception { get; set; }
 
-        public Func<object, Exception, string> Formatter { get; set; }
+        public Func<object, Exception, bool, string> Formatter { get; set; }
 
         public object Scope { get; set; }
 

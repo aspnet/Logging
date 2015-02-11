@@ -34,13 +34,13 @@ namespace Microsoft.Framework.Logging.NLog
                 int eventId,
                 object state,
                 Exception exception,
-                Func<object, Exception, string> formatter)
+                Func<object, Exception, bool, string> formatter)
             {
                 var nLogLogLevel = GetLogLevel(logLevel);
                 var message = string.Empty;
                 if (formatter != null)
                 {
-                    message = formatter(state, exception);
+                    message = formatter(state, exception, IsEnabled(LogLevel.Debug));
                 }
                 else
                 {

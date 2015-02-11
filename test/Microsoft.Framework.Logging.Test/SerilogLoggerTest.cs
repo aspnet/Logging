@@ -15,6 +15,7 @@ namespace Microsoft.Framework.Logging.Test
     {
         private const string _name = "test";
         private const string _state = "This is a test";
+        private const string _secureState = "Secure this is a test";
         private static readonly Func<object, Exception, string> TheMessageAndError = (message, error) => string.Format(CultureInfo.CurrentCulture, "{0}:{1}", message, error);
 
         private Tuple<SerilogLogger, SerilogSink> SetUp(LogLevel logLevel)
@@ -37,8 +38,10 @@ namespace Microsoft.Framework.Logging.Test
         {
             switch (logLevel)
             {
-                case LogLevel.Verbose:
+                case LogLevel.Debug:
                     return serilog.MinimumLevel.Verbose();
+                case LogLevel.Verbose:
+                    return serilog.MinimumLevel.Debug();
                 case LogLevel.Information:
                     return serilog.MinimumLevel.Information();
                 case LogLevel.Warning:
@@ -71,11 +74,12 @@ namespace Microsoft.Framework.Logging.Test
         public void LogsCorrectLevel()
         {
             // Arrange
-            var t = SetUp(LogLevel.Verbose);
+            var t = SetUp(LogLevel.Debug);
             var logger = t.Item1;
             var sink = t.Item2;
 
             // Act
+            logger.Write(LogLevel.Debug, 0, _state, null, null);
             logger.Write(LogLevel.Verbose, 0, _state, null, null);
             logger.Write(LogLevel.Information, 0, _state, null, null);
             logger.Write(LogLevel.Warning, 0, _state, null, null);
@@ -83,35 +87,47 @@ namespace Microsoft.Framework.Logging.Test
             logger.Write(LogLevel.Critical, 0, _state, null, null);
 
             // Assert
-            Assert.Equal(5, sink.Writes.Count);
+            Assert.Equal(6, sink.Writes.Count);
             Assert.Equal(LogEventLevel.Verbose, sink.Writes[0].Level);
-            Assert.Equal(LogEventLevel.Information, sink.Writes[1].Level);
-            Assert.Equal(LogEventLevel.Warning, sink.Writes[2].Level);
-            Assert.Equal(LogEventLevel.Error, sink.Writes[3].Level);
-            Assert.Equal(LogEventLevel.Fatal, sink.Writes[4].Level);
+            Assert.Equal(LogEventLevel.Debug, sink.Writes[1].Level);
+            Assert.Equal(LogEventLevel.Information, sink.Writes[2].Level);
+            Assert.Equal(LogEventLevel.Warning, sink.Writes[3].Level);
+            Assert.Equal(LogEventLevel.Error, sink.Writes[4].Level);
+            Assert.Equal(LogEventLevel.Fatal, sink.Writes[5].Level);
         }
 
         [Theory]
+        [InlineData(LogLevel.Debug, LogLevel.Debug, 1)]
+        [InlineData(LogLevel.Debug, LogLevel.Verbose, 1)]
+        [InlineData(LogLevel.Debug, LogLevel.Information, 1)]
+        [InlineData(LogLevel.Debug, LogLevel.Warning, 1)]
+        [InlineData(LogLevel.Debug, LogLevel.Error, 1)]
+        [InlineData(LogLevel.Debug, LogLevel.Critical, 1)]
+        [InlineData(LogLevel.Verbose, LogLevel.Debug, 0)]
         [InlineData(LogLevel.Verbose, LogLevel.Verbose, 1)]
         [InlineData(LogLevel.Verbose, LogLevel.Information, 1)]
         [InlineData(LogLevel.Verbose, LogLevel.Warning, 1)]
         [InlineData(LogLevel.Verbose, LogLevel.Error, 1)]
         [InlineData(LogLevel.Verbose, LogLevel.Critical, 1)]
+        [InlineData(LogLevel.Information, LogLevel.Debug, 0)]
         [InlineData(LogLevel.Information, LogLevel.Verbose, 0)]
         [InlineData(LogLevel.Information, LogLevel.Information, 1)]
         [InlineData(LogLevel.Information, LogLevel.Warning, 1)]
         [InlineData(LogLevel.Information, LogLevel.Error, 1)]
         [InlineData(LogLevel.Information, LogLevel.Critical, 1)]
+        [InlineData(LogLevel.Warning, LogLevel.Debug, 0)]
         [InlineData(LogLevel.Warning, LogLevel.Verbose, 0)]
         [InlineData(LogLevel.Warning, LogLevel.Information, 0)]
         [InlineData(LogLevel.Warning, LogLevel.Warning, 1)]
         [InlineData(LogLevel.Warning, LogLevel.Error, 1)]
         [InlineData(LogLevel.Warning, LogLevel.Critical, 1)]
+        [InlineData(LogLevel.Error, LogLevel.Debug, 0)]
         [InlineData(LogLevel.Error, LogLevel.Verbose, 0)]
         [InlineData(LogLevel.Error, LogLevel.Information, 0)]
         [InlineData(LogLevel.Error, LogLevel.Warning, 0)]
         [InlineData(LogLevel.Error, LogLevel.Error, 1)]
         [InlineData(LogLevel.Error, LogLevel.Critical, 1)]
+        [InlineData(LogLevel.Critical, LogLevel.Debug, 0)]
         [InlineData(LogLevel.Critical, LogLevel.Verbose, 0)]
         [InlineData(LogLevel.Critical, LogLevel.Information, 0)]
         [InlineData(LogLevel.Critical, LogLevel.Warning, 0)]
@@ -131,6 +147,23 @@ namespace Microsoft.Framework.Logging.Test
             Assert.Equal(expected, sink.Writes.Count);
         }
 
+        [Theory]
+        [InlineData(LogLevel.Verbose, _state)]
+        [InlineData(LogLevel.Debug, _secureState)]
+        public void DebugLogsCorrectMessage(LogLevel minLevel, string expected)
+        {
+            // Arrange
+            var t = SetUp(minLevel);
+            var logger = t.Item1;
+            var sink = t.Item2;
+
+            // Act
+            logger.WriteDebug(_secureState, _state);
+
+            // Assert
+            Assert.Equal(1, sink.Writes.Count);
+            Assert.Equal(expected, sink.Writes[0].RenderMessage());
+        }
 
         [Fact]
         public void LogsCorrectMessage()

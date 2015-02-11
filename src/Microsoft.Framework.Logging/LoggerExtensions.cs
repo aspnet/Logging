@@ -18,6 +18,131 @@ namespace Microsoft.Framework.Logging
         private static readonly Func<object, Exception, string> _loggerStructureFormatter = (state, error)
             => LoggerStructureFormatter((ILoggerStructure)state, error);
 
+        private static readonly Func<object, Exception, bool, string> SecureMessage =
+            (messages, error, secure) =>
+            {
+                if (secure)
+                {
+                    return ((string[])messages)[0];
+                }
+                return ((string[])messages)[1];
+            };
+
+        private static readonly Func<object, Exception, bool, string> SecureMessageAndError =
+            (messages, error, secure) =>
+            {
+                if (secure)
+                {
+                    return string.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", ((string[])messages)[0], Environment.NewLine, error);
+                }
+                return string.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", ((string[])messages)[1], Environment.NewLine, error);
+            };
+
+        private static readonly Func<object, Exception, bool, string> _secureLoggerStructureFormatter =
+            (state, error, secure) =>
+            {
+                var formatter = (ILoggerStructure[]) state;
+
+                if (secure)
+                {
+                    return LoggerStructureFormatter(formatter[0], error);
+                }
+                return LoggerStructureFormatter(formatter[1], error);
+                
+            };
+
+        //------------------------------------------DEBUG------------------------------------------//
+
+        /// <summary>
+        /// Writes a verbose log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="data">The message to log at verbose level.</param>
+        /// <param name="secureData">The message to log at debug level.</param>
+        // FYI, this field is called data because naming it message triggers CA1303 and CA2204 for callers.
+        public static void WriteDebug([NotNull] this ILogger logger, string secureData, string data)
+        {
+            logger.Write(LogLevel.Verbose, 0, new[] {secureData, data}, null, SecureMessage);
+        }
+
+        /// <summary>
+        /// Writes a verbose log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="secureData">The message to log at debug level.</param>
+        /// <param name="data">The message to log at verbose level.</param>
+        public static void WriteDebug([NotNull] this ILogger logger, int eventId, string secureData, string data)
+        {
+            logger.Write(LogLevel.Verbose, eventId, new[] {secureData, data}, null, SecureMessage);
+        }
+
+        /// <summary>
+        /// Formats and writes a verbose log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="secureFormat">Format string of the log message for debug level</param>
+        /// <param name="format">Format string of the log message for verbose level.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public static void WriteDebug([NotNull] this ILogger logger, string secureFormat, string format,
+            params object[] args)
+        {
+            logger.Write(LogLevel.Verbose, 0, 
+                new[] {new LoggerStructureFormat(secureFormat, args), new LoggerStructureFormat(format, args)}, 
+                null, _secureLoggerStructureFormatter);
+        }
+
+        /// <summary>
+        /// Formats and writes a verbose log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="secureFormat">Format string of the log message for debug level.</param>
+        /// <param name="format">Format string of the log message for verbose level.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public static void WriteDebug([NotNull] this ILogger logger, int eventId, string secureFormat, string format,
+            params object[] args)
+        {
+            logger.Write(LogLevel.Verbose, eventId,
+                new[] { new LoggerStructureFormat(secureFormat, args), new LoggerStructureFormat(format, args) },
+                null, _secureLoggerStructureFormatter);
+        }
+
+        /// <summary>
+        /// Formats the given <see cref="ILoggerStructure"/> and writes a verbose log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="secureState">The <see cref="ILoggerStructure"/> to write for debug level.</param>
+        /// <param name="state">The <see cref="ILoggerStructure"/> to write for verbose level.</param>
+        /// <param name="error">The exception to log.</param>
+        public static void WriteDebug(
+            [NotNull] this ILogger logger,
+            ILoggerStructure secureState,
+            ILoggerStructure state,
+            Exception error = null)
+        {
+            logger.WriteSecure(LogLevel.Verbose, secureState, state, error);
+        }
+
+        /// <summary>
+        /// Formats the given <see cref="ILoggerStructure"/> and writes a verbose log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="secureState">The <see cref="ILoggerStructure"/> to write for debug level.</param>
+        /// <param name="state">The <see cref="ILoggerStructure"/> to write for verbose level.</param>
+        /// <param name="error">The exception to log.</param>
+        public static void WriteDebug(
+            [NotNull] this ILogger logger,
+            int eventId,
+            ILoggerStructure secureState,
+            ILoggerStructure state,
+            Exception error = null)
+        {
+            logger.WriteSecureWithEvent(LogLevel.Verbose, eventId, secureState, state, error);
+        }
+
+
         //------------------------------------------VERBOSE------------------------------------------//
 
         /// <summary>
@@ -469,6 +594,16 @@ namespace Microsoft.Framework.Logging
         }
 
         //------------------------------------------HELPERS------------------------------------------//
+        public static void Write(
+            this ILogger logger, 
+            LogLevel logLevel, 
+            int eventId, 
+            object state, 
+            Exception exception,
+            Func<object, Exception, string> formatter)
+        {
+            logger.Write(logLevel, eventId, state, exception, (obj, ex, _) => formatter(obj, ex));
+        }
 
         private static void Write(
             this ILogger logger,
@@ -487,6 +622,26 @@ namespace Microsoft.Framework.Logging
             Exception exception = null)
         {
             logger.Write(logLevel, eventId, state, exception, _loggerStructureFormatter);
+        }
+        private static void WriteSecure(
+            this ILogger logger,
+            LogLevel logLevel,
+            ILoggerStructure secureState,
+            ILoggerStructure state,
+            Exception exception = null)
+        {
+            logger.Write(logLevel, 0, new[] {secureState, state}, exception, _secureLoggerStructureFormatter);
+        }
+
+        private static void WriteSecureWithEvent(
+            this ILogger logger,
+            LogLevel logLevel,
+            int eventId,
+            ILoggerStructure secureState,
+            ILoggerStructure state,
+            Exception exception = null)
+        {
+            logger.Write(logLevel, eventId, new[] {secureState, state}, exception, _secureLoggerStructureFormatter);
         }
 
         private static string LoggerStructureFormatter(ILoggerStructure state, Exception exception)
