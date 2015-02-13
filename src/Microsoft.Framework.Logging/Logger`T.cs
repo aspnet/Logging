@@ -33,7 +33,7 @@ namespace Microsoft.Framework.Logging
             return _logger.IsEnabled(logLevel);
         }
 
-        void ILogger.Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        void ILogger.Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, bool, string> formatter)
         {
             _logger.Write(logLevel, eventId, state, exception, formatter);
         }

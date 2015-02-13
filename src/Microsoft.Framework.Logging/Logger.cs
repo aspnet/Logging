@@ -25,7 +25,7 @@ namespace Microsoft.Framework.Logging
             }
         }
 
-        public void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, bool, string> formatter)
         {
             foreach (var logger in _loggers)
             {

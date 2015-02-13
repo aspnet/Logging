@@ -24,7 +24,7 @@ namespace Microsoft.Framework.Logging.Console
 
         public IConsole Console { get; set; }
 
-        public void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, bool, string> formatter)
         {
             if (!IsEnabled(logLevel))
             {
@@ -34,7 +34,7 @@ namespace Microsoft.Framework.Logging.Console
             var structure = state as ILoggerStructure;
             if (formatter != null)
             {
-                message = formatter(state, exception);
+                message = formatter(state, exception, IsEnabled(LogLevel.Debug));
             }
             else if (structure != null)
             {

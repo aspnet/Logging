@@ -16,7 +16,7 @@ namespace Microsoft.Framework.Logging
             _traceSource = traceSource;
         }
 
-        public void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, bool, string> formatter)
         {
             if (!IsEnabled(logLevel))
             {
@@ -25,7 +25,7 @@ namespace Microsoft.Framework.Logging
             var message = string.Empty;
             if (formatter != null)
             {
-                message = formatter(state, exception);
+                message = formatter(state, exception, IsEnabled(LogLevel.Debug));
             }
             else
             {
