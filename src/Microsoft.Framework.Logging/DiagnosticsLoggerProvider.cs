@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-#if NET45 || ASPNET50 || ASPNETCORE50
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -20,7 +19,7 @@ namespace Microsoft.Framework.Logging
         private readonly ConcurrentDictionary<string, TraceSource> _sources = new ConcurrentDictionary<string, TraceSource>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DiagnosticsLoggerProvider"/> class. 
+        /// Initializes a new instance of the <see cref="DiagnosticsLoggerProvider"/> class.
         /// </summary>
         /// <summary>
         /// Creates a factory named "Microsoft.AspNet".
@@ -108,4 +107,3 @@ namespace Microsoft.Framework.Logging
         }
     }
 }
-#endif
