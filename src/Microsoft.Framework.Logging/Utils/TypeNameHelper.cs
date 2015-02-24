@@ -72,11 +72,7 @@ namespace Microsoft.Framework.Logging
                 text = t.Name;
             }
             var num = text.IndexOf('`');
-            if (num != -1)
-            {
-                return text.Substring(0, num);
-            }
-            return text;
+            return num != -1 ? text.Substring(0, num) : text;
         }
     }
 }
