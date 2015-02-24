@@ -1,6 +1,9 @@
 {
     "version": "1.0.0-*",
     "description": "Logging interface definitions.",
+    "dependencies": {
+        "Microsoft.Framework.NotNullAttribute.Internal": { "type": "build", "version": "1.0.0-*" }
+    },
     "frameworks": {
         "net45": { },
         "aspnet50": { },
@@ -8,14 +11,17 @@
             "dependencies": {
                 "System.Runtime": "4.0.20-beta-*",
                 "System.Runtime.Extensions": "4.0.10-beta-*",
-                "System.Runtime.InteropServices": "4.0.20-beta-*"
+                "System.Runtime.InteropServices": "4.0.20-beta-*",
+                "System.Linq": "4.0.0-beta-*"
             }
         },
         ".NETPortable,Version=v4.6,Profile=Profile151": {
             "frameworkAssemblies": {
+                "System.Runtime.Extensions": "",
                 "System.Globalization": "",
                 "System.Runtime": "",
-                "System.Runtime.InteropServices": ""
+                "System.Runtime.InteropServices": "",
+                "System.Linq": ""
             }
         }
     }
