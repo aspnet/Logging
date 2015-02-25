@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Globalization;
 using System.Text;
+using Microsoft.Framework.Logging.Console.Internal;
 
 namespace Microsoft.Framework.Logging.Console
 {
@@ -24,24 +25,24 @@ namespace Microsoft.Framework.Logging.Console
 
         public IConsole Console { get; set; }
 
-        public void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
             if (!IsEnabled(logLevel))
             {
                 return;
             }
             var message = string.Empty;
-            var structure = state as ILoggerStructure;
+            var values = state as ILogValues;
             if (formatter != null)
             {
                 message = formatter(state, exception);
             }
-            else if (structure != null)
+            else if (values != null)
             {
                 var builder = new StringBuilder();
-                FormatLoggerStructure(
+                FormatLogValues(
                     builder,
-                    structure,
+                    values,
                     level: 1,
                     bullet: false);
                 message = builder.ToString();
@@ -111,13 +112,9 @@ namespace Microsoft.Framework.Logging.Console
             return null;
         }
 
-        private void FormatLoggerStructure(StringBuilder builder, ILoggerStructure structure, int level, bool bullet)
+        private void FormatLogValues(StringBuilder builder, ILogValues logValues, int level, bool bullet)
         {
-            if (structure.Message != null)
-            {
-                builder.Append(structure.Message);
-            }
-            var values = structure.GetValues();
+            var values = logValues.GetValues();
             if (values == null)
             {
                 return;
@@ -141,11 +138,11 @@ namespace Microsoft.Framework.Logging.Console
                 {
                     foreach (var value in (IEnumerable)kvp.Value)
                     {
-                        if (value is ILoggerStructure)
+                        if (value is ILogValues)
                         {
-                            FormatLoggerStructure(
+                            FormatLogValues(
                                 builder,
-                                (ILoggerStructure)value,
+                                (ILogValues)value,
                                 level + 1,
                                 bullet: true);
                         }
@@ -157,11 +154,11 @@ namespace Microsoft.Framework.Logging.Console
                         }
                     }
                 }
-                else if (kvp.Value is ILoggerStructure)
+                else if (kvp.Value is ILogValues)
                 {
-                    FormatLoggerStructure(
+                    FormatLogValues(
                         builder,
-                        (ILoggerStructure)kvp.Value,
+                        (ILogValues)kvp.Value,
                         level + 1,
                         bullet: false);
                 }

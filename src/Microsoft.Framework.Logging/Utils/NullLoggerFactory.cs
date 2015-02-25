@@ -9,7 +9,7 @@ namespace Microsoft.Framework.Logging
 
         public LogLevel MinimumLevel { get; set; } = LogLevel.Verbose;
 
-        public ILogger Create(string name)
+        public ILogger CreateLogger(string categoryName)
         {
             return NullLogger.Instance;
         }

@@ -7,22 +7,20 @@ using System.Collections.Generic;
 namespace Microsoft.Framework.Logging
 {
     /// <summary>
-    /// LoggerStructure to enable formatting options supported by <see cref="string.Format"/>. 
+    /// LogValues to enable formatting options supported by <see cref="string.Format"/>. 
     /// This also enables using {NamedformatItem} in the format string.
     /// </summary>
-    public class LoggerStructureFormat : ILoggerStructure
+    public class LogValuesFormat : ILogValues
     {
-        private static ConcurrentDictionary<string, LoggerStructureFormatter> _formatters = new ConcurrentDictionary<string, LoggerStructureFormatter>();
-        private readonly LoggerStructureFormatter _formatter;
+        private static ConcurrentDictionary<string, LogValuesFormatter> _formatters = new ConcurrentDictionary<string, LogValuesFormatter>();
+        private readonly LogValuesFormatter _formatter;
         private readonly object[] _values;
 
-        public LoggerStructureFormat(string format, params object[] values)
+        public LogValuesFormat(string format, params object[] values)
         {
-            _formatter = _formatters.GetOrAdd(format, f => new LoggerStructureFormatter(f));
+            _formatter = _formatters.GetOrAdd(format, f => new LogValuesFormatter(f));
             _values = values;
         }
-
-        public string Message { get { return null; } }
 
         public string Format()
         {

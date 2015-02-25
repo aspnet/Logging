@@ -10,14 +10,14 @@ namespace Microsoft.Framework.Logging
     /// <summary>
     /// Formatter to convert the named format items like {NamedformatItem} to <see cref="string.Format"/> format.
     /// </summary>
-    public class LoggerStructureFormatter
+    public class LogValuesFormatter
     {
         private readonly string _format;
         private readonly List<string> _valueNames = new List<string>();
 
         public string OriginalFormat { get; private set; }
 
-        public LoggerStructureFormatter(string format)
+        public LogValuesFormatter(string format)
         {
             OriginalFormat = format;
 
