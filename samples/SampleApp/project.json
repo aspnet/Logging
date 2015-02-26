@@ -15,5 +15,8 @@
                 "System.Console": "4.0.0-beta-*"
             }
         }
+    },
+    "commands": {
+        "run": "run"
     }
 }
