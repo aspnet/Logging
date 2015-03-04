@@ -4,19 +4,19 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace Microsoft.Framework.Logging
+namespace Microsoft.Framework.Logging.Internal
 {
     /// <summary>
     /// LogValues to enable formatting options supported by <see cref="string.Format"/>. 
     /// This also enables using {NamedformatItem} in the format string.
     /// </summary>
-    public class LogValuesFormat : ILogValues
+    public class FormattedLogValues : ILogValues
     {
         private static ConcurrentDictionary<string, LogValuesFormatter> _formatters = new ConcurrentDictionary<string, LogValuesFormatter>();
         private readonly LogValuesFormatter _formatter;
         private readonly object[] _values;
 
-        public LogValuesFormat(string format, params object[] values)
+        public FormattedLogValues(string format, params object[] values)
         {
             _formatter = _formatters.GetOrAdd(format, f => new LogValuesFormatter(f));
             _values = values;
