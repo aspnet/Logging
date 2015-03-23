@@ -13,9 +13,7 @@ namespace Microsoft.Framework.Logging
     /// </summary>
     public static class LoggerExtensions
     {
-        private static readonly Func<object, Exception, string> TheMessage = (message, error) => (string)message;
-        private static readonly Func<object, Exception, string> TheMessageAndError = (message, error)
-            => string.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", message, Environment.NewLine, error);
+        private static readonly Func<object, Exception, string> _formatter = (message, error) => FormatMessage(message, error);
         private static readonly Func<object, Exception, string> _logValuesFormatter = (state, error)
             => LogValuesFormatter((ILogValues)state, error);
 
@@ -29,7 +27,7 @@ namespace Microsoft.Framework.Logging
         // FYI, this field is called data because naming it message triggers CA1303 and CA2204 for callers.
         public static void LogDebug([NotNull] this ILogger logger, string data)
         {
-            logger.Log(LogLevel.Debug, 0, data, null, TheMessage);
+            logger.Log(LogLevel.Debug, 0, data, null, _formatter);
         }
 
         /// <summary>
@@ -40,7 +38,7 @@ namespace Microsoft.Framework.Logging
         /// <param name="data">The message to log.</param>
         public static void LogDebug([NotNull] this ILogger logger, int eventId, string data)
         {
-            logger.Log(LogLevel.Debug, eventId, data, null, TheMessage);
+            logger.Log(LogLevel.Debug, eventId, data, null, _formatter);
         }
 
         /// <summary>
@@ -106,7 +104,7 @@ namespace Microsoft.Framework.Logging
         // FYI, this field is called data because naming it message triggers CA1303 and CA2204 for callers.
         public static void LogVerbose([NotNull] this ILogger logger, string data)
         {
-            logger.Log(LogLevel.Verbose, 0, data, null, TheMessage);
+            logger.Log(LogLevel.Verbose, 0, data, null, _formatter);
         }
 
         /// <summary>
@@ -117,7 +115,7 @@ namespace Microsoft.Framework.Logging
         /// <param name="data">The message to log.</param>
         public static void LogVerbose([NotNull] this ILogger logger, int eventId, string data)
         {
-            logger.Log(LogLevel.Verbose, eventId, data, null, TheMessage);
+            logger.Log(LogLevel.Verbose, eventId, data, null, _formatter);
         }
 
         /// <summary>
@@ -182,7 +180,7 @@ namespace Microsoft.Framework.Logging
         /// <param name="message">The message to log.</param>
         public static void LogInformation([NotNull] this ILogger logger, string message)
         {
-            logger.Log(LogLevel.Information, 0, message, null, TheMessage);
+            logger.Log(LogLevel.Information, 0, message, null, _formatter);
         }
 
         /// <summary>
@@ -193,7 +191,7 @@ namespace Microsoft.Framework.Logging
         /// <param name="message">The message to log.</param>
         public static void LogInformation([NotNull] this ILogger logger, int eventId, string message)
         {
-            logger.Log(LogLevel.Information, eventId, message, null, TheMessage);
+            logger.Log(LogLevel.Information, eventId, message, null, _formatter);
         }
 
         /// <summary>
@@ -258,7 +256,7 @@ namespace Microsoft.Framework.Logging
         /// <param name="message">The message to log.</param>
         public static void LogWarning([NotNull] this ILogger logger, string message)
         {
-            logger.Log(LogLevel.Warning, 0, message, null, TheMessage);
+            logger.Log(LogLevel.Warning, 0, message, null, _formatter);
         }
 
         /// <summary>
@@ -269,7 +267,7 @@ namespace Microsoft.Framework.Logging
         /// <param name="message">The message to log.</param>
         public static void LogWarning([NotNull] this ILogger logger, int eventId, string message)
         {
-            logger.Log(LogLevel.Warning, eventId, message, null, TheMessage);
+            logger.Log(LogLevel.Warning, eventId, message, null, _formatter);
         }
 
         /// <summary>
@@ -357,7 +355,7 @@ namespace Microsoft.Framework.Logging
         /// <param name="message">The message to log.</param>
         public static void LogError([NotNull] this ILogger logger, string message)
         {
-            logger.Log(LogLevel.Error, 0, message, null, TheMessage);
+            logger.Log(LogLevel.Error, 0, message, null, _formatter);
         }
 
         /// <summary>
@@ -368,7 +366,7 @@ namespace Microsoft.Framework.Logging
         /// <param name="message">The message to log.</param>
         public static void LogError([NotNull] this ILogger logger, int eventId, string message)
         {
-            logger.Log(LogLevel.Error, eventId, message, null, TheMessage);
+            logger.Log(LogLevel.Error, eventId, message, null, _formatter);
         }
 
         /// <summary>
@@ -456,7 +454,7 @@ namespace Microsoft.Framework.Logging
         /// <param name="message">The message to log.</param>
         public static void LogCritical([NotNull] this ILogger logger, string message)
         {
-            logger.Log(LogLevel.Critical, 0, message, null, TheMessage);
+            logger.Log(LogLevel.Critical, 0, message, null, _formatter);
         }
 
         /// <summary>
@@ -467,7 +465,7 @@ namespace Microsoft.Framework.Logging
         /// <param name="message">The message to log.</param>
         public static void LogCritical([NotNull] this ILogger logger, int eventId, string message)
         {
-            logger.Log(LogLevel.Critical, eventId, message, null, TheMessage);
+            logger.Log(LogLevel.Critical, eventId, message, null, _formatter);
         }
 
         /// <summary>
@@ -575,6 +573,13 @@ namespace Microsoft.Framework.Logging
             }
 
             return state.Format() + Environment.NewLine + exception;
+        }
+        
+        private static string FormatMessage(object message, Exception error)
+        {
+            return (error == null)
+                ? (string)message
+                : string.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", message, Environment.NewLine, error);
         }
     }
 }
