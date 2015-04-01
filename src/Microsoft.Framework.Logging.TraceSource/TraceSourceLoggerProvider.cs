@@ -12,12 +12,14 @@ namespace Microsoft.Framework.Logging.TraceSource
     /// <summary>
     /// Provides an ILoggerFactory based on System.Diagnostics.TraceSource.
     /// </summary>
-    public class TraceSourceLoggerProvider : ILoggerProvider
+    public class TraceSourceLoggerProvider : ILoggerProvider, IDisposable
     {
         private readonly SourceSwitch _rootSourceSwitch;
         private readonly TraceListener _rootTraceListener;
 
         private readonly ConcurrentDictionary<string, DiagnosticsTraceSource> _sources = new ConcurrentDictionary<string, DiagnosticsTraceSource>(StringComparer.OrdinalIgnoreCase);
+
+        private bool _disposed = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TraceSourceLoggerProvider"/> class.
@@ -96,6 +98,27 @@ namespace Microsoft.Framework.Logging.TraceSource
         {
             return string.IsNullOrEmpty(traceSource.Switch.DisplayName) == string.IsNullOrEmpty(traceSource.Name) &&
                 traceSource.Switch.Level == SourceLevels.Off;
+        }
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _rootTraceListener.Flush();
+                    _rootTraceListener.Dispose();
+                }
+
+                _disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }
