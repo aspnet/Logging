@@ -10,11 +10,12 @@ namespace Microsoft.Framework.Logging
     /// <summary>
     /// Summary description for LoggerFactory
     /// </summary>
-    public class LoggerFactory : ILoggerFactory
+    public class LoggerFactory : ILoggerFactory, IDisposable
     {
         private readonly Dictionary<string, Logger> _loggers = new Dictionary<string, Logger>(StringComparer.Ordinal);
         private ILoggerProvider[] _providers = new ILoggerProvider[0];
         private readonly object _sync = new object();
+        private bool _disposed = false;
 
         public ILogger CreateLogger(string categoryName)
         {
@@ -47,6 +48,32 @@ namespace Microsoft.Framework.Logging
         internal ILoggerProvider[] GetProviders()
         {
             return _providers;
+        }
+        
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    foreach (var provider in _providers)
+                    {
+                        var disposable = provider as IDisposable;
+                        if (disposable!= null)
+                        {
+                            disposable.Dispose();
+                        }
+                    }
+                }
+
+                _disposed = true;
+            }
+        }
+        
+        public void Dispose()
+        {           
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }
