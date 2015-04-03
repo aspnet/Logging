@@ -31,5 +31,10 @@ namespace Microsoft.Framework.Logging.Internal
         {
             return _formatter.GetValues(_values);
         }
+
+        public override string ToString()
+        {
+            return Format();
+        }
     }
 }
