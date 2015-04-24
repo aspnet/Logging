@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Framework.ConfigurationModel;
+using System;
 using System.Collections.Generic;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.Logging.Console;
@@ -38,8 +39,9 @@ namespace SampleApp
                 .WriteTo.Sink(new RollingFileSink("file-{Date}.json", new JsonFormatter(), null, null))
                 .WriteTo.Sink(new FileSink("dump.txt", new RawFormatter(), null)));
 #endif
-            factory.AddConsole();
+            // factory.AddConsole();
             factory.AddConsole((category, logLevel) => logLevel >= LogLevel.Critical && category.Equals(typeof(Program).FullName));
+            factory.AddConsole(new Configuration().AddJsonFile("LocalConfig.json"));
         }
 
         public void Main(string[] args)
