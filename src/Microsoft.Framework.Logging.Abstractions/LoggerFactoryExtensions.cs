@@ -20,7 +20,7 @@ namespace Microsoft.Framework.Logging
         {
             if (factory == null)
             {
-                throw new ArgumentNullException("factory");
+                throw new ArgumentNullException(nameof(factory));
             }
 
             return factory.CreateLogger(TypeNameHelper.GetTypeDisplayName(typeof(T), fullName: true));
