@@ -73,7 +73,7 @@ namespace Microsoft.Framework.Logging.Test
         public void LogsCorrectLevel()
         {
             // Arrange
-            var t = SetUp(LogLevel.Verbose);
+            var t = SetUp(LogLevel.Debug);
             var logger = t.Item1;
             var sink = t.Item2;
 
