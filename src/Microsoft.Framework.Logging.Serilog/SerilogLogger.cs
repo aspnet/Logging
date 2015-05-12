@@ -44,35 +44,38 @@ namespace Microsoft.Framework.Logging.Serilog
             }
 
             var logger = _logger;
+            string messageTemplate = null;
 
-            var message = string.Empty;
-            if (formatter != null)
+            var structure = state as ILogValues;
+            if (structure != null)
             {
-                message = formatter(state, exception);
+                foreach (var property in structure.GetValues())
+                {
+                    if (property.Key == "{OriginalFormat}" && property.Value is string)
+                    {
+                        messageTemplate = (string)property.Value;
+                    }
+
+                    logger = logger.ForContext(property.Key, property.Value);
+                }
             }
-            else
+
+            if (messageTemplate == null && state != null)
             {
-                message = LogFormatter.Formatter(state, exception);
+                messageTemplate = LogFormatter.Formatter(state, null);
             }
-            if (string.IsNullOrEmpty(message))
+
+            if (string.IsNullOrEmpty(messageTemplate))
             {
                 return;
             }
+
             if (eventId != 0)
             {
                 logger = logger.ForContext("EventId", eventId, false);
             }
-            var structure = state as ILogValues;
-            if (structure != null)
-            {
-                logger = logger.ForContext(new[] { new StructureEnricher(structure) });
-            }
-            if (exception != null)
-            {
-                logger = logger.ForContext(new[] { new ExceptionEnricher(exception) });
-            }
 
-            logger.Write(level, "{Message:l}", message);
+            logger.Write(level, exception, messageTemplate);
         }
 
         private LogEventLevel ConvertLevel(LogLevel logLevel)
@@ -88,54 +91,10 @@ namespace Microsoft.Framework.Logging.Serilog
                 case LogLevel.Information:
                     return LogEventLevel.Information;
                 case LogLevel.Verbose:
-                    return LogEventLevel.Verbose;
+                    return LogEventLevel.Debug;
+                case LogLevel.Debug:
                 default:
-                    throw new NotSupportedException();
-            }
-        }
-
-        private class StructureEnricher : ILogEventEnricher
-        {
-            private readonly ILogValues _structure;
-
-            public StructureEnricher(ILogValues structure)
-            {
-                _structure = structure;
-            }
-
-            public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
-            {
-                foreach (var value in _structure.GetValues())
-                {
-                    logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(
-                        value.Key,
-                        value.Value));
-                }
-            }
-        }
-
-        private sealed class ExceptionEnricher : ILogEventEnricher
-        {
-            private readonly Exception _exception;
-
-            public ExceptionEnricher(Exception exception)
-            {
-                _exception = exception;
-            }
-
-            public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
-            {
-                logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(
-                    "Exception",
-                    _exception.ToString()));
-
-                logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(
-                    "ExceptionType",
-                    _exception.GetType().FullName));
-
-                logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(
-                    "ExceptionMessage",
-                    _exception.Message));
+                    return LogEventLevel.Verbose;
             }
         }
     }
