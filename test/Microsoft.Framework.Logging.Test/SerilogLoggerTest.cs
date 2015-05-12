@@ -37,8 +37,10 @@ namespace Microsoft.Framework.Logging.Test
         {
             switch (logLevel)
             {
-                case LogLevel.Verbose:
+                case LogLevel.Debug:
                     return serilog.MinimumLevel.Verbose();
+                case LogLevel.Verbose:
+                    return serilog.MinimumLevel.Debug();
                 case LogLevel.Information:
                     return serilog.MinimumLevel.Information();
                 case LogLevel.Warning:

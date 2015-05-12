@@ -88,9 +88,10 @@ namespace Microsoft.Framework.Logging.Serilog
                 case LogLevel.Information:
                     return LogEventLevel.Information;
                 case LogLevel.Verbose:
-                    return LogEventLevel.Verbose;
+                    return LogEventLevel.Debug;
+                case LogLevel.Debug:
                 default:
-                    throw new NotSupportedException();
+                    return LogEventLevel.Verbose;
             }
         }
 
