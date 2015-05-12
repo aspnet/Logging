@@ -78,6 +78,7 @@ namespace Microsoft.Framework.Logging.Test
             var sink = t.Item2;
 
             // Act
+            logger.Log(LogLevel.Debug, 0, _state, null, null);
             logger.Log(LogLevel.Verbose, 0, _state, null, null);
             logger.Log(LogLevel.Information, 0, _state, null, null);
             logger.Log(LogLevel.Warning, 0, _state, null, null);
@@ -85,12 +86,13 @@ namespace Microsoft.Framework.Logging.Test
             logger.Log(LogLevel.Critical, 0, _state, null, null);
 
             // Assert
-            Assert.Equal(5, sink.Writes.Count);
+            Assert.Equal(6, sink.Writes.Count);
             Assert.Equal(LogEventLevel.Verbose, sink.Writes[0].Level);
-            Assert.Equal(LogEventLevel.Information, sink.Writes[1].Level);
-            Assert.Equal(LogEventLevel.Warning, sink.Writes[2].Level);
-            Assert.Equal(LogEventLevel.Error, sink.Writes[3].Level);
-            Assert.Equal(LogEventLevel.Fatal, sink.Writes[4].Level);
+            Assert.Equal(LogEventLevel.Debug, sink.Writes[1].Level);
+            Assert.Equal(LogEventLevel.Information, sink.Writes[2].Level);
+            Assert.Equal(LogEventLevel.Warning, sink.Writes[3].Level);
+            Assert.Equal(LogEventLevel.Error, sink.Writes[4].Level);
+            Assert.Equal(LogEventLevel.Fatal, sink.Writes[5].Level);
         }
 
         [Theory]
@@ -147,14 +149,10 @@ namespace Microsoft.Framework.Logging.Test
             // Act
             logger.Log(LogLevel.Information, 0, null, null, null);
             logger.Log(LogLevel.Information, 0, _state, null, null);
-            logger.Log(LogLevel.Information, 0, _state, exception, null);
-            logger.Log(LogLevel.Information, 0, _state, exception, TheMessageAndError);
 
             // Assert
-            Assert.Equal(3, sink.Writes.Count);
+            Assert.Equal(1, sink.Writes.Count);
             Assert.Equal(_state, sink.Writes[0].RenderMessage());
-            Assert.Equal(_state + Environment.NewLine + exception, sink.Writes[1].RenderMessage());
-            Assert.Equal(TheMessageAndError(_state, exception), sink.Writes[2].RenderMessage());
         }
 
         [Fact]
