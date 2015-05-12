@@ -1,18 +1,18 @@
 {
-    "version": "1.0.0-*",
+    "version": "1.0.0-beta4",
     "description": "Console logger implementation.",
     "dependencies": {
-        "Microsoft.Framework.Logging.Interfaces": "1.0.0-*"
+        "Microsoft.Framework.Logging.Interfaces": "1.0.0-beta4"
     },
     "frameworks": {
         "net45": { },
         "dnx451": { },
         "dnxcore50": {
             "dependencies": {
-                "System.Runtime": "4.0.20.0-beta-*",
-                "System.Console": "4.0.0-beta-*",
-                "System.IO": "4.0.10-beta-*",
-                "System.Threading": "4.0.10-beta-*"
+                "System.Runtime": "4.0.20.0-beta-22816",
+                "System.Console": "4.0.0-beta-22816",
+                "System.IO": "4.0.10-beta-22816",
+                "System.Threading": "4.0.10-beta-22816"
             }
         }
     }

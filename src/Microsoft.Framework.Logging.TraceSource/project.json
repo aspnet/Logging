@@ -1,8 +1,8 @@
 {
-    "version": "1.0.0-*",
+    "version": "1.0.0-beta4",
     "dependencies": {
-        "Microsoft.Framework.Logging.Interfaces": "1.0.0-*",
-        "Microsoft.Framework.NotNullAttribute.Internal": { "type": "build", "version": "1.0.0-*" }
+        "Microsoft.Framework.Logging.Interfaces": "1.0.0-beta4",
+        "Microsoft.Framework.NotNullAttribute.Internal": { "type": "build", "version": "1.0.0-beta4" }
     },
 
     "frameworks": {
@@ -18,12 +18,12 @@
         },
         "dnxcore50": {
             "dependencies": {
-                "System.Collections.Concurrent": "4.0.10-beta-*",
-                "System.Collections": "4.0.10-beta-*",
-                "System.Diagnostics.TraceSource": "4.0.0-beta-*",
-                "System.Globalization": "4.0.10-beta-*",
-                "System.Linq": "4.0.0-beta-*",
-                "System.Threading": "4.0.10-beta-*"
+                "System.Collections.Concurrent": "4.0.10-beta-22816",
+                "System.Collections": "4.0.10-beta-22816",
+                "System.Diagnostics.TraceSource": "4.0.0-beta-22816",
+                "System.Globalization": "4.0.10-beta-22816",
+                "System.Linq": "4.0.0-beta-22816",
+                "System.Threading": "4.0.10-beta-22816"
             }
         }
     }

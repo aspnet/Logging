@@ -1,18 +1,18 @@
 {
     "dependencies": {
-        "Microsoft.Framework.Logging": "1.0.0-*",
-        "Microsoft.Framework.Logging.Console": "1.0.0-*"
+        "Microsoft.Framework.Logging": "1.0.0-beta4",
+        "Microsoft.Framework.Logging.Console": "1.0.0-beta4"
     },
     "frameworks": {
         "dnx451": {
             "dependencies": {
-                "Microsoft.Framework.Logging.NLog": "1.0.0-*",
-                "Microsoft.Framework.Logging.Serilog": "1.0.0-*"
+                "Microsoft.Framework.Logging.NLog": "1.0.0-beta4",
+                "Microsoft.Framework.Logging.Serilog": "1.0.0-beta4"
             }
         },
         "dnxcore50": {
             "dependencies": {
-                "System.Console": "4.0.0-beta-*"
+                "System.Console": "4.0.0-beta-22816"
             }
         }
     }

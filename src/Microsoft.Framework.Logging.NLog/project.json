@@ -1,7 +1,7 @@
 {
-    "version": "1.0.0-*",
+    "version": "1.0.0-beta4",
     "dependencies": {
-        "Microsoft.Framework.Logging.Interfaces": "1.0.0-*",
+        "Microsoft.Framework.Logging.Interfaces": "1.0.0-beta4",
         "NLog": "3.1.0"
     },
     "frameworks": {
