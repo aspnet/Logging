@@ -3,7 +3,7 @@
     "dependencies": {
         "Microsoft.Framework.Logging.Abstractions": "1.0.0-*",
         "Microsoft.Framework.NotNullAttribute.Sources": { "type": "build", "version": "1.0.0-*" },
-        "Serilog": "1.4.14"
+        "Serilog": "1.5.5"
     },
     "frameworks": {
         "dnx451": {
