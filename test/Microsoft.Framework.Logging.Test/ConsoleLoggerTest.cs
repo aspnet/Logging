@@ -97,6 +97,50 @@ namespace Microsoft.Framework.Logging.Test
         }
 
         [Fact]
+        public void DoesNotLog_NewLine_WhenNoExceptionIsProvided()
+        {
+            // Arrange
+            var t = SetUp(null);
+            var logger = (ILogger)t.Item1;
+            var sink = t.Item2;
+            var expectedMessage = "Route with name 'Default' was not found.";
+
+            // Act
+            logger.LogCritical(expectedMessage);
+            logger.LogCritical(expectedMessage, error: null);
+            logger.LogCritical(eventId: 10, message: expectedMessage);
+            logger.LogCritical(eventId: 10, message: expectedMessage, error: null);
+
+            // Assert
+            Assert.Equal(4, sink.Writes.Count);
+            Assert.Equal($"critical: [{_name}] {expectedMessage}", sink.Writes[0].Message);
+            Assert.Equal($"critical: [{_name}] {expectedMessage}", sink.Writes[1].Message);
+            Assert.Equal($"critical: [{_name}] {expectedMessage}", sink.Writes[2].Message);
+            Assert.Equal($"critical: [{_name}] {expectedMessage}", sink.Writes[3].Message);
+        }
+
+        [Fact]
+        public void Writes_NewLine_WhenExceptionIsProvided()
+        {
+            // Arrange
+            var t = SetUp(null);
+            var logger = (ILogger)t.Item1;
+            var sink = t.Item2;
+            var message = "Route with name 'Default' was not found.";
+            var exception = new InvalidOperationException("Invalid value");
+            var expectedMessage = $"{message}{Environment.NewLine}{exception}";
+
+            // Act
+            logger.LogCritical(message, exception);
+            logger.LogCritical(10, message, exception);
+
+            // Assert
+            Assert.Equal(2, sink.Writes.Count);
+            Assert.Equal($"critical: [{_name}] {expectedMessage}", sink.Writes[0].Message);
+            Assert.Equal($"critical: [{_name}] {expectedMessage}", sink.Writes[1].Message);
+        }
+
+        [Fact]
         public void LogsWhenNullFilterGiven()
         {
             // Arrange
