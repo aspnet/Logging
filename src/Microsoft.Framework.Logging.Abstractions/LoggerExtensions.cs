@@ -578,14 +578,25 @@ namespace Microsoft.Framework.Logging
             logger.Log(logLevel, eventId, state, exception, MessageFormatter);
         }
 
-        private static string MessageFormatter(object state, Exception exception)
+        private static string MessageFormatter(object state, Exception error)
         {
-            if (exception == null)
+            if (state == null && error == null)
             {
-                return state?.ToString();
+                throw new InvalidOperationException("No message or exception details were found " +
+                    "to create a message for the log.");
             }
 
-            return string.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", state, Environment.NewLine, exception);
+            if (state == null)
+            {
+                return error.ToString();
+            }
+
+            if (error == null)
+            {
+                return state.ToString();
+            }
+
+            return string.Format(CultureInfo.CurrentCulture, "{0}{1}{2}", state, Environment.NewLine, error);
         }
     }
 }
