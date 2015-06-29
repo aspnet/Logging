@@ -18,25 +18,6 @@ namespace Microsoft.Framework.Logging.Console
         private Func<string, LogLevel, bool> _filter;
         private readonly object _lock = new object();
 
-        private static readonly Dictionary<LogLevel, string> _logLevelMappings = new Dictionary<LogLevel, string>()
-        {
-            { LogLevel.Information, "info" },
-            { LogLevel.Critical, "critical" },
-            { LogLevel.Debug, "debug" },
-            { LogLevel.Error, "error" },
-            { LogLevel.Verbose, "verbose" },
-            { LogLevel.Warning, "warning" }
-        };
-        private static readonly string UnknownLogLevel = "unknown";
-        private static readonly int Padding;
-
-        static ConsoleLogger()
-        {
-            Padding = Math.Max(
-                _logLevelMappings.Values.Max(v => v.Length),
-                UnknownLogLevel.Length);
-        }
-
         public ConsoleLogger(string name, Func<string, LogLevel, bool> filter)
         {
             _name = name;
@@ -97,12 +78,8 @@ namespace Microsoft.Framework.Logging.Console
 
         private string FormatMessage(LogLevel logLevel, string message)
         {
-            string logLevelString;
-            if(!_logLevelMappings.TryGetValue(logLevel, out logLevelString))
-            {
-                logLevelString = UnknownLogLevel;
-            }
-            return $"{logLevelString.PadRight(Padding)}: [{_name}] {message}";
+            var logLevelString = GetRightPaddedLogLevelString(logLevel);
+            return $"{logLevelString}: [{_name}] {message}";
         }
 
         public bool IsEnabled(LogLevel logLevel)
@@ -195,6 +172,27 @@ namespace Microsoft.Framework.Logging.Console
                     builder.Append(kvp.Value);
                 }
                 isFirst = false;
+            }
+        }
+
+        private static string GetRightPaddedLogLevelString(LogLevel logLevel)
+        {
+            switch (logLevel)
+            {
+                case LogLevel.Debug:
+                    return "debug   ";
+                case LogLevel.Verbose:
+                    return "verbose ";
+                case LogLevel.Information:
+                    return "info    ";
+                case LogLevel.Warning:
+                    return "warning ";
+                case LogLevel.Error:
+                    return "error   ";
+                case LogLevel.Critical:
+                    return "critical";
+                default:
+                    return "unknown ";
             }
         }
     }
