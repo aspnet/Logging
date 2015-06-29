@@ -12,7 +12,7 @@ namespace Microsoft.Framework.Logging.Console
     {
         private const int _indentation = 2;
         private readonly string _name;
-        private Func<string, LogLevel, bool> _filter;
+        private readonly Func<string, LogLevel, bool> _filter;
         private readonly object _lock = new object();
 
         public ConsoleLogger(string name, Func<string, LogLevel, bool> filter)
