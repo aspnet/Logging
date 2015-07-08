@@ -21,6 +21,8 @@ namespace Microsoft.Framework.Logging.TraceSource
 
         private bool _disposed = false;
 
+        private bool _disposed = false;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TraceSourceLoggerProvider"/> class.
         /// </summary>
