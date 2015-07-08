@@ -58,10 +58,13 @@ namespace Microsoft.Framework.Logging
                 {
                     foreach (var provider in _providers)
                     {
-                        var disposable = provider as IDisposable;
-                        if (disposable!= null)
+                        try
                         {
-                            disposable.Dispose();
+                            provider.Dispose();
+                        }
+                        catch
+                        {
+                            // Swallow exceptions on dispose
                         }
                     }
                 }

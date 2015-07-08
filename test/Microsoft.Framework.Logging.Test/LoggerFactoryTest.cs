@@ -2,8 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using Microsoft.Framework.Logging;
+using Moq;
 using Xunit;
 
 namespace Microsoft.Framework.Logging.Test
@@ -11,34 +10,50 @@ namespace Microsoft.Framework.Logging.Test
     public class LoggerFactoryTest
     {
         [Fact]
-        public static void Dispose_ProvidersAreDisposed()
+        public void Dispose_ProvidersAreDisposed()
         {
             // Arrange
             var factory = new LoggerFactory();
-            var provider = new DisposableProvider();
-            factory.AddProvider(provider);
+            var disposableProvider1 = CreateProvider();
+            var disposableProvider2 = CreateProvider();
+            factory.AddProvider(disposableProvider1);
+            factory.AddProvider(disposableProvider2);
 
             // Act
             factory.Dispose();
 
             // Assert
-            Assert.True(provider.Disposed);
+            Mock.Get<IDisposable>(disposableProvider1)
+                    .Verify(p => p.Dispose(), Times.Once());
+            Mock.Get<IDisposable>(disposableProvider2)
+                     .Verify(p => p.Dispose(), Times.Once());
         }
 
-        private class DisposableProvider : ILoggerProvider, IDisposable
+        private static ILoggerProvider CreateProvider()
         {
-            public bool Disposed { get; set; }
+            var disposableProvider = new Mock<ILoggerProvider>();
+            disposableProvider.As<IDisposable>()
+                  .Setup(p => p.Dispose());
+            return disposableProvider.Object;
+        }
 
-            public ILogger CreateLogger(string name)
-            {
-                throw new NotImplementedException();
-            }
+        [Fact]
+        public void Dispose_ThrowException_SwallowsException()
+        {
+            // Arrange
+            var factory = new LoggerFactory();
+            var throwingProvider = new Mock<ILoggerProvider>();
+            throwingProvider.As<IDisposable>()
+                .Setup(p => p.Dispose())
+                .Throws<Exception>();
+            factory.AddProvider(throwingProvider.Object);
 
-            public void Dispose()
-            {
-                Disposed = true;
-            }
+            // Act
+            factory.Dispose();
 
+            // Assert
+            throwingProvider.As<IDisposable>()
+                .Verify(p => p.Dispose(), Times.Once());
         }
     }
 }

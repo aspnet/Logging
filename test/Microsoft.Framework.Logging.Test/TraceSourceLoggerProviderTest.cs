@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Framework.Logging.TraceSource;
 using Xunit;
 
 namespace Microsoft.Framework.Logging.Test
