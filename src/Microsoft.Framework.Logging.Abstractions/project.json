@@ -1,27 +1,33 @@
 {
-    "version": "1.0.0-*",
+    "version": "1.0.0-beta6",
     "repository": {
         "type": "git",
         "url": "git://github.com/aspnet/logging"
     },
     "description": "Logging interface definitions.",
     "dependencies": {
-        "Microsoft.Framework.NotNullAttribute.Sources": { "type": "build", "version": "1.0.0-*" },
-        "Microsoft.Framework.TypeNameHelper.Sources": { "type": "build", "version": "1.0.0-*" }
+        "Microsoft.Framework.NotNullAttribute.Sources": {
+            "type": "build",
+            "version": "1.0.0-beta6"
+        },
+        "Microsoft.Framework.TypeNameHelper.Sources": {
+            "type": "build",
+            "version": "1.0.0-beta6"
+        }
     },
     "frameworks": {
-        "net45": { },
-        "dnx451": { },
+        "net45": {},
+        "dnx451": {},
         "dotnet": {
             "dependencies": {
-                "System.Collections": "4.0.10-beta-*",
-                "System.Collections.Concurrent": "4.0.10-beta-*",
-                "System.Linq": "4.0.0-beta-*",
-                "System.Globalization": "4.0.10-beta-*",
-                "System.Reflection": "4.0.10-beta-*",
-                "System.Runtime": "4.0.20-beta-*",
-                "System.Runtime.Extensions": "4.0.10-beta-*",
-                "System.Runtime.InteropServices": "4.0.20-beta-*"
+                "System.Collections": "4.0.10-beta-23109",
+                "System.Collections.Concurrent": "4.0.10-beta-23109",
+                "System.Linq": "4.0.0-beta-23109",
+                "System.Globalization": "4.0.10-beta-23109",
+                "System.Reflection": "4.0.10-beta-23109",
+                "System.Runtime": "4.0.20-beta-23109",
+                "System.Runtime.Extensions": "4.0.10-beta-23109",
+                "System.Runtime.InteropServices": "4.0.20-beta-23109"
             }
         }
     }

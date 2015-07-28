@@ -1,22 +1,22 @@
 {
-    "version": "1.0.0-*",
+    "version": "1.0.0-beta6",
     "repository": {
         "type": "git",
         "url": "git://github.com/aspnet/logging"
     },
     "description": "Console logger implementation.",
     "dependencies": {
-        "Microsoft.Framework.Logging.Abstractions": "1.0.0-*"
+        "Microsoft.Framework.Logging.Abstractions": "1.0.0-beta6"
     },
     "frameworks": {
-        "net45": { },
-        "dnx451": { },
+        "net45": {},
+        "dnx451": {},
         "dotnet": {
             "dependencies": {
-                "System.Runtime": "4.0.20.0-beta-*",
-                "System.Console": "4.0.0-beta-*",
-                "System.IO": "4.0.10-beta-*",
-                "System.Threading": "4.0.10-beta-*"
+                "System.Runtime": "4.0.20-beta-23109",
+                "System.Console": "4.0.0-beta-23109",
+                "System.IO": "4.0.10-beta-23109",
+                "System.Threading": "4.0.10-beta-23109"
             }
         }
     }
