@@ -100,25 +100,14 @@ namespace Microsoft.Framework.Logging.TraceSource
                 traceSource.Switch.Level == SourceLevels.Off;
         }
 
-
-        protected virtual void Dispose(bool disposing)
+        public void Dispose()
         {
             if (!_disposed)
             {
-                if (disposing)
-                {
-                    _rootTraceListener.Flush();
-                    _rootTraceListener.Dispose();
-                }
-
+                _rootTraceListener.Flush();
+                _rootTraceListener.Dispose();
                 _disposed = true;
             }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

@@ -23,24 +23,14 @@ namespace Microsoft.Framework.Logging.NLog
         }
 
 
-        protected virtual void Dispose(bool disposing)
+        public void Dispose()
         {
             if (!_disposed)
             {
-                if (disposing)
-                {
-                    _logFactory.Flush();
-                    _logFactory.Dispose();
-                }
-
+                _logFactory.Flush();
+                _logFactory.Dispose();
                 _disposed = true;
             }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         private class Logger : ILogger

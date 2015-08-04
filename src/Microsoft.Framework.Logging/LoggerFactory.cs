@@ -49,34 +49,25 @@ namespace Microsoft.Framework.Logging
         {
             return _providers;
         }
-        
-        protected virtual void Dispose(bool disposing)
+
+        public void Dispose()
         {
             if (!_disposed)
             {
-                if (disposing)
+                foreach (var provider in _providers)
                 {
-                    foreach (var provider in _providers)
+                    try
                     {
-                        try
-                        {
-                            provider.Dispose();
-                        }
-                        catch
-                        {
-                            // Swallow exceptions on dispose
-                        }
+                        provider.Dispose();
+                    }
+                    catch
+                    {
+                        // Swallow exceptions on dispose
                     }
                 }
 
                 _disposed = true;
             }
-        }
-        
-        public void Dispose()
-        {           
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }
