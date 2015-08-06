@@ -6,7 +6,7 @@ using Moq;
 #endif
 using Xunit;
 
-namespace Microsoft.Framework.Logging.Test
+namespace Microsoft.Framework.Logging.Tests
 {
     public class LoggerFactoryExtensionsTest
     {
@@ -35,7 +35,7 @@ namespace Microsoft.Framework.Logging.Test
             // Arrange
             var factory = new Mock<ILoggerFactory>();
             factory.Setup(f => f.CreateLogger(It.Is<string>(
-                x => x.Equals("Microsoft.Framework.Logging.Test.GenericClass<Microsoft.Framework.Logging.Test.TestType>"))))
+                x => x.Equals("Microsoft.Framework.Logging.Tests.GenericClass<Microsoft.Framework.Logging.Tests.TestType>"))))
             .Returns(new Mock<ILogger>().Object);
 
             var logger = factory.Object.CreateLogger<GenericClass<TestType>>();
@@ -50,7 +50,7 @@ namespace Microsoft.Framework.Logging.Test
             // Arrange
             var factory = new Mock<ILoggerFactory>();
             factory.Setup(f => f.CreateLogger(It.Is<string>(
-                x => x.Equals("Microsoft.Framework.Logging.Test.GenericClass<Microsoft.Framework.Logging.Test.TestType, Microsoft.Framework.Logging.Test.SecondTestType>"))))
+                x => x.Equals("Microsoft.Framework.Logging.Tests.GenericClass<Microsoft.Framework.Logging.Tests.TestType, Microsoft.Framework.Logging.Tests.SecondTestType>"))))
             .Returns(new Mock<ILogger>().Object);
 
             var logger = factory.Object.CreateLogger<GenericClass<TestType,SecondTestType>>();

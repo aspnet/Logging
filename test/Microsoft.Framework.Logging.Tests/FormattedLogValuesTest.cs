@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.Framework.Logging.Internal;
 using Xunit;
 
-namespace Microsoft.Framework.Logging.Test
+namespace Microsoft.Framework.Logging.Tests
 {
     public class FormattedLogValuesTest
     {

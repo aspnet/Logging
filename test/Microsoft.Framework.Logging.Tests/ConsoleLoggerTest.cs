@@ -4,12 +4,12 @@
 using System;
 using System.Globalization;
 using Microsoft.Framework.Logging.Console;
-using Microsoft.Framework.Logging.Test.Console;
+using Microsoft.Framework.Logging.Tests.Console;
 using Moq;
 using Xunit;
 using Xunit.Sdk;
 
-namespace Microsoft.Framework.Logging.Test
+namespace Microsoft.Framework.Logging.Tests
 {
     public class ConsoleLoggerTest
     {

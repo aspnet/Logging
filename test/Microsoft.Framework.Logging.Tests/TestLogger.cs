@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Framework.Logging.Test
+namespace Microsoft.Framework.Logging.Tests
 {
     public class TestLogger : ILogger
     {

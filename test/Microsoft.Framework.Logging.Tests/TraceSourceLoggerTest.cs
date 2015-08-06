@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using Xunit;
 
-namespace Microsoft.Framework.Logging.Test
+namespace Microsoft.Framework.Logging.Tests
 {
     public class TraceSourceLoggerTest
     {

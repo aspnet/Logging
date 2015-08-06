@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Framework.Logging.Console.Internal;
 
-namespace Microsoft.Framework.Logging.Test.Console
+namespace Microsoft.Framework.Logging.Tests.Console
 {
     public class TestConsole : IConsole
     {
