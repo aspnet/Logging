@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Framework.Logging.Test.Console
+namespace Microsoft.Framework.Logging.Tests.Console
 {
     public class ConsoleContext
     {

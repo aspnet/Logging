@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Framework.Logging.Test.Console
+namespace Microsoft.Framework.Logging.Tests.Console
 {
     public class ConsoleSink
     {
