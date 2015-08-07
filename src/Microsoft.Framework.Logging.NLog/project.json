@@ -7,7 +7,7 @@
     "dependencies": {
         "Microsoft.Framework.Logging.Abstractions": "1.0.0-*",
         "Microsoft.Framework.NotNullAttribute.Sources": { "type": "build", "version": "1.0.0-*" },
-        "NLog": "3.1.0"
+        "NLog": "3.2.0"
     },
     "frameworks": {
         "net45": { },

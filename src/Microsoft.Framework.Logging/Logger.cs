@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Microsoft.Framework.Logging
@@ -60,6 +61,19 @@ namespace Microsoft.Framework.Logging
             {
                 scope.SetDisposable(index, loggers[index].BeginScopeImpl(state));
             }
+            return scope;
+        }
+
+        public IDisposable BeginTrackedScopeImpl(object state, LogLevel logLevel, string startMessage, string endMessage, bool trackTime)
+        {
+            var loggers = _loggers;
+            var scope = new TrackedScope(loggers.Length, this, logLevel, endMessage, trackTime);
+            for (var index = 0; index != loggers.Length; index++)
+            {
+                scope.SetDisposable(index, loggers[index].BeginScopeImpl(state));
+            }
+
+            Log(logLevel, 0, startMessage, null, null);
             return scope;
         }
 
@@ -144,6 +158,54 @@ namespace Microsoft.Framework.Logging
             internal void Add(IDisposable disposable)
             {
                 throw new NotImplementedException();
+            }
+        }
+
+        private class TrackedScope : Scope
+        {
+            private bool _isDisposed;
+
+            private readonly ILogger _logger;
+            private readonly string _endMessage;
+            private readonly Stopwatch _stopwatch;
+            private readonly bool _trackTime;
+            private readonly LogLevel _logLevel;
+
+            public TrackedScope(int count, ILogger logger, LogLevel logLevel, string endMessage, bool trackTime)
+                : base(count)
+            {
+                _endMessage = endMessage;
+                _logger = logger;
+                _logLevel = logLevel;
+                _trackTime = trackTime;
+
+                if (trackTime)
+                {
+                    _stopwatch = new Stopwatch();
+                    _stopwatch.Start();
+                }
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (!_isDisposed)
+                {
+                    if (disposing)
+                    {
+                        if (_endMessage != null && _logger.IsEnabled(_logLevel))
+                        {
+                            _logger.Log(_logLevel, 0, _endMessage, null, null);
+                            if (_trackTime)
+                            {
+                                _logger.Log(_logLevel, 0, $"Elapsed: {_stopwatch.Elapsed}", null, null);
+                            }
+                        }
+                    }
+
+                    _isDisposed = true;
+                }
+
+                base.Dispose(disposing);
             }
         }
     }

@@ -67,5 +67,12 @@ namespace Microsoft.Framework.Logging.TraceSource
         {
             return new TraceSourceScope(state);
         }
+
+        public IDisposable BeginTrackedScopeImpl(object state, LogLevel logLevel, string startMessage, string endMessage, bool trackTime)
+        {
+            Log(logLevel, 0, startMessage, null, null);
+
+            return new TraceSourceTrackedScope(state, this, logLevel, endMessage, trackTime);
+        }
     }
 }

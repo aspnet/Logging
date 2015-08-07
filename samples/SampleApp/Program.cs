@@ -54,6 +54,14 @@ namespace SampleApp
                 Console.ReadLine();
             }
 
+            Console.WriteLine("Hello World - tracked");
+            using (_logger.BeginTrackedScopeImpl("Main - Tracked", LogLevel.Information, "Start", "End", true))
+            {
+                _logger.LogInformation("Waiting for user input");
+                var userInput = Console.ReadLine();
+                _logger.LogInformation("User input: {0}", userInput);
+            }
+
             var endTime = DateTimeOffset.UtcNow;
             _logger.LogInformation(2, "Stopping at '{StopTime}'", endTime);
 

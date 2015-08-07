@@ -559,6 +559,29 @@ namespace Microsoft.Framework.Logging
             return logger.BeginScopeImpl(new FormattedLogValues(messageFormat, args));
         }
 
+        /// <summary>
+        /// Creates a scope that will automatically put an Enter/Exit message and track the time the scope is active.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to create the scope in.</param>
+        /// <param name="logLevel">Level to log the enter/exit/time messages at.</param>
+        /// <param name="startMessage">Message to display at the start of the scope.</param>
+        /// <param name="endMessage">Message to display at the end of the scope.</param>
+        /// <param name="trackTime">Whether or not to track and log how long the scope is active.</param>
+        /// <param name="messageFormat">Format string of the scope message.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <returns></returns>
+        public static IDisposable BeginTrackedScope(
+            [NotNull] this ILogger logger,
+            [NotNull] LogLevel logLevel,
+            string startMessage,
+            string endMessage,
+            bool trackTime,
+            string messageFormat,
+            params object[] args)
+        {
+            return logger.BeginTrackedScopeImpl(new FormattedLogValues(messageFormat, args), logLevel, startMessage, endMessage, trackTime);
+        }
+
         //------------------------------------------HELPERS------------------------------------------//
 
         private static void Log(
