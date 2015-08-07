@@ -28,6 +28,11 @@ namespace Microsoft.Framework.Logging
             return _logger.BeginScopeImpl(state);
         }
 
+        IDisposable ILogger.BeginTrackedScopeImpl(object state, LogLevel logLevel, string startMessage, string endMessage, bool trackTime)
+        {
+            return _logger.BeginTrackedScopeImpl(state, logLevel, startMessage, endMessage, trackTime);
+        }
+
         bool ILogger.IsEnabled(LogLevel logLevel)
         {
             return _logger.IsEnabled(logLevel);

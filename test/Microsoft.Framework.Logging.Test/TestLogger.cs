@@ -34,6 +34,21 @@ namespace Microsoft.Framework.Logging.Test
             return null;
         }
 
+        public IDisposable BeginTrackedScopeImpl(object state, LogLevel logLevel, string startMessage, string endMessage, bool trackTime)
+        {
+            _scope = state;
+
+            _sink.Begin(new BeginScopeContext()
+            {
+                LoggerName = _name,
+                Scope = state,
+            });
+
+            Log(logLevel, 0, startMessage, null, null);
+
+            return new TrackedScopeContext(this, logLevel, endMessage, trackTime);
+        }
+
         public void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
             _sink.Write(new WriteContext()

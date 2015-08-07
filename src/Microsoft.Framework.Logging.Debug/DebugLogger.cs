@@ -41,6 +41,13 @@ namespace Microsoft.Framework.Logging.Debug
             return new NoopDisposable();
         }
 
+        public IDisposable BeginTrackedScopeImpl(object state, LogLevel logLevel, string startMessage, string endMessage, bool trackTime)
+        {
+            Log(logLevel, 0, startMessage, null, null);
+
+            return new TrackedDisposable(this, logLevel, endMessage, trackTime);
+        }
+
         /// <inheritdoc />
         public bool IsEnabled(LogLevel logLevel)
         {
@@ -90,6 +97,55 @@ namespace Microsoft.Framework.Logging.Debug
         {
             public void Dispose()
             {
+            }
+        }
+
+        private class TrackedDisposable : IDisposable
+        {
+            private readonly ILogger _logger;
+            private readonly string _endMessage;
+            private readonly Stopwatch _stopwatch;
+            private readonly bool _trackTime;
+            private readonly LogLevel _logLevel;
+            private bool _disposed;
+
+            public TrackedDisposable(ILogger logger, LogLevel logLevel, string endMessage, bool trackTime)
+            {
+                _endMessage = endMessage;
+                _logger = logger;
+                _logLevel = logLevel;
+                _trackTime = trackTime;
+
+                if (trackTime)
+                {
+                    _stopwatch = new Stopwatch();
+                    _stopwatch.Start();
+                }
+            }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!_disposed)
+                {
+                    if (disposing)
+                    {
+                        if (_endMessage != null && _logger.IsEnabled(_logLevel))
+                        {
+                            _logger.Log(_logLevel, 0, _endMessage, null, null);
+                            if (_trackTime)
+                            {
+                                _logger.Log(_logLevel, 0, $"Elapsed: {_stopwatch.Elapsed}", null, null);
+                            }
+                        }
+                    }
+
+                    _disposed = true;
+                }
+            }
+
+            public void Dispose()
+            {
+                Dispose(true);
             }
         }
     }
