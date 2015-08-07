@@ -12,7 +12,7 @@ namespace Microsoft.Framework.Logging.TraceSource
     /// <summary>
     /// Provides an ILoggerFactory based on System.Diagnostics.TraceSource.
     /// </summary>
-    public class TraceSourceLoggerProvider : ILoggerProvider, IDisposable
+    public class TraceSourceLoggerProvider : ILoggerProvider
     {
         private readonly SourceSwitch _rootSourceSwitch;
         private readonly TraceListener _rootTraceListener;

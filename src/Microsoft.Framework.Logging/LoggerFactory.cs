@@ -10,7 +10,7 @@ namespace Microsoft.Framework.Logging
     /// <summary>
     /// Summary description for LoggerFactory
     /// </summary>
-    public class LoggerFactory : ILoggerFactory, IDisposable
+    public class LoggerFactory : ILoggerFactory
     {
         private readonly Dictionary<string, Logger> _loggers = new Dictionary<string, Logger>(StringComparer.Ordinal);
         private ILoggerProvider[] _providers = new ILoggerProvider[0];
