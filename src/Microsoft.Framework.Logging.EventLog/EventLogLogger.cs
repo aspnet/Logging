@@ -46,7 +46,7 @@ namespace Microsoft.Framework.Logging.EventLog
         }
 
         /// <inheritdoc />
-        public IDisposable BeginScopeImpl(object state)
+        public virtual IDisposable BeginScopeImpl(object state)
         {
             return new NoopDisposable();
         }
@@ -58,7 +58,7 @@ namespace Microsoft.Framework.Logging.EventLog
         }
 
         /// <inheritdoc />
-        public void Log(
+        public virtual void Log(
             LogLevel logLevel,
             int eventId,
             object state,

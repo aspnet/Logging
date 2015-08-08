@@ -25,7 +25,7 @@ namespace Microsoft.Framework.Logging.Console
         public IConsole Console { get; set; }
         protected string Name { get { return _name; } }
 
-        public void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public virtual void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
             if (!IsEnabled(logLevel))
             {
@@ -109,7 +109,7 @@ namespace Microsoft.Framework.Logging.Console
             }
         }
 
-        public IDisposable BeginScopeImpl(object state)
+        public virtual IDisposable BeginScopeImpl(object state)
         {
             return new NoopDisposable();
         }

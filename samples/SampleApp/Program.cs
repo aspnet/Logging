@@ -18,7 +18,7 @@ namespace SampleApp
 
             // providers may be added to an ILoggerFactory at any time, existing ILoggers are updated
 #if !DNXCORE50
-            factory.AddNLog(new global::NLog.LogFactory());
+            factory.AddNLog(new NLog.LogFactory());
             factory.AddEventLog();
 #endif
             factory.AddConsole();
