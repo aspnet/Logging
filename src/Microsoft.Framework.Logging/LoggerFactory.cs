@@ -54,6 +54,7 @@ namespace Microsoft.Framework.Logging
         {
             if (!_disposed)
             {
+                _disposed = true;
                 foreach (var provider in _providers)
                 {
                     try
@@ -65,8 +66,6 @@ namespace Microsoft.Framework.Logging
                         // Swallow exceptions on dispose
                     }
                 }
-
-                _disposed = true;
             }
         }
     }
