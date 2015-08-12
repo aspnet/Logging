@@ -36,7 +36,7 @@ namespace Microsoft.Framework.Logging.Debug
 
 
         /// <inheritdoc />
-        public IDisposable BeginScopeImpl(object state)
+        public virtual IDisposable BeginScopeImpl(object state)
         {
             return new NoopDisposable();
         }
@@ -51,7 +51,7 @@ namespace Microsoft.Framework.Logging.Debug
         }
 
         /// <inheritdoc />
-        public void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public virtual void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
             if (!IsEnabled(logLevel))
             {

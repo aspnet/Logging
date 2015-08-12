@@ -7,7 +7,7 @@ using DiagnosticsTraceSource = System.Diagnostics.TraceSource;
 
 namespace Microsoft.Framework.Logging.TraceSource
 {
-    internal class TraceSourceLogger : ILogger
+    public class TraceSourceLogger : ILogger
     {
         private readonly DiagnosticsTraceSource _traceSource;
 
@@ -16,7 +16,7 @@ namespace Microsoft.Framework.Logging.TraceSource
             _traceSource = traceSource;
         }
 
-        public void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public virtual void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
         {
             if (!IsEnabled(logLevel))
             {
@@ -63,7 +63,7 @@ namespace Microsoft.Framework.Logging.TraceSource
             }
         }
 
-        public IDisposable BeginScopeImpl(object state)
+        public virtual IDisposable BeginScopeImpl(object state)
         {
             return new TraceSourceScope(state);
         }
