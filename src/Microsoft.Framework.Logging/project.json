@@ -15,24 +15,17 @@
         ]
     },
     "frameworks": {
-        "net45": {
-            "frameworkAssemblies": {
-                "System.Collections.Concurrent": { "version": "", "type": "build" }
-            }
-        },
-        "dnx451": {
-            "frameworkAssemblies": {
-                "System.Collections.Concurrent": ""
-            }
-        },
+        "net45": { },
+        "dnx451": { },
         "dotnet": {
             "dependencies": {
-                "System.Collections.Concurrent": "4.0.11-beta-*",
-                "System.Collections": "4.0.11-beta-*",
-                "System.ComponentModel": "4.0.1-beta-*",
-                "System.Globalization": "4.0.11-beta-*",
-                "System.Linq": "4.0.1-beta-*",
-                "System.Threading": "4.0.11-beta-*"
+                "System.Collections": "4.0.0",
+                "System.Diagnostics.Debug": "4.0.0",
+                "System.Linq": "4.0.0",
+                "System.Runtime": "4.0.0",
+                "System.Runtime.Extensions": "4.0.0",
+                "System.Threading": "4.0.0",
+                "System.Threading.Tasks": "4.0.0"
             }
         }
     }
