@@ -1,14 +1,16 @@
 {
-    "version": "1.0.0-*",
+    "version": "1.0.0-beta7",
     "repository": {
         "type": "git",
         "url": "git://github.com/aspnet/logging"
     },
     "dependencies": {
-        "Microsoft.Framework.Logging.Abstractions": "1.0.0-*",
-        "Microsoft.Framework.NotNullAttribute.Sources": { "type": "build", "version": "1.0.0-*" }
+        "Microsoft.Framework.Logging.Abstractions": "1.0.0-beta7",
+        "Microsoft.Framework.NotNullAttribute.Sources": {
+            "type": "build",
+            "version": "1.0.0-beta7"
+        }
     },
-
     "frameworks": {
         "net45": {
             "frameworkAssemblies": {
@@ -22,12 +24,12 @@
         },
         "dotnet": {
             "dependencies": {
-                "System.Collections.Concurrent": "4.0.11-beta-*",
-                "System.Collections": "4.0.11-beta-*",
-                "System.Diagnostics.TraceSource": "4.0.0-beta-*",
-                "System.Globalization": "4.0.11-beta-*",
-                "System.Linq": "4.0.1-beta-*",
-                "System.Threading": "4.0.11-beta-*"
+                "System.Collections.Concurrent": "4.0.11-beta-23225",
+                "System.Collections": "4.0.11-beta-23225",
+                "System.Diagnostics.TraceSource": "4.0.0-beta-23225",
+                "System.Globalization": "4.0.11-beta-23225",
+                "System.Linq": "4.0.1-beta-23225",
+                "System.Threading": "4.0.11-beta-23225"
             }
         }
     }
