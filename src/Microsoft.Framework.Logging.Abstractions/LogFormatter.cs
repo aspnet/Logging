@@ -14,7 +14,7 @@ namespace Microsoft.Framework.Logging
     /// </summary>
     public static class LogFormatter
     {
-        private const string space = "  ";
+        private const string space = " ";
 
         /// <summary>
         /// Formats a message from the given state and exception, in the form 
