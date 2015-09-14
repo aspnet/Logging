@@ -384,6 +384,18 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
+        /// Formats the given message and error and writes a warning log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="error">The exception to log.</param>
+        /// <param name="format">Format string of the log message.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public static void LogWarning(this ILogger logger, Exception error, string format, params object[] args)
+        {
+            logger.Log(LogLevel.Warning, 0, new FormattedLogValues(format, args), error, _messageFormatter);
+        }
+
+        /// <summary>
         /// Formats and writes a warning log message.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
@@ -398,6 +410,19 @@ namespace Microsoft.Extensions.Logging
             }
 
             logger.Log(LogLevel.Warning, eventId, new FormattedLogValues(format, args), null, _messageFormatter);
+        }
+
+        /// <summary>
+        /// Formats the given message and error and writes a warning log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="error">The exception to log.</param>
+        /// <param name="format">Format string of the log message.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public static void LogWarning(this ILogger logger, int eventId, Exception error, string format, params object[] args)
+        {
+            logger.Log(LogLevel.Warning, eventId, new FormattedLogValues(format, args), error, _messageFormatter);
         }
 
         /// <summary>
@@ -523,6 +548,18 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
+        /// Formats the given message and error and writes an error log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="error">The exception to log.</param>
+        /// <param name="format">Format string of the log message.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public static void LogError(this ILogger logger, Exception error, string format, params object[] args)
+        {
+            logger.Log(LogLevel.Error, 0, new FormattedLogValues(format, args), error, _messageFormatter);
+        }
+
+        /// <summary>
         /// Formats and writes an error log message.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
@@ -537,6 +574,19 @@ namespace Microsoft.Extensions.Logging
             }
 
             logger.Log(LogLevel.Error, eventId, new FormattedLogValues(format, args), null, _messageFormatter);
+        }
+
+        /// <summary>
+        /// Formats the given message and error and writes an error log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="error">The exception to log.</param>
+        /// <param name="format">Format string of the log message.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public static void LogError(this ILogger logger, int eventId, Exception error, string format, params object[] args)
+        {
+            logger.Log(LogLevel.Error, eventId, new FormattedLogValues(format, args), error, _messageFormatter);
         }
 
         /// <summary>
@@ -662,6 +712,18 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
+        /// Formats the given message and error and writes a critical log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="error">The exception to log.</param>
+        /// <param name="format">Format string of the log message.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public static void LogCritical(this ILogger logger, Exception error, string format, params object[] args)
+        {
+            logger.Log(LogLevel.Critical, 0, new FormattedLogValues(format, args), error, _messageFormatter);
+        }
+
+        /// <summary>
         /// Formats and writes a critical log message.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
@@ -676,6 +738,19 @@ namespace Microsoft.Extensions.Logging
             }
 
             logger.Log(LogLevel.Critical, eventId, new FormattedLogValues(format, args), null, _messageFormatter);
+        }
+
+        /// <summary>
+        /// Formats the given message and error and writes a critical log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="error">The exception to log.</param>
+        /// <param name="format">Format string of the log message.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public static void LogCritical(this ILogger logger, int eventId, Exception error, string format, params object[] args)
+        {
+            logger.Log(LogLevel.Critical, eventId, new FormattedLogValues(format, args), error, _messageFormatter);
         }
 
         /// <summary>
