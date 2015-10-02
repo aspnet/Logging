@@ -4,6 +4,7 @@
         "type": "git",
         "url": "git://github.com/aspnet/logging"
     },
+    "description": "Logger implementation that writes to debug output.",
     "dependencies": {
         "Microsoft.Framework.Logging.Abstractions": "1.0.0-*"
     },
