@@ -1,0 +1,22 @@
+{
+  "commands": {
+    "SampleApp2": "SampleApp2"
+  },
+  "dependencies": {
+    "Microsoft.Framework.Logging": "1.0.0-*",
+    "Microsoft.Framework.Logging.Observer": "1.0.0-*"
+  },
+  "frameworks": {
+    "dnx451": {
+      "dependencies": {
+        "Microsoft.Framework.Logging.EventLog": "1.0.0-*",
+        "Microsoft.Framework.Logging.NLog": "1.0.0-*"
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {
+        "System.Console": "4.0.0-beta-*"
+      }
+    }
+  }
+}

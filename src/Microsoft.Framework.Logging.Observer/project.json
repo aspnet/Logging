@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0-*",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aspnet/logging"
+  },
+  "description": "Console Observer implementation.",
+  "dependencies": {
+    "System.Diagnostics.Tracing.Logger": "4.0.0-beta-23405"
+  },
+  "frameworks": {
+    "net45": {
+      "frameworkAssemblies": {
+        "System.Runtime": "",
+        "System.Reflection": ""
+      }
+    },
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Runtime": "",
+        "System.Reflection": ""
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {
+        "System.Runtime": "4.0.21-beta-*",
+        "System.Console": "4.0.0-beta-*",
+        "System.IO": "4.0.11-beta-*",
+        "System.Threading": "4.0.11-beta-*",
+        "System.Reflection": "4.1.0-beta-*"
+      }
+    },
+    "dotnet": {
+      "dependencies": {
+        "System.Console": "4.0.0-*",
+        "System.Reflection": "4.1.0-beta-*"
+      }
+    }
+  }
+}
