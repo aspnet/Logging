@@ -1,7 +1,7 @@
 ﻿using System;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics.Tracing;
-using Microsoft.Framework.Logging.Observer;
+using Microsoft.Extensions.Logging.Observer;
 
 namespace SampleApp2
 {
@@ -19,8 +19,8 @@ namespace SampleApp2
 
             var observer = new ConsoleObserver();
 
-            //factory.Subscribe(observer);
-            factory.AddConsole();
+            factory.Subscribe(observer);
+            //factory.AddConsole();
 
         }
 
