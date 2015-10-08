@@ -19,7 +19,8 @@ namespace SampleApp2
 
             var observer = new ConsoleObserver();
 
-            factory.Subscribe(observer);
+            //factory.Subscribe(observer);
+            factory.AddConsole();
 
         }
 

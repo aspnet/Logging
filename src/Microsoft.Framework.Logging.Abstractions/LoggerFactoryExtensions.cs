@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Framework.Internal;
+using System.Diagnostics.Tracing;
 
 namespace Microsoft.Framework.Logging
 {
@@ -20,6 +21,12 @@ namespace Microsoft.Framework.Logging
         {
             return factory.CreateLogger(TypeNameHelper.GetTypeDisplayName(typeof(T), fullName: true));
         }
+
+        public static System.Diagnostics.Tracing.Logger CreateSystemLogger<T>([NotNull] this ILoggerFactory factory)
+        {
+            return factory.CreateSystemLogger(TypeNameHelper.GetTypeDisplayName(typeof(T), fullName: true));
+        }
+
     }
-        
+
 }

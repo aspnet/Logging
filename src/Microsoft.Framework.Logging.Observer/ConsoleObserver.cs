@@ -24,7 +24,7 @@ namespace Microsoft.Framework.Logging.Observer
             var loggerArguments = value.Value as LoggerArguments;
             if (loggerArguments != null)
             {
-                LogLevel logLevel = loggerArguments.Level;
+                System.Diagnostics.Tracing.LogLevel logLevel = loggerArguments.Level;
                 if (!IsEnabled(logLevel))
                 {
                     return;
@@ -54,7 +54,7 @@ namespace Microsoft.Framework.Logging.Observer
             }
         }
 
-        public string GetPayload(object data)
+        internal static string GetPayload(object data)
         {
             if (data == null)
                 return null;
@@ -84,36 +84,36 @@ namespace Microsoft.Framework.Logging.Observer
             return builder.ToString();
         }
 
-        public virtual string FormatMessage(LogLevel logLevel, string logName, string message)
+        public virtual string FormatMessage(System.Diagnostics.Tracing.LogLevel logLevel, string logName, string message)
         {
             var logLevelString = GetRightPaddedLogLevelString(logLevel);
             return $"{logLevelString}: [{logName}] {message}";
         }
 
-        public bool IsEnabled(LogLevel logLevel)
+        public bool IsEnabled(System.Diagnostics.Tracing.LogLevel logLevel)
         {
             return true;
         }
 
         // sets the console text color to reflect the given LogLevel
-        private void SetConsoleColor(LogLevel logLevel)
+        private void SetConsoleColor(System.Diagnostics.Tracing.LogLevel logLevel)
         {
             switch (logLevel)
             {
-                case LogLevel.Critical:
+                case System.Diagnostics.Tracing.LogLevel.Critical:
                     Console.BackgroundColor = ConsoleColor.Red;
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
-                case LogLevel.Error:
+                case System.Diagnostics.Tracing.LogLevel.Error:
                     Console.ForegroundColor = ConsoleColor.Red;
                     break;
-                case LogLevel.Warning:
+                case System.Diagnostics.Tracing.LogLevel.Warning:
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     break;
-                case LogLevel.Informational:
+                case System.Diagnostics.Tracing.LogLevel.Informational:
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
-                case LogLevel.Verbose:
+                case System.Diagnostics.Tracing.LogLevel.Verbose:
                 default:
                     Console.ForegroundColor = ConsoleColor.Gray;
                     break;
@@ -185,21 +185,21 @@ namespace Microsoft.Framework.Logging.Observer
         }
         */
 
-        private static string GetRightPaddedLogLevelString(LogLevel logLevel)
+        private static string GetRightPaddedLogLevelString(System.Diagnostics.Tracing.LogLevel logLevel)
         {
             switch (logLevel)
             {
-                case LogLevel.LogAlways:
+                case System.Diagnostics.Tracing.LogLevel.LogAlways:
                     return "LogAlways   ";
-                case LogLevel.Verbose:
+                case System.Diagnostics.Tracing.LogLevel.Verbose:
                     return "verbose ";
-                case LogLevel.Informational:
+                case System.Diagnostics.Tracing.LogLevel.Informational:
                     return "info    ";
-                case LogLevel.Warning:
+                case System.Diagnostics.Tracing.LogLevel.Warning:
                     return "warning ";
-                case LogLevel.Error:
+                case System.Diagnostics.Tracing.LogLevel.Error:
                     return "error   ";
-                case LogLevel.Critical:
+                case System.Diagnostics.Tracing.LogLevel.Critical:
                     return "critical";
                 default:
                     return "unknown ";

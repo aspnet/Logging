@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics.Tracing;
+using Microsoft.Framework.Logging.Observer;
 
 namespace Microsoft.Framework.Logging
 {
@@ -29,8 +30,10 @@ namespace Microsoft.Framework.Logging
                 {
                     logger = new System.Diagnostics.Tracing.Logger(categoryName);
                     _systemLoggers[categoryName] = logger;
-                    //TODO create an observer which will pipe messages from sysLogger to Logger;
                     _loggers[categoryName] = new Logger(this, categoryName);
+
+                    // pipe messages from systemLogger to logger
+                    logger.Subscribe(new LoggerObserver(_loggers[categoryName]), System.Diagnostics.Tracing.LogLevel.Verbose);
 
                     // subscribe all existing observers to the new logger
                     foreach (var observer in _observers)

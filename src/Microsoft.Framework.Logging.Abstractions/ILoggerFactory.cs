@@ -22,6 +22,13 @@ namespace Microsoft.Framework.Logging
         /// <returns></returns>
         ILogger CreateLogger(string categoryName);
 
+        /// <summary>
+        /// Creates a new System.Diagnostics.Tracing.Logger instance of the given name.
+        /// </summary>
+        /// <param name="categoryName"></param>
+        /// <returns></returns>
+        System.Diagnostics.Tracing.Logger CreateSystemLogger(string categoryName);
+
         void AddProvider(ILoggerProvider provider);
     }
 }

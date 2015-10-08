@@ -9,7 +9,8 @@
     "Microsoft.Framework.DependencyInjection.Abstractions": "1.0.0-*",
     "Microsoft.Framework.Logging.Abstractions": "1.0.0-*",
     "System.Diagnostics.DiagnosticSource": "4.0.0-beta-23405",
-    "System.Diagnostics.Tracing.Logger": "4.0.0-beta-23405"
+    "System.Diagnostics.Tracing.Logger": "4.0.0-beta-23405",
+    "Microsoft.Framework.Logging.Observer": "1.0.0-*"
   },
   "compilationOptions": {
     "define": [

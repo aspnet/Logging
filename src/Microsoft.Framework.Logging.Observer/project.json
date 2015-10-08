@@ -6,7 +6,8 @@
   },
   "description": "Console Observer implementation.",
   "dependencies": {
-    "System.Diagnostics.Tracing.Logger": "4.0.0-beta-23405"
+    "System.Diagnostics.Tracing.Logger": "4.0.0-beta-23405",
+    "Microsoft.Framework.Logging.Abstractions": "1.0.0-*"
   },
   "frameworks": {
     "net45": {
