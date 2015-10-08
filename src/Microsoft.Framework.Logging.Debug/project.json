@@ -1,13 +1,12 @@
 {
-    "version": "1.0.0-*",
+    "version": "1.0.0-beta7",
     "repository": {
         "type": "git",
         "url": "git://github.com/aspnet/logging"
     },
     "dependencies": {
-        "Microsoft.Framework.Logging.Abstractions": "1.0.0-*"
+        "Microsoft.Framework.Logging.Abstractions": "1.0.0-beta7"
     },
-
     "frameworks": {
         "net45": {
         },
@@ -15,9 +14,9 @@
         },
         "dnxcore50": {
             "dependencies": {
-                "System.Collections": "4.0.11-beta-*",
-                "System.Globalization": "4.0.11-beta-*",
-                "System.Linq": "4.0.1-beta-*"
+                "System.Collections": "4.0.11-beta-23225",
+                "System.Globalization": "4.0.11-beta-23225",
+                "System.Linq": "4.0.1-beta-23225"
             }
         },
         "dotnet": { }
