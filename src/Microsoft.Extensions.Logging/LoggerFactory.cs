@@ -3,138 +3,121 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics.Tracing;
-using Microsoft.Extensions.Logging.Observer;
 
 namespace Microsoft.Extensions.Logging
 {
-    /// <summary>
-    /// Summary description for LoggerFactory
-    /// </summary>
-    public class LoggerFactory : ILoggerFactory, IObservable<KeyValuePair<string, object>>, IDisposable
+    public class LoggerFactory : ILoggerFactory, IDisposable
     {
-        private readonly Dictionary<string, Logger> _loggers = new Dictionary<string, Logger>(StringComparer.Ordinal);
-        private ILoggerProvider[] _providers = new ILoggerProvider[0];
-        private readonly object _sync = new object();
-        private bool _disposed = false;
-        private readonly Dictionary<string, System.Diagnostics.Tracing.Logger> _systemLoggers = new Dictionary<string, System.Diagnostics.Tracing.Logger>(StringComparer.Ordinal);
-        private List<IObserver<KeyValuePair<string, object>>> _observers = new List<IObserver<KeyValuePair<string, object>>>();
-
-        public System.Diagnostics.Tracing.Logger CreateSystemLogger(string categoryName)
-        {
-            System.Diagnostics.Tracing.Logger logger;
-            lock (_sync)
-            {
-                if (!_systemLoggers.TryGetValue(categoryName, out logger))
-                {
-                    logger = new System.Diagnostics.Tracing.Logger(categoryName);
-                    _systemLoggers[categoryName] = logger;
-                    _loggers[categoryName] = new Logger(this, categoryName);
-
-                    // pipe messages from systemLogger to logger
-                    logger.Subscribe(new LoggerObserver(_loggers[categoryName]), System.Diagnostics.Tracing.LogLevel.Verbose);
-
-                    // subscribe all existing observers to the new logger
-                    foreach (var observer in _observers)
-                        //TODO IDisposable is lost
-                        logger.Subscribe(observer);
-                }
-            }
-            return logger;
-        }
-
-        public IDisposable Subscribe(IObserver<KeyValuePair<string, object>> observer)
-        {
-            List<IDisposable> subsribers = new List<IDisposable>();
-            lock (_sync)
-            {
-                _observers.Add(observer);
-                foreach (var logger in _systemLoggers.Values)
-                    subsribers.Add(logger.Subscribe(observer, System.Diagnostics.Tracing.LogLevel.Verbose));
-            }
-            return new DisposeAll(subsribers);
-        }
-
-        public ILogger CreateLogger(string categoryName)
-        {
-            Logger logger;
-            lock (_sync)
-            {
-                if (!_loggers.TryGetValue(categoryName, out logger))
-                {
-                    logger = new Logger(this, categoryName);
-                    _loggers[categoryName] = logger;
-                }
-            }
-            return logger;
-        }
+        public LoggerFactory() { }
 
         public LogLevel MinimumLevel { get; set; } = LogLevel.Verbose;
 
-        public void AddProvider(ILoggerProvider provider)
+        public virtual ILogger CreateLogger(string name)
         {
-            lock (_sync)
+            Logger ret;
+            if (!_cache.TryGetValue(name, out ret))
             {
-                _providers = _providers.Concat(new[] { provider }).ToArray();
-                foreach (var logger in _loggers)
-                {
-                    logger.Value.AddProvider(provider);
-                }
+                ret = new Logger(name);
+
+                if (_loggerCreated != null)
+                    _loggerCreated(ret);
+
+                _cache.Add(name, ret);
+            }
+
+            return ret;
+        }
+
+        public virtual void Dispose()
+        {
+            var factoryDispose = FactoryDispose;
+            if (factoryDispose != null)
+            {
+                factoryDispose();
+                FactoryDispose = null;
             }
         }
 
-        internal ILoggerProvider[] GetProviders()
+        public IDisposable Subscribe(IObserver<KeyValuePair<string, object>> target)
         {
-            return _providers;
+            IDisposable asDisposable = target as IDisposable;
+            if (asDisposable != null)
+                FactoryDispose += asDisposable.Dispose;
+
+            return new SubscriptionList(this, target);
         }
-
-        public void Dispose()
+/*
+        public void SubscribeForever(IObserver<KeyValuePair<string, object>> target, Predicate<Logger> filter = null)
         {
-            if (!_disposed)
+            IDisposable asDisposable = target as IDisposable;
+            if (asDisposable != null)
+                FactoryDispose += asDisposable.Dispose;
+
+            LoggerCreated += delegate (Logger newLogger)
             {
-                foreach (var provider in _providers)
-                {
-                    try
-                    {
-                        provider.Dispose();
-                    }
-                    catch
-                    {
-                        // Swallow exceptions on dispose
-                    }
-                }
-
-                if (_systemLoggers != null)
-                {
-                    foreach (var logger in _systemLoggers.Values)
-                        logger.Dispose();
-                    _systemLoggers.Clear();
-                }
-
-                _disposed = true;
+                if (filter == null || filter(newLogger))
+                    newLogger.Subscribe(target, MinimumLevel);
+            };
+        }
+*/
+        
+        internal virtual event Action<Logger> LoggerCreated
+        {
+            add
+            {
+                foreach (Logger logger in _cache.Values)
+                    value(logger);
+                _loggerCreated = (Action<Logger>)Delegate.Combine(_loggerCreated, value);
+            }
+            remove
+            {
+                _loggerCreated = (Action<Logger>)Delegate.Remove(_loggerCreated, value);
             }
         }
+        internal virtual event Action FactoryDispose;
 
-        private class DisposeAll : IDisposable
+        #region private
+
+        Dictionary<string, Logger> _cache = new Dictionary<string, Logger>();
+        Action<Logger> _loggerCreated;
+
+        /// <summary>
+        /// TODO This does not belong here it is just an example of how to use it. 
+        /// </summary>
+        class SubscriptionList : IDisposable
         {
-            public DisposeAll(List<IDisposable> toDispose)
-            {
-                _toDispose = toDispose;
+            // Can have state that the the rest of the stuff uses.  
 
+            public SubscriptionList(LoggerFactory factory, IObserver<KeyValuePair<string, object>> target)
+            {
+                _factory = factory;
+                _target = target;
+                _loggerSubscriptions = new List<IDisposable>();
+                _factory.LoggerCreated += OnLoggerCreated;
             }
 
             public void Dispose()
             {
-                var toDispose = _toDispose;
-                if (toDispose != null)
-                {
-                    _toDispose = null;
-                    foreach (var subscription in toDispose)
-                        subscription.Dispose();
-                }
+                foreach (var subscription in _loggerSubscriptions)
+                    subscription.Dispose();
+                _loggerSubscriptions.Clear();
+
+                // Unsubscribe from the factory.  
+                _factory.LoggerCreated -= OnLoggerCreated;
             }
-            List<IDisposable> _toDispose;
+
+            #region private
+            private void OnLoggerCreated(Logger newLogger)
+            {
+                _loggerSubscriptions.Add(newLogger.Subscribe(_target, _factory.MinimumLevel));
+            }
+
+            List<IDisposable> _loggerSubscriptions;
+            LoggerFactory _factory;
+            IObserver<KeyValuePair<string, object>> _target;
+            #endregion
         }
+        #endregion 
     }
 }

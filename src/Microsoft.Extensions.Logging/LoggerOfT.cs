@@ -1,21 +1,19 @@
-// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 
 namespace Microsoft.Extensions.Logging
 {
     /// <summary>
-    /// Delegates to a new <see cref="ILogger"/> instance using the full name of the given type, created by the
-    /// provided <see cref="ILoggerFactory"/>.
+    /// Encapsulates System.Diagnostics.Tracing.Logger for DI
     /// </summary>
     /// <typeparam name="T">The type.</typeparam>
     public class Logger<T> : ILogger<T>
     {
         private readonly ILogger _logger;
-        
+
         /// <summary>
-        /// Creates a new <see cref="Logger{T}"/>.
+        /// Creates a new Logger
         /// </summary>
         /// <param name="factory">The factory.</param>
         public Logger(ILoggerFactory factory)
@@ -23,19 +21,28 @@ namespace Microsoft.Extensions.Logging
             _logger = factory.CreateLogger<T>();
         }
 
-        IDisposable ILogger.BeginScopeImpl(object state)
+        public bool IsEnabled(LogLevel level)
         {
-            return _logger.BeginScopeImpl(state);
+            return _logger.IsEnabled(level);
         }
 
-        bool ILogger.IsEnabled(LogLevel logLevel)
+        public void Log(string logItemName, LogLevel level, object arguments = null)
         {
-            return _logger.IsEnabled(logLevel);
+            _logger.Log(logItemName, level, arguments);
         }
 
-        void ILogger.Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        /// <summary>
+        /// </summary>
+        public IDisposable ActivityStart(string activityName, LogLevel level = LogLevel.Critical, object arguments = null)
         {
-            _logger.Log(logLevel, eventId, state, exception, formatter);
+            return _logger.ActivityStart(activityName, level, arguments);
+        }
+
+        /// <summary>
+        /// </summary>
+        public virtual IDisposable Subscribe(IObserver<KeyValuePair<string, object>> observer, LogLevel level)
+        {
+            return _logger.Subscribe(observer, level);
         }
     }
 }

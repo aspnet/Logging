@@ -19,12 +19,12 @@
     "net45": {
       "frameworkAssemblies": {
         "System.Runtime": ""
-      }    
+      }
     },
     "dnx451": {
       "frameworkAssemblies": {
         "System.Runtime": ""
-      }    
+      }
     },
     "dnxcore50": {
       "dependencies": {

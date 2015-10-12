@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Microsoft.Extensions.Logging.Observer
 {
-    public class ConsoleObserver : IObserver<KeyValuePair<string, object>>
+    public class ConsoleObserver : IObserver<KeyValuePair<string, object>>, IDisposable
     {
         public void OnCompleted()
         {

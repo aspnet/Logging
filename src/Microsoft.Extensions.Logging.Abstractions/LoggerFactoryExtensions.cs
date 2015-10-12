@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Extensions.Internal;
+using System.Diagnostics.Tracing;
 
 namespace Microsoft.Extensions.Logging
 {
@@ -25,11 +26,5 @@ namespace Microsoft.Extensions.Logging
 
             return factory.CreateLogger(TypeNameHelper.GetTypeDisplayName(typeof(T), fullName: true));
         }
-
-        public static System.Diagnostics.Tracing.Logger CreateSystemLogger<T>(this ILoggerFactory factory)
-        {
-            return factory.CreateSystemLogger(TypeNameHelper.GetTypeDisplayName(typeof(T), fullName: true));
-        }
-
     }
 }

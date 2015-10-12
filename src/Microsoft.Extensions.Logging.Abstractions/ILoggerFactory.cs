@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 
 namespace Microsoft.Extensions.Logging
 {
@@ -23,12 +25,10 @@ namespace Microsoft.Extensions.Logging
         ILogger CreateLogger(string categoryName);
 
         /// <summary>
-        /// Creates a new System.Diagnostics.Tracing.Logger instance of the given name.
+        /// Adds an observer to the factory
         /// </summary>
-        /// <param name="categoryName"></param>
+        /// <param name="target"></param>
         /// <returns></returns>
-        System.Diagnostics.Tracing.Logger CreateSystemLogger(string categoryName);
-
-        void AddProvider(ILoggerProvider provider);
+        IDisposable Subscribe(IObserver<KeyValuePair<string, object>> target, Predicate<Logger> filter = null);
     }
 }

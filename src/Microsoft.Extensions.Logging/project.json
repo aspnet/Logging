@@ -8,9 +8,7 @@
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
-    "System.Diagnostics.DiagnosticSource": "4.0.0-beta-23405",
-    "System.Diagnostics.Tracing.Logger": "4.0.0-beta-23405",
-    "Microsoft.Extensions.Logging.Observer": "1.0.0-*"
+    "System.Diagnostics.Tracing.Logger": "4.0.0-beta-23405"
   },
   "compilationOptions": {
     "warningsAsErrors": true,
@@ -21,6 +19,7 @@
   "frameworks": {
     "net45": {
       "frameworkAssemblies": {
+        "System.Runtime": "",
         "System.Collections.Concurrent": {
           "version": "",
           "type": "build"
@@ -29,6 +28,7 @@
     },
     "dnx451": {
       "frameworkAssemblies": {
+        "System.Runtime": "",
         "System.Collections.Concurrent": ""
       }
     },
