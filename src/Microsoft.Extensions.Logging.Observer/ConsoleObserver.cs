@@ -12,8 +12,7 @@ namespace Microsoft.Extensions.Logging.Observer
 {
     public class ConsoleObserver : IObserver<KeyValuePair<string, object>>, IDisposable
     {
-        private readonly Func<string, LogLevel, bool> _filter;
-        public ConsoleObserver(Func<string, LogLevel, bool> filter)
+        public ConsoleObserver(Func<string, LogLevel, bool> filter = null)
         {
             _filter = filter;
         }
@@ -29,15 +28,14 @@ namespace Microsoft.Extensions.Logging.Observer
             var loggerArguments = value.Value as LoggerArguments;
             if (loggerArguments != null)
             {
-                System.Diagnostics.Tracing.LogLevel logLevel = loggerArguments.Level;
-                if (!IsEnabled(logLevel))
+                LogLevel logLevel = loggerArguments.Level;
+                string loggerName = loggerArguments.LoggerName;
+                if (!IsEnabled(loggerName, logLevel))
                 {
                     return;
                 }
 
                 string logItemName = value.Key;
-
-                string loggerName = loggerArguments.LoggerName;
                 string payloadStr = GetPayload(loggerArguments.Arguments);
 
                 if (string.IsNullOrEmpty(payloadStr))
@@ -58,6 +56,15 @@ namespace Microsoft.Extensions.Logging.Observer
                 }
             }
         }
+
+        public Func<string, LogLevel, bool> Filter
+        {
+            get
+            {
+                return _filter;
+            }
+        }
+
 
         internal static string GetPayload(object data)
         {
@@ -89,16 +96,30 @@ namespace Microsoft.Extensions.Logging.Observer
             return builder.ToString();
         }
 
-        public virtual string FormatMessage(System.Diagnostics.Tracing.LogLevel logLevel, string logName, string message)
+        public virtual string FormatMessage(LogLevel logLevel, string logName, string message)
         {
             var logLevelString = GetRightPaddedLogLevelString(logLevel);
             return $"{logLevelString}: [{logName}] {message}";
         }
 
-        public bool IsEnabled(System.Diagnostics.Tracing.LogLevel logLevel)
+        public bool IsEnabled(string loggerName, LogLevel logLevel)
         {
-            return true;
+            if (Filter != null)
+                return Filter(loggerName, logLevel);
+            else
+                return true;
         }
+
+        public IDisposable BeginScopeImpl(object state)
+        {
+            return new NoopDisposable();
+        }
+
+        void IDisposable.Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
 
         // sets the console text color to reflect the given LogLevel
         private void SetConsoleColor(System.Diagnostics.Tracing.LogLevel logLevel)
@@ -124,71 +145,6 @@ namespace Microsoft.Extensions.Logging.Observer
                     break;
             }
         }
-
-        public IDisposable BeginScopeImpl(object state)
-        {
-            return new NoopDisposable();
-        }
-
-        /*
-        private void FormatLogValues(StringBuilder builder, ILogValues logValues, int level, bool bullet)
-        {
-            var values = logValues.GetValues();
-            if (values == null)
-            {
-                return;
-            }
-            var isFirst = true;
-            foreach (var kvp in values)
-            {
-                builder.AppendLine();
-                if (bullet && isFirst)
-                {
-                    builder.Append(' ', level * _indentation - 1)
-                           .Append('-');
-                }
-                else
-                {
-                    builder.Append(' ', level * _indentation);
-                }
-                builder.Append(kvp.Key)
-                       .Append(": ");
-                if (kvp.Value is IEnumerable && !(kvp.Value is string))
-                {
-                    foreach (var value in (IEnumerable)kvp.Value)
-                    {
-                        if (value is ILogValues)
-                        {
-                            FormatLogValues(
-                                builder,
-                                (ILogValues)value,
-                                level + 1,
-                                bullet: true);
-                        }
-                        else
-                        {
-                            builder.AppendLine()
-                                   .Append(' ', (level + 1) * _indentation)
-                                   .Append(value);
-                        }
-                    }
-                }
-                else if (kvp.Value is ILogValues)
-                {
-                    FormatLogValues(
-                        builder,
-                        (ILogValues)kvp.Value,
-                        level + 1,
-                        bullet: false);
-                }
-                else
-                {
-                    builder.Append(kvp.Value);
-                }
-                isFirst = false;
-            }
-        }
-        */
 
         private static string GetRightPaddedLogLevelString(System.Diagnostics.Tracing.LogLevel logLevel)
         {

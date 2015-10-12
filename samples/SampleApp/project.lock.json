@@ -42,27 +42,72 @@
           "System.Runtime"
         ]
       },
-      "Microsoft.Extensions.Logging.Console/1.0.0-beta7": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
+      "Microsoft.Extensions.Logging.Console/1.0.0-rc1-15675": {
+        "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "1.0.0"
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Extensions.Logging.Console.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Extensions.Logging.Console.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging.EventLog/1.0.0-t151010022325": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
+      "Microsoft.Extensions.Logging.EventLog/1.0.0-rc1-15675": {
+        "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "1.0.0"
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging.NLog/1.0.0-beta7": {
+      "Microsoft.Extensions.Logging.NLog/1.0.0-rc1-15675": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675",
+          "NLog": "3.1.0"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
-          "NLog": "3.1.0"
-        }
+          "System.Diagnostics.Tracing.Logger": "4.0.0-beta-23405"
+        },
+        "frameworkAssemblies": [
+          "System.Reflection",
+          "System.Runtime"
+        ]
       },
       "Microsoft.Extensions.TypeNameHelper.Sources/1.0.0-rc1-15720": {
         "type": "package",
@@ -105,7 +150,7 @@
         "type": "package",
         "dependencies": {
           "System.Diagnostics.DiagnosticSource": "4.0.0-beta-23405",
-          "System.Runtime": "4.0.20"
+          "System.Runtime": "4.0.0"
         },
         "compile": {
           "lib/dotnet/System.Diagnostics.Tracing.Logger.dll": {}
@@ -114,10 +159,13 @@
           "lib/dotnet/System.Diagnostics.Tracing.Logger.dll": {}
         }
       },
-      "System.Runtime/4.0.20": {
+      "System.Runtime/4.0.0": {
         "type": "package",
         "compile": {
-          "ref/dotnet/System.Runtime.dll": {}
+          "ref/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/_._": {}
         }
       },
       "System.Threading/4.0.0": {
@@ -180,15 +228,33 @@
           "System.Runtime.InteropServices": "4.0.21-beta-23225"
         }
       },
-      "Microsoft.Extensions.Logging.Console/1.0.0-beta7": {
+      "Microsoft.Extensions.Logging.Console/1.0.0-rc1-15675": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675",
+          "System.Console": "4.0.0-beta-23405",
+          "System.IO": "4.0.11-beta-23405",
+          "System.Runtime": "4.0.21-beta-23405",
+          "System.Threading": "4.0.11-beta-23405"
+        },
+        "compile": {
+          "lib/dnxcore50/Microsoft.Extensions.Logging.Console.dll": {}
+        },
+        "runtime": {
+          "lib/dnxcore50/Microsoft.Extensions.Logging.Console.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
-          "System.Console": "4.0.0-beta-23225",
-          "System.IO": "4.0.11-beta-23225",
-          "System.Runtime": "4.0.21-beta-23225",
-          "System.Threading": "4.0.11-beta-23225"
+          "System.Console": "4.0.0-beta",
+          "System.Diagnostics.Tracing.Logger": "4.0.0-beta-23405",
+          "System.IO": "4.0.11-beta",
+          "System.Reflection": "4.1.0-beta",
+          "System.Runtime": "4.0.21-beta",
+          "System.Threading": "4.0.11-beta"
         }
       },
       "Microsoft.Extensions.TypeNameHelper.Sources/1.0.0-rc1-15720": {
@@ -305,7 +371,7 @@
         "type": "package",
         "dependencies": {
           "System.Diagnostics.DiagnosticSource": "4.0.0-beta-23405",
-          "System.Runtime": "4.0.20"
+          "System.Runtime": "4.0.0"
         },
         "compile": {
           "lib/dotnet/System.Diagnostics.Tracing.Logger.dll": {}
@@ -326,7 +392,7 @@
           "lib/DNXCore50/System.Globalization.dll": {}
         }
       },
-      "System.IO/4.0.11-beta-23225": {
+      "System.IO/4.0.11-beta-23412": {
         "type": "package",
         "dependencies": {
           "System.Runtime": "4.0.20",
@@ -410,16 +476,13 @@
           "lib/dotnet/System.ObjectModel.dll": {}
         }
       },
-      "System.Private.Uri/4.0.1-beta-23225": {
+      "System.Private.Uri/4.0.1-beta-23412": {
         "type": "package",
         "compile": {
           "ref/dnxcore50/_._": {}
-        },
-        "runtime": {
-          "lib/DNXCore50/System.Private.Uri.dll": {}
         }
       },
-      "System.Reflection/4.1.0-beta-23225": {
+      "System.Reflection/4.1.0-beta-23412": {
         "type": "package",
         "dependencies": {
           "System.IO": "4.0.0",
@@ -515,10 +578,10 @@
           "lib/DNXCore50/System.Resources.ResourceManager.dll": {}
         }
       },
-      "System.Runtime/4.0.21-beta-23225": {
+      "System.Runtime/4.0.21-beta-23412": {
         "type": "package",
         "dependencies": {
-          "System.Private.Uri": "4.0.1-beta-23225"
+          "System.Private.Uri": "4.0.1-beta-23412"
         },
         "compile": {
           "ref/dotnet/System.Runtime.dll": {}
@@ -591,7 +654,7 @@
           "lib/DNXCore50/System.Text.Encoding.Extensions.dll": {}
         }
       },
-      "System.Threading/4.0.11-beta-23225": {
+      "System.Threading/4.0.11-beta-23412": {
         "type": "package",
         "dependencies": {
           "System.Runtime": "4.0.0",
@@ -599,9 +662,6 @@
         },
         "compile": {
           "ref/dotnet/System.Threading.dll": {}
-        },
-        "runtime": {
-          "lib/DNXCore50/System.Threading.dll": {}
         }
       },
       "System.Threading.Tasks/4.0.10": {
@@ -657,27 +717,72 @@
           "System.Runtime"
         ]
       },
-      "Microsoft.Extensions.Logging.Console/1.0.0-beta7": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
+      "Microsoft.Extensions.Logging.Console/1.0.0-rc1-15675": {
+        "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "1.0.0"
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Extensions.Logging.Console.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Extensions.Logging.Console.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging.EventLog/1.0.0-t151010022325": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
+      "Microsoft.Extensions.Logging.EventLog/1.0.0-rc1-15675": {
+        "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "1.0.0"
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging.NLog/1.0.0-beta7": {
+      "Microsoft.Extensions.Logging.NLog/1.0.0-rc1-15675": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675",
+          "NLog": "3.1.0"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
-          "NLog": "3.1.0"
-        }
+          "System.Diagnostics.Tracing.Logger": "4.0.0-beta-23405"
+        },
+        "frameworkAssemblies": [
+          "System.Reflection",
+          "System.Runtime"
+        ]
       },
       "Microsoft.Extensions.TypeNameHelper.Sources/1.0.0-rc1-15720": {
         "type": "package",
@@ -720,7 +825,7 @@
         "type": "package",
         "dependencies": {
           "System.Diagnostics.DiagnosticSource": "4.0.0-beta-23405",
-          "System.Runtime": "4.0.20"
+          "System.Runtime": "4.0.0"
         },
         "compile": {
           "lib/dotnet/System.Diagnostics.Tracing.Logger.dll": {}
@@ -729,10 +834,13 @@
           "lib/dotnet/System.Diagnostics.Tracing.Logger.dll": {}
         }
       },
-      "System.Runtime/4.0.20": {
+      "System.Runtime/4.0.0": {
         "type": "package",
         "compile": {
-          "ref/dotnet/System.Runtime.dll": {}
+          "ref/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/_._": {}
         }
       },
       "System.Threading/4.0.0": {
@@ -785,27 +893,72 @@
           "System.Runtime"
         ]
       },
-      "Microsoft.Extensions.Logging.Console/1.0.0-beta7": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
+      "Microsoft.Extensions.Logging.Console/1.0.0-rc1-15675": {
+        "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "1.0.0"
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Extensions.Logging.Console.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Extensions.Logging.Console.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging.EventLog/1.0.0-t151010022325": {
-        "type": "project",
-        "framework": "DNX,Version=v4.5.1",
+      "Microsoft.Extensions.Logging.EventLog/1.0.0-rc1-15675": {
+        "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "1.0.0"
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging.NLog/1.0.0-beta7": {
+      "Microsoft.Extensions.Logging.NLog/1.0.0-rc1-15675": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675",
+          "NLog": "3.1.0"
+        },
+        "frameworkAssemblies": [
+          "Microsoft.CSharp",
+          "mscorlib",
+          "System",
+          "System.Core"
+        ],
+        "compile": {
+          "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll": {}
+        },
+        "runtime": {
+          "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
-          "NLog": "3.1.0"
-        }
+          "System.Diagnostics.Tracing.Logger": "4.0.0-beta-23405"
+        },
+        "frameworkAssemblies": [
+          "System.Reflection",
+          "System.Runtime"
+        ]
       },
       "Microsoft.Extensions.TypeNameHelper.Sources/1.0.0-rc1-15720": {
         "type": "package",
@@ -848,7 +1001,7 @@
         "type": "package",
         "dependencies": {
           "System.Diagnostics.DiagnosticSource": "4.0.0-beta-23405",
-          "System.Runtime": "4.0.20"
+          "System.Runtime": "4.0.0"
         },
         "compile": {
           "lib/dotnet/System.Diagnostics.Tracing.Logger.dll": {}
@@ -857,10 +1010,13 @@
           "lib/dotnet/System.Diagnostics.Tracing.Logger.dll": {}
         }
       },
-      "System.Runtime/4.0.20": {
+      "System.Runtime/4.0.0": {
         "type": "package",
         "compile": {
-          "ref/dotnet/System.Runtime.dll": {}
+          "ref/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/_._": {}
         }
       },
       "System.Threading/4.0.0": {
@@ -923,15 +1079,33 @@
           "System.Runtime.InteropServices": "4.0.21-beta-23225"
         }
       },
-      "Microsoft.Extensions.Logging.Console/1.0.0-beta7": {
+      "Microsoft.Extensions.Logging.Console/1.0.0-rc1-15675": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675",
+          "System.Console": "4.0.0-beta-23405",
+          "System.IO": "4.0.11-beta-23405",
+          "System.Runtime": "4.0.21-beta-23405",
+          "System.Threading": "4.0.11-beta-23405"
+        },
+        "compile": {
+          "lib/dnxcore50/Microsoft.Extensions.Logging.Console.dll": {}
+        },
+        "runtime": {
+          "lib/dnxcore50/Microsoft.Extensions.Logging.Console.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
-          "System.Console": "4.0.0-beta-23225",
-          "System.IO": "4.0.11-beta-23225",
-          "System.Runtime": "4.0.21-beta-23225",
-          "System.Threading": "4.0.11-beta-23225"
+          "System.Console": "4.0.0-beta",
+          "System.Diagnostics.Tracing.Logger": "4.0.0-beta-23405",
+          "System.IO": "4.0.11-beta",
+          "System.Reflection": "4.1.0-beta",
+          "System.Runtime": "4.0.21-beta",
+          "System.Threading": "4.0.11-beta"
         }
       },
       "Microsoft.Extensions.TypeNameHelper.Sources/1.0.0-rc1-15720": {
@@ -953,6 +1127,24 @@
         },
         "runtime": {
           "runtimes/win7/lib/DNXCore50/System.Diagnostics.Debug.dll": {}
+        }
+      },
+      "runtime.win7.System.Private.Uri/4.0.1-beta-23412": {
+        "type": "package",
+        "compile": {
+          "ref/dotnet/_._": {}
+        },
+        "runtime": {
+          "runtimes/win7/lib/DNXCore50/System.Private.Uri.dll": {}
+        }
+      },
+      "runtime.win7.System.Threading/4.0.11-beta-23412": {
+        "type": "package",
+        "compile": {
+          "ref/dotnet/_._": {}
+        },
+        "runtime": {
+          "runtimes/win7/lib/DNXCore50/System.Threading.dll": {}
         }
       },
       "System.Collections/4.0.11-beta-23225": {
@@ -1057,7 +1249,7 @@
         "type": "package",
         "dependencies": {
           "System.Diagnostics.DiagnosticSource": "4.0.0-beta-23405",
-          "System.Runtime": "4.0.20"
+          "System.Runtime": "4.0.0"
         },
         "compile": {
           "lib/dotnet/System.Diagnostics.Tracing.Logger.dll": {}
@@ -1078,7 +1270,7 @@
           "lib/DNXCore50/System.Globalization.dll": {}
         }
       },
-      "System.IO/4.0.11-beta-23225": {
+      "System.IO/4.0.11-beta-23412": {
         "type": "package",
         "dependencies": {
           "System.Runtime": "4.0.20",
@@ -1162,16 +1354,13 @@
           "lib/dotnet/System.ObjectModel.dll": {}
         }
       },
-      "System.Private.Uri/4.0.1-beta-23225": {
+      "System.Private.Uri/4.0.1-beta-23412": {
         "type": "package",
         "compile": {
           "ref/dnxcore50/_._": {}
-        },
-        "runtime": {
-          "lib/DNXCore50/System.Private.Uri.dll": {}
         }
       },
-      "System.Reflection/4.1.0-beta-23225": {
+      "System.Reflection/4.1.0-beta-23412": {
         "type": "package",
         "dependencies": {
           "System.IO": "4.0.0",
@@ -1282,10 +1471,10 @@
           "lib/DNXCore50/System.Resources.ResourceManager.dll": {}
         }
       },
-      "System.Runtime/4.0.21-beta-23225": {
+      "System.Runtime/4.0.21-beta-23412": {
         "type": "package",
         "dependencies": {
-          "System.Private.Uri": "4.0.1-beta-23225"
+          "System.Private.Uri": "4.0.1-beta-23412"
         },
         "compile": {
           "ref/dotnet/System.Runtime.dll": {}
@@ -1358,7 +1547,7 @@
           "lib/DNXCore50/System.Text.Encoding.Extensions.dll": {}
         }
       },
-      "System.Threading/4.0.11-beta-23225": {
+      "System.Threading/4.0.11-beta-23412": {
         "type": "package",
         "dependencies": {
           "System.Runtime": "4.0.0",
@@ -1366,9 +1555,6 @@
         },
         "compile": {
           "ref/dotnet/System.Threading.dll": {}
-        },
-        "runtime": {
-          "lib/DNXCore50/System.Threading.dll": {}
         }
       },
       "System.Threading.Tasks/4.0.10": {
@@ -1434,15 +1620,33 @@
           "System.Runtime.InteropServices": "4.0.21-beta-23225"
         }
       },
-      "Microsoft.Extensions.Logging.Console/1.0.0-beta7": {
+      "Microsoft.Extensions.Logging.Console/1.0.0-rc1-15675": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675",
+          "System.Console": "4.0.0-beta-23405",
+          "System.IO": "4.0.11-beta-23405",
+          "System.Runtime": "4.0.21-beta-23405",
+          "System.Threading": "4.0.11-beta-23405"
+        },
+        "compile": {
+          "lib/dnxcore50/Microsoft.Extensions.Logging.Console.dll": {}
+        },
+        "runtime": {
+          "lib/dnxcore50/Microsoft.Extensions.Logging.Console.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
-          "System.Console": "4.0.0-beta-23225",
-          "System.IO": "4.0.11-beta-23225",
-          "System.Runtime": "4.0.21-beta-23225",
-          "System.Threading": "4.0.11-beta-23225"
+          "System.Console": "4.0.0-beta",
+          "System.Diagnostics.Tracing.Logger": "4.0.0-beta-23405",
+          "System.IO": "4.0.11-beta",
+          "System.Reflection": "4.1.0-beta",
+          "System.Runtime": "4.0.21-beta",
+          "System.Threading": "4.0.11-beta"
         }
       },
       "Microsoft.Extensions.TypeNameHelper.Sources/1.0.0-rc1-15720": {
@@ -1464,6 +1668,24 @@
         },
         "runtime": {
           "runtimes/win7/lib/DNXCore50/System.Diagnostics.Debug.dll": {}
+        }
+      },
+      "runtime.win7.System.Private.Uri/4.0.1-beta-23412": {
+        "type": "package",
+        "compile": {
+          "ref/dotnet/_._": {}
+        },
+        "runtime": {
+          "runtimes/win7/lib/DNXCore50/System.Private.Uri.dll": {}
+        }
+      },
+      "runtime.win7.System.Threading/4.0.11-beta-23412": {
+        "type": "package",
+        "compile": {
+          "ref/dotnet/_._": {}
+        },
+        "runtime": {
+          "runtimes/win7/lib/DNXCore50/System.Threading.dll": {}
         }
       },
       "System.Collections/4.0.11-beta-23225": {
@@ -1568,7 +1790,7 @@
         "type": "package",
         "dependencies": {
           "System.Diagnostics.DiagnosticSource": "4.0.0-beta-23405",
-          "System.Runtime": "4.0.20"
+          "System.Runtime": "4.0.0"
         },
         "compile": {
           "lib/dotnet/System.Diagnostics.Tracing.Logger.dll": {}
@@ -1589,7 +1811,7 @@
           "lib/DNXCore50/System.Globalization.dll": {}
         }
       },
-      "System.IO/4.0.11-beta-23225": {
+      "System.IO/4.0.11-beta-23412": {
         "type": "package",
         "dependencies": {
           "System.Runtime": "4.0.20",
@@ -1673,16 +1895,13 @@
           "lib/dotnet/System.ObjectModel.dll": {}
         }
       },
-      "System.Private.Uri/4.0.1-beta-23225": {
+      "System.Private.Uri/4.0.1-beta-23412": {
         "type": "package",
         "compile": {
           "ref/dnxcore50/_._": {}
-        },
-        "runtime": {
-          "lib/DNXCore50/System.Private.Uri.dll": {}
         }
       },
-      "System.Reflection/4.1.0-beta-23225": {
+      "System.Reflection/4.1.0-beta-23412": {
         "type": "package",
         "dependencies": {
           "System.IO": "4.0.0",
@@ -1793,10 +2012,10 @@
           "lib/DNXCore50/System.Resources.ResourceManager.dll": {}
         }
       },
-      "System.Runtime/4.0.21-beta-23225": {
+      "System.Runtime/4.0.21-beta-23412": {
         "type": "package",
         "dependencies": {
-          "System.Private.Uri": "4.0.1-beta-23225"
+          "System.Private.Uri": "4.0.1-beta-23412"
         },
         "compile": {
           "ref/dotnet/System.Runtime.dll": {}
@@ -1869,7 +2088,7 @@
           "lib/DNXCore50/System.Text.Encoding.Extensions.dll": {}
         }
       },
-      "System.Threading/4.0.11-beta-23225": {
+      "System.Threading/4.0.11-beta-23412": {
         "type": "package",
         "dependencies": {
           "System.Runtime": "4.0.0",
@@ -1877,9 +2096,6 @@
         },
         "compile": {
           "ref/dotnet/System.Threading.dll": {}
-        },
-        "runtime": {
-          "lib/DNXCore50/System.Threading.dll": {}
         }
       },
       "System.Threading.Tasks/4.0.10": {
@@ -1905,17 +2121,9 @@
       "type": "project",
       "path": "../../src/Microsoft.Extensions.Logging.Abstractions/project.json"
     },
-    "Microsoft.Extensions.Logging.Console/1.0.0-beta7": {
+    "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
       "type": "project",
-      "path": "../../src/Microsoft.Extensions.Logging.Console/project.json"
-    },
-    "Microsoft.Extensions.Logging.EventLog/1.0.0-t151010022325": {
-      "type": "project",
-      "path": "../../src/Microsoft.Extensions.Logging.EventLog/project.json"
-    },
-    "Microsoft.Extensions.Logging.NLog/1.0.0-beta7": {
-      "type": "project",
-      "path": "../../src/Microsoft.Extensions.Logging.NLog/project.json"
+      "path": "../../src/Microsoft.Extensions.Logging.Observer/project.json"
     },
     "Microsoft.Extensions.DependencyInjection.Abstractions/1.0.0-rc1-15674": {
       "type": "package",
@@ -1933,6 +2141,51 @@
         "Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0-rc1-15674.nupkg",
         "Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0-rc1-15674.nupkg.sha512",
         "Microsoft.Extensions.DependencyInjection.Abstractions.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Logging.Console/1.0.0-rc1-15675": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "OtfFiYYSwo6LTTy9Vkoz61jSEhfhXljlc9OJO9aOUdVGuLNcMCBkeClDc9EbN0Llq9s3u1TXygViTkU1mdW97A==",
+      "files": [
+        "lib/dnx451/Microsoft.Extensions.Logging.Console.dll",
+        "lib/dnx451/Microsoft.Extensions.Logging.Console.xml",
+        "lib/dnxcore50/Microsoft.Extensions.Logging.Console.dll",
+        "lib/dnxcore50/Microsoft.Extensions.Logging.Console.xml",
+        "lib/dotnet/Microsoft.Extensions.Logging.Console.dll",
+        "lib/dotnet/Microsoft.Extensions.Logging.Console.xml",
+        "lib/net45/Microsoft.Extensions.Logging.Console.dll",
+        "lib/net45/Microsoft.Extensions.Logging.Console.xml",
+        "Microsoft.Extensions.Logging.Console.1.0.0-rc1-15675.nupkg",
+        "Microsoft.Extensions.Logging.Console.1.0.0-rc1-15675.nupkg.sha512",
+        "Microsoft.Extensions.Logging.Console.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Logging.EventLog/1.0.0-rc1-15675": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "B9cL4M4GvwKpYF+wcDYlQnzRnNv+utyppe+VmRDW/4Fz7P4hLJZJJTJEJnX9IAG2sZJK/ISypdHUUfr77bqU9g==",
+      "files": [
+        "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll",
+        "lib/dnx451/Microsoft.Extensions.Logging.EventLog.xml",
+        "lib/net45/Microsoft.Extensions.Logging.EventLog.dll",
+        "lib/net45/Microsoft.Extensions.Logging.EventLog.xml",
+        "Microsoft.Extensions.Logging.EventLog.1.0.0-rc1-15675.nupkg",
+        "Microsoft.Extensions.Logging.EventLog.1.0.0-rc1-15675.nupkg.sha512",
+        "Microsoft.Extensions.Logging.EventLog.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Logging.NLog/1.0.0-rc1-15675": {
+      "type": "package",
+      "sha512": "ATqrNF55D2hfy/BN9lKORZGXaV3tyYlCZz0EvZMp6QgMcOVLuH8bvmJU95cl/Y+uiSDAHTdfMfjIKcegmNXaRw==",
+      "files": [
+        "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll",
+        "lib/dnx451/Microsoft.Extensions.Logging.NLog.xml",
+        "lib/net45/Microsoft.Extensions.Logging.NLog.dll",
+        "lib/net45/Microsoft.Extensions.Logging.NLog.xml",
+        "Microsoft.Extensions.Logging.NLog.1.0.0-rc1-15675.nupkg",
+        "Microsoft.Extensions.Logging.NLog.1.0.0-rc1-15675.nupkg.sha512",
+        "Microsoft.Extensions.Logging.NLog.nuspec"
       ]
     },
     "Microsoft.Extensions.TypeNameHelper.Sources/1.0.0-rc1-15720": {
@@ -1984,6 +2237,34 @@
         "runtimes/win7/lib/DNXCore50/System.Diagnostics.Debug.dll",
         "runtimes/win7/lib/netcore50/System.Diagnostics.Debug.dll",
         "runtimes/win8-aot/lib/netcore50/System.Diagnostics.Debug.dll"
+      ]
+    },
+    "runtime.win7.System.Private.Uri/4.0.1-beta-23412": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "NUcQUWXrMiG5w3SKOjmwQ8hcs0AIica5bzwi3Is9fAbNsHTFqSJnd7HNWmMVjeRkV7FmzzStQYSfzHIgI813Zg==",
+      "files": [
+        "ref/dotnet/_._",
+        "runtime.win7.System.Private.Uri.4.0.1-beta-23412.nupkg",
+        "runtime.win7.System.Private.Uri.4.0.1-beta-23412.nupkg.sha512",
+        "runtime.win7.System.Private.Uri.nuspec",
+        "runtimes/win7/lib/DNXCore50/System.Private.Uri.dll",
+        "runtimes/win7/lib/netcore50/System.Private.Uri.dll",
+        "runtimes/win8-aot/lib/netcore50/System.Private.Uri.dll"
+      ]
+    },
+    "runtime.win7.System.Threading/4.0.11-beta-23412": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "xbX0dh+F0UWs938AT9t1L1sx3mkaIoEv31Bl038V8cAJNv8+FE9hx3xSIulsbhGSvv3OuCpVuksWMjnK6SJ5/A==",
+      "files": [
+        "ref/dotnet/_._",
+        "runtime.win7.System.Threading.4.0.11-beta-23412.nupkg",
+        "runtime.win7.System.Threading.4.0.11-beta-23412.nupkg.sha512",
+        "runtime.win7.System.Threading.nuspec",
+        "runtimes/win7/lib/DNXCore50/System.Threading.dll",
+        "runtimes/win7/lib/netcore50/System.Threading.dll",
+        "runtimes/win8-aot/lib/netcore50/System.Threading.dll"
       ]
     },
     "System.Collections/4.0.11-beta-23225": {
@@ -2149,7 +2430,7 @@
     "System.Diagnostics.Tracing.Logger/4.0.0-beta-23405": {
       "type": "package",
       "serviceable": true,
-      "sha512": "RUYvjNY6iuCvnynnBhbKvVLxl8+lRY4Z9zrkwyeNg004AqkcbzJBuhFN4k+BdxMYOF+HJ2ySebBbYgtMd3w20w==",
+      "sha512": "bH5ULc4mx5aBSgVglIEX+CL/deDU6va5plo2KhH1H465bUe5TMYJMg5AppASw6EiFDzPDmdWPoXnt1d51C+htQ==",
       "files": [
         "lib/dotnet/System.Diagnostics.Tracing.Logger.dll",
         "lib/dotnet/System.Diagnostics.Tracing.Logger.xml",
@@ -2184,10 +2465,10 @@
         "System.Globalization.nuspec"
       ]
     },
-    "System.IO/4.0.11-beta-23225": {
+    "System.IO/4.0.11-beta-23412": {
       "type": "package",
       "serviceable": true,
-      "sha512": "wkZi/602eDK6SCtRK8cpfOQuVHP/wb9QZRIqxVoKAdp6xeMDTnJVrPZbE6AnKY9x5vymR9OwZxNZVmZ+2IzGVQ==",
+      "sha512": "/WfoLOLhzEr/Vh7DOdbcWxkq9zgPtvozrU5M6GiC98SZYUdeXjEGT7A4na/1oWah/vQIluedb0QnALZJnLTV5w==",
       "files": [
         "lib/DNXCore50/System.IO.dll",
         "lib/MonoAndroid10/_._",
@@ -2196,15 +2477,25 @@
         "lib/netcore50/System.IO.dll",
         "lib/xamarinios10/_._",
         "lib/xamarinmac20/_._",
+        "ref/dotnet/de/System.IO.xml",
+        "ref/dotnet/es/System.IO.xml",
+        "ref/dotnet/fr/System.IO.xml",
+        "ref/dotnet/it/System.IO.xml",
+        "ref/dotnet/ja/System.IO.xml",
+        "ref/dotnet/ko/System.IO.xml",
+        "ref/dotnet/ru/System.IO.xml",
         "ref/dotnet/System.IO.dll",
+        "ref/dotnet/System.IO.xml",
+        "ref/dotnet/zh-hans/System.IO.xml",
+        "ref/dotnet/zh-hant/System.IO.xml",
         "ref/MonoAndroid10/_._",
         "ref/MonoTouch10/_._",
         "ref/net46/_._",
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
         "runtimes/win8-aot/lib/netcore50/System.IO.dll",
-        "System.IO.4.0.11-beta-23225.nupkg",
-        "System.IO.4.0.11-beta-23225.nupkg.sha512",
+        "System.IO.4.0.11-beta-23412.nupkg",
+        "System.IO.4.0.11-beta-23412.nupkg.sha512",
         "System.IO.nuspec"
       ]
     },
@@ -2319,25 +2610,22 @@
         "System.ObjectModel.nuspec"
       ]
     },
-    "System.Private.Uri/4.0.1-beta-23225": {
+    "System.Private.Uri/4.0.1-beta-23412": {
       "type": "package",
-      "serviceable": true,
-      "sha512": "fdKNkf1NIe8FVi8HiPg1NuFb4C1hn1oX/JHBu+S5LoMHorGYxJ6Rwwx5Ig9Flb5vICaeudpsf0Wyzc6israg6g==",
+      "sha512": "Jg+U6g22+NYx0SzVzmovdsV9j9grqP9EH1iQ+XqXrOTTcEEQ797barUz2N1WZeGOR8wOX4zT7Bv01HZsOPRrxw==",
       "files": [
-        "lib/DNXCore50/System.Private.Uri.dll",
-        "lib/netcore50/System.Private.Uri.dll",
         "ref/dnxcore50/_._",
         "ref/netcore50/_._",
-        "runtimes/win8-aot/lib/netcore50/System.Private.Uri.dll",
-        "System.Private.Uri.4.0.1-beta-23225.nupkg",
-        "System.Private.Uri.4.0.1-beta-23225.nupkg.sha512",
+        "runtime.json",
+        "System.Private.Uri.4.0.1-beta-23412.nupkg",
+        "System.Private.Uri.4.0.1-beta-23412.nupkg.sha512",
         "System.Private.Uri.nuspec"
       ]
     },
-    "System.Reflection/4.1.0-beta-23225": {
+    "System.Reflection/4.1.0-beta-23412": {
       "type": "package",
       "serviceable": true,
-      "sha512": "WbLtaCxoe5XdqEyZuGpemSQ8YBJ8cj11zx+yxOxJfHbNrmu7oMQ29+J50swaqg3soUc3BVBMqfIhb/7gocDHQA==",
+      "sha512": "eagSG80HSWBGVVhujMwegbKrRXXWX4IbTENrDww15W20yAbZ2/cHyZTy4OAUr3EKSJDGhTiATiTCRX3jSaha/Q==",
       "files": [
         "lib/DNXCore50/System.Reflection.dll",
         "lib/MonoAndroid10/_._",
@@ -2346,15 +2634,25 @@
         "lib/netcore50/System.Reflection.dll",
         "lib/xamarinios10/_._",
         "lib/xamarinmac20/_._",
+        "ref/dotnet/de/System.Reflection.xml",
+        "ref/dotnet/es/System.Reflection.xml",
+        "ref/dotnet/fr/System.Reflection.xml",
+        "ref/dotnet/it/System.Reflection.xml",
+        "ref/dotnet/ja/System.Reflection.xml",
+        "ref/dotnet/ko/System.Reflection.xml",
+        "ref/dotnet/ru/System.Reflection.xml",
         "ref/dotnet/System.Reflection.dll",
+        "ref/dotnet/System.Reflection.xml",
+        "ref/dotnet/zh-hans/System.Reflection.xml",
+        "ref/dotnet/zh-hant/System.Reflection.xml",
         "ref/MonoAndroid10/_._",
         "ref/MonoTouch10/_._",
         "ref/net46/_._",
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
         "runtimes/win8-aot/lib/netcore50/System.Reflection.dll",
-        "System.Reflection.4.1.0-beta-23225.nupkg",
-        "System.Reflection.4.1.0-beta-23225.nupkg.sha512",
+        "System.Reflection.4.1.0-beta-23412.nupkg",
+        "System.Reflection.4.1.0-beta-23412.nupkg.sha512",
         "System.Reflection.nuspec"
       ]
     },
@@ -2563,10 +2861,58 @@
         "System.Resources.ResourceManager.nuspec"
       ]
     },
-    "System.Runtime/4.0.20": {
+    "System.Runtime/4.0.0": {
+      "type": "package",
+      "sha512": "Uq9epame8hEqJlj4KaWb67dDJvj4IM37jRFGVeFbugRdPz48bR0voyBhrbf3iSa2tAmlkg4lsa6BUOL9iwlMew==",
+      "files": [
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net45/_._",
+        "lib/win8/_._",
+        "lib/wp80/_._",
+        "lib/wpa81/_._",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "License.rtf",
+        "ref/dotnet/de/System.Runtime.xml",
+        "ref/dotnet/es/System.Runtime.xml",
+        "ref/dotnet/fr/System.Runtime.xml",
+        "ref/dotnet/it/System.Runtime.xml",
+        "ref/dotnet/ja/System.Runtime.xml",
+        "ref/dotnet/ko/System.Runtime.xml",
+        "ref/dotnet/ru/System.Runtime.xml",
+        "ref/dotnet/System.Runtime.dll",
+        "ref/dotnet/System.Runtime.xml",
+        "ref/dotnet/zh-hans/System.Runtime.xml",
+        "ref/dotnet/zh-hant/System.Runtime.xml",
+        "ref/MonoAndroid10/_._",
+        "ref/MonoTouch10/_._",
+        "ref/net45/_._",
+        "ref/netcore50/de/System.Runtime.xml",
+        "ref/netcore50/es/System.Runtime.xml",
+        "ref/netcore50/fr/System.Runtime.xml",
+        "ref/netcore50/it/System.Runtime.xml",
+        "ref/netcore50/ja/System.Runtime.xml",
+        "ref/netcore50/ko/System.Runtime.xml",
+        "ref/netcore50/ru/System.Runtime.xml",
+        "ref/netcore50/System.Runtime.dll",
+        "ref/netcore50/System.Runtime.xml",
+        "ref/netcore50/zh-hans/System.Runtime.xml",
+        "ref/netcore50/zh-hant/System.Runtime.xml",
+        "ref/win8/_._",
+        "ref/wp80/_._",
+        "ref/wpa81/_._",
+        "ref/xamarinios10/_._",
+        "ref/xamarinmac20/_._",
+        "System.Runtime.4.0.0.nupkg",
+        "System.Runtime.4.0.0.nupkg.sha512",
+        "System.Runtime.nuspec"
+      ]
+    },
+    "System.Runtime/4.0.21-beta-23412": {
       "type": "package",
       "serviceable": true,
-      "sha512": "X7N/9Bz7jVPorqdVFO86ns1sX6MlQM+WTxELtx+Z4VG45x9+LKmWH0GRqjgKprUnVuwmfB9EJ9DQng14Z7/zwg==",
+      "sha512": "FMMQtZbnUqsY6+8Y77P7vowIXDbAhCSuLhKvIxXvwHa0Gc7vJ0mQM+p0qd1OwnrZSXYpOGkbXPXqFS/dKYB7+g==",
       "files": [
         "lib/DNXCore50/System.Runtime.dll",
         "lib/MonoAndroid10/_._",
@@ -2592,32 +2938,8 @@
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
         "runtimes/win8-aot/lib/netcore50/System.Runtime.dll",
-        "System.Runtime.4.0.20.nupkg",
-        "System.Runtime.4.0.20.nupkg.sha512",
-        "System.Runtime.nuspec"
-      ]
-    },
-    "System.Runtime/4.0.21-beta-23225": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "3YYoQMbbiX6ayLsynZtnA+x7KIMier2NivCOxNzlfDb/ZmpVFCQ2XyYd33JYAVM7TnfFbFMzKZxD1kC+zo8wYA==",
-      "files": [
-        "lib/DNXCore50/System.Runtime.dll",
-        "lib/MonoAndroid10/_._",
-        "lib/MonoTouch10/_._",
-        "lib/net46/_._",
-        "lib/netcore50/System.Runtime.dll",
-        "lib/xamarinios10/_._",
-        "lib/xamarinmac20/_._",
-        "ref/dotnet/System.Runtime.dll",
-        "ref/MonoAndroid10/_._",
-        "ref/MonoTouch10/_._",
-        "ref/net46/_._",
-        "ref/xamarinios10/_._",
-        "ref/xamarinmac20/_._",
-        "runtimes/win8-aot/lib/netcore50/System.Runtime.dll",
-        "System.Runtime.4.0.21-beta-23225.nupkg",
-        "System.Runtime.4.0.21-beta-23225.nupkg.sha512",
+        "System.Runtime.4.0.21-beta-23412.nupkg",
+        "System.Runtime.4.0.21-beta-23412.nupkg.sha512",
         "System.Runtime.nuspec"
       ]
     },
@@ -2817,27 +3139,35 @@
         "System.Threading.nuspec"
       ]
     },
-    "System.Threading/4.0.11-beta-23225": {
+    "System.Threading/4.0.11-beta-23412": {
       "type": "package",
       "serviceable": true,
-      "sha512": "B/+Lw3Z8IQCMtVT0/2ywBSnT35DleljjmwYqdtM1+LpBo5pf8WX/6lwZF0XSgXjROjxz5oe1IArTgv0uZ+0aOQ==",
+      "sha512": "yLgYPp6J5CLhWDXF/CJzCZ1YSy+8ACgrz/S9LFq66WzeoX6iagzWMTY8uosk3IOjBEJVst3Bqvs2abfShjy5bQ==",
       "files": [
-        "lib/DNXCore50/System.Threading.dll",
         "lib/MonoAndroid10/_._",
         "lib/MonoTouch10/_._",
         "lib/net46/_._",
-        "lib/netcore50/System.Threading.dll",
         "lib/xamarinios10/_._",
         "lib/xamarinmac20/_._",
+        "ref/dotnet/de/System.Threading.xml",
+        "ref/dotnet/es/System.Threading.xml",
+        "ref/dotnet/fr/System.Threading.xml",
+        "ref/dotnet/it/System.Threading.xml",
+        "ref/dotnet/ja/System.Threading.xml",
+        "ref/dotnet/ko/System.Threading.xml",
+        "ref/dotnet/ru/System.Threading.xml",
         "ref/dotnet/System.Threading.dll",
+        "ref/dotnet/System.Threading.xml",
+        "ref/dotnet/zh-hans/System.Threading.xml",
+        "ref/dotnet/zh-hant/System.Threading.xml",
         "ref/MonoAndroid10/_._",
         "ref/MonoTouch10/_._",
         "ref/net46/_._",
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._",
-        "runtimes/win8-aot/lib/netcore50/System.Threading.dll",
-        "System.Threading.4.0.11-beta-23225.nupkg",
-        "System.Threading.4.0.11-beta-23225.nupkg.sha512",
+        "runtime.json",
+        "System.Threading.4.0.11-beta-23412.nupkg",
+        "System.Threading.4.0.11-beta-23412.nupkg.sha512",
         "System.Threading.nuspec"
       ]
     },
@@ -2879,7 +3209,8 @@
   "projectFileDependencyGroups": {
     "": [
       "Microsoft.Extensions.Logging >= 1.0.0-*",
-      "Microsoft.Extensions.Logging.Console >= 1.0.0-*"
+      "Microsoft.Extensions.Logging.Console >= 1.0.0-*",
+      "Microsoft.Extensions.Logging.Observer >= 1.0.0-*"
     ],
     "DNX,Version=v4.5.1": [
       "Microsoft.Extensions.Logging.EventLog >= 1.0.0-*",

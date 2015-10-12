@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.Logging
             Logger ret;
             if (!_cache.TryGetValue(name, out ret))
             {
-                ret = new Logger(name);
+                ret = new Logger(name, MinimumLevel);
 
                 if (_loggerCreated != null)
                     _loggerCreated(ret);
@@ -47,20 +47,6 @@ namespace Microsoft.Extensions.Logging
 
             return new SubscriptionList(this, target, filter);
         }
-/*
-        public void SubscribeForever(IObserver<KeyValuePair<string, object>> target, Predicate<Logger> filter = null)
-        {
-            IDisposable asDisposable = target as IDisposable;
-            if (asDisposable != null)
-                FactoryDispose += asDisposable.Dispose;
-
-            LoggerCreated += delegate (Logger newLogger)
-            {
-                if (filter == null || filter(newLogger))
-                    newLogger.Subscribe(target, MinimumLevel);
-            };
-        }
-*/
         
         internal virtual event Action<Logger> LoggerCreated
         {
@@ -111,8 +97,7 @@ namespace Microsoft.Extensions.Logging
             #region private
             private void OnLoggerCreated(Logger newLogger)
             {
-                if (_filter == null || _filter(newLogger, LogLevel.Critical))
-                    _loggerSubscriptions.Add(newLogger.Subscribe(_target, _filter));
+                _loggerSubscriptions.Add(newLogger.Subscribe(_target, _filter));
             }
 
             List<IDisposable> _loggerSubscriptions;

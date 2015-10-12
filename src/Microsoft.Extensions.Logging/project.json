@@ -19,7 +19,6 @@
   "frameworks": {
     "net45": {
       "frameworkAssemblies": {
-        "System.Runtime": "",
         "System.Collections.Concurrent": {
           "version": "",
           "type": "build"

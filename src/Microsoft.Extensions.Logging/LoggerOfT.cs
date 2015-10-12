@@ -40,9 +40,9 @@ namespace Microsoft.Extensions.Logging
 
         /// <summary>
         /// </summary>
-        public virtual IDisposable Subscribe(IObserver<KeyValuePair<string, object>> observer, LogLevel level)
+        public virtual IDisposable Subscribe(IObserver<KeyValuePair<string, object>> observer, Func<string, LogLevel, bool> filter = null)
         {
-            return _logger.Subscribe(observer, level);
+            return _logger.Subscribe(observer, filter);
         }
     }
 }
