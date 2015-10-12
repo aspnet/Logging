@@ -29,6 +29,6 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
-        IDisposable Subscribe(IObserver<KeyValuePair<string, object>> target, Predicate<Logger> filter = null);
+        IDisposable Subscribe(IObserver<KeyValuePair<string, object>> target, Func<string, LogLevel, bool> filter = null);
     }
 }

@@ -39,13 +39,13 @@ namespace Microsoft.Extensions.Logging
             }
         }
 
-        public IDisposable Subscribe(IObserver<KeyValuePair<string, object>> target)
+        public IDisposable Subscribe(IObserver<KeyValuePair<string, object>> target, Func<string, LogLevel, bool> filter = null)
         {
             IDisposable asDisposable = target as IDisposable;
             if (asDisposable != null)
                 FactoryDispose += asDisposable.Dispose;
 
-            return new SubscriptionList(this, target);
+            return new SubscriptionList(this, target, filter);
         }
 /*
         public void SubscribeForever(IObserver<KeyValuePair<string, object>> target, Predicate<Logger> filter = null)
@@ -89,10 +89,11 @@ namespace Microsoft.Extensions.Logging
         {
             // Can have state that the the rest of the stuff uses.  
 
-            public SubscriptionList(LoggerFactory factory, IObserver<KeyValuePair<string, object>> target)
+            public SubscriptionList(LoggerFactory factory, IObserver<KeyValuePair<string, object>> target, Func<string, LogLevel, bool> filter)
             {
                 _factory = factory;
                 _target = target;
+                _filter = filter;
                 _loggerSubscriptions = new List<IDisposable>();
                 _factory.LoggerCreated += OnLoggerCreated;
             }
@@ -110,11 +111,13 @@ namespace Microsoft.Extensions.Logging
             #region private
             private void OnLoggerCreated(Logger newLogger)
             {
-                _loggerSubscriptions.Add(newLogger.Subscribe(_target, _factory.MinimumLevel));
+                if (_filter == null || _filter(newLogger, LogLevel.Critical))
+                    _loggerSubscriptions.Add(newLogger.Subscribe(_target, _filter));
             }
 
             List<IDisposable> _loggerSubscriptions;
             LoggerFactory _factory;
+            Func<string, LogLevel, bool> _filter;
             IObserver<KeyValuePair<string, object>> _target;
             #endregion
         }

@@ -12,6 +12,11 @@ namespace Microsoft.Extensions.Logging.Observer
 {
     public class ConsoleObserver : IObserver<KeyValuePair<string, object>>, IDisposable
     {
+        private readonly Func<string, LogLevel, bool> _filter;
+        public ConsoleObserver(Func<string, LogLevel, bool> filter)
+        {
+            _filter = filter;
+        }
         public void OnCompleted()
         {
         }
