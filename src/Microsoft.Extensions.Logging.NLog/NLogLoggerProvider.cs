@@ -60,7 +60,7 @@ namespace Microsoft.Extensions.Logging.NLog
                 }
                 if (!string.IsNullOrEmpty(message))
                 {
-                    var eventInfo = LogEventInfo.Create(nLogLogLevel, _logger.Name, message, exception);
+                    var eventInfo = LogEventInfo.Create(nLogLogLevel, _logger.Name, exception, null, message);
                     eventInfo.Properties["EventId"] = eventId;
                     _logger.Log(eventInfo);
                 }
