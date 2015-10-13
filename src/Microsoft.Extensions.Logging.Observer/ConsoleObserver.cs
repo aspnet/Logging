@@ -18,10 +18,11 @@ namespace Microsoft.Extensions.Logging.Observer
         }
         public void OnCompleted()
         {
+            //TODO
         }
         public void OnError(Exception error)
         {
-            // System.Console.WriteLine("ERROR in logging stream: {0}", error.Message);
+            // TODO
         }
         public void OnNext(KeyValuePair<string, object> value)
         {
@@ -36,7 +37,9 @@ namespace Microsoft.Extensions.Logging.Observer
                 }
 
                 string logItemName = value.Key;
-                string payloadStr = GetPayload(loggerArguments.Arguments);
+                var builder = new StringBuilder();
+                GetPayload(loggerArguments.Arguments, builder);
+                string payloadStr = builder.ToString();
 
                 if (string.IsNullOrEmpty(payloadStr))
                 {
@@ -65,35 +68,67 @@ namespace Microsoft.Extensions.Logging.Observer
             }
         }
 
-
-        internal static string GetPayload(object data)
+        //TODO: add indentation & bullets
+        internal static void GetPayload(object data, StringBuilder builder)
         {
             if (data == null)
-                return null;
-            if(data.GetType().GetTypeInfo().IsPrimitive || data is String || data is Exception)
+                return;
+            if(data is IEnumerable<KeyValuePair<string, object>>)
             {
-                return data.ToString();
+                var first = true;
+                foreach (var kvp in (IEnumerable<KeyValuePair<string, object>>)data)
+                {
+                    if (!first) { builder.Append(" "); first = false; }
+                    builder.Append(kvp.Key);
+                    builder.Append(": ");
+                    GetPayload(kvp.Value, builder);
+                }
             }
-            var builder = new StringBuilder();
-            if (data != null)
+            else if(data is IEnumerable && !(data is String)) // String also implements IEnumerable
+            {
+                var list = data as IEnumerable;
+                if (list != null)
+                {
+                    var first = true;
+                    foreach (var elem in list)
+                    {
+                        if (!first) { builder.Append(", "); first = false; }
+                        GetPayload(elem, builder);
+                    }
+                }
+            }
+            else if(data is KeyValuePair<string, object>)
+            {
+                var kvp = (KeyValuePair<string, object>)data;
+                builder.Append(kvp.Key);
+                builder.Append(": ");
+                GetPayload(kvp.Value, builder);
+            }
+            else if(data.GetType().IsAnonymousType())
             {
                 Type t = data.GetType();
+
                 // Get a list of the properties
                 IEnumerable<PropertyInfo> pList = t.GetTypeInfo().DeclaredProperties;
+
+                var first = true;
                 // Loop through the properties in the list
                 foreach (PropertyInfo pi in pList)
                 {
+                    if(!first) { builder.Append(" "); first = false; }
+
                     // Get the value of the property
                     object o = pi.GetValue(data, null);
                     // Write out the property information
                     builder.Append(pi.Name);
-                    builder.Append(" = ");
-                    builder.Append(o.ToString());
-                    builder.Append(", ");
+                    builder.Append(": ");
+                    GetPayload(o, builder);
                 }
-                builder.Remove(builder.Length - 2, 2);
             }
-            return builder.ToString();
+            else
+            {
+                builder.Append(data.ToString());
+            }
         }
 
         public virtual string FormatMessage(LogLevel logLevel, string logName, string message)
@@ -167,7 +202,6 @@ namespace Microsoft.Extensions.Logging.Observer
             }
         }
 
-        private const int _indentation = 2;
         private readonly string _name;
         private readonly Func<string, LogLevel, bool> _filter;
         private readonly object _lock = new object();
@@ -181,5 +215,17 @@ namespace Microsoft.Extensions.Logging.Observer
             }
         }
 
+    }
+    public static class TypeExtension
+    {
+
+        public static Boolean IsAnonymousType(this Type type)
+        {
+            //TODO: Fix this method...is this correct?
+            //Boolean hasCompilerGeneratedAttribute = type.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Count() > 0;
+            Boolean nameContainsAnonymousType = type.FullName.Contains("AnonymousType");
+
+            return nameContainsAnonymousType;
+        }
     }
 }

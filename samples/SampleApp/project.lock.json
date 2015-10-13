@@ -60,44 +60,7 @@
           "lib/dnx451/Microsoft.Extensions.Logging.Console.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging.EventLog/1.0.0-rc1-15675": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675"
-        },
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll": {}
-        },
-        "runtime": {
-          "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll": {}
-        }
-      },
-      "Microsoft.Extensions.Logging.NLog/1.0.0-rc1-15675": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675",
-          "NLog": "3.1.0"
-        },
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll": {}
-        },
-        "runtime": {
-          "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll": {}
-        }
-      },
-      "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
+      "Microsoft.Extensions.Logging.Observer/1.0.0-t151013012019": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
@@ -122,15 +85,6 @@
         },
         "runtime": {
           "lib/dnx451/Microsoft.Extensions.TypeNameHelper.Sources.dll": {}
-        }
-      },
-      "NLog/3.1.0": {
-        "type": "package",
-        "compile": {
-          "lib/net45/NLog.dll": {}
-        },
-        "runtime": {
-          "lib/net45/NLog.dll": {}
         }
       },
       "System.Diagnostics.DiagnosticSource/4.0.0-beta-23405": {
@@ -244,7 +198,7 @@
           "lib/dnxcore50/Microsoft.Extensions.Logging.Console.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
+      "Microsoft.Extensions.Logging.Observer/1.0.0-t151013012019": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
         "dependencies": {
@@ -735,44 +689,7 @@
           "lib/dnx451/Microsoft.Extensions.Logging.Console.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging.EventLog/1.0.0-rc1-15675": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675"
-        },
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll": {}
-        },
-        "runtime": {
-          "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll": {}
-        }
-      },
-      "Microsoft.Extensions.Logging.NLog/1.0.0-rc1-15675": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675",
-          "NLog": "3.1.0"
-        },
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll": {}
-        },
-        "runtime": {
-          "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll": {}
-        }
-      },
-      "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
+      "Microsoft.Extensions.Logging.Observer/1.0.0-t151013012019": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
@@ -797,15 +714,6 @@
         },
         "runtime": {
           "lib/dnx451/Microsoft.Extensions.TypeNameHelper.Sources.dll": {}
-        }
-      },
-      "NLog/3.1.0": {
-        "type": "package",
-        "compile": {
-          "lib/net45/NLog.dll": {}
-        },
-        "runtime": {
-          "lib/net45/NLog.dll": {}
         }
       },
       "System.Diagnostics.DiagnosticSource/4.0.0-beta-23405": {
@@ -911,44 +819,7 @@
           "lib/dnx451/Microsoft.Extensions.Logging.Console.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging.EventLog/1.0.0-rc1-15675": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675"
-        },
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll": {}
-        },
-        "runtime": {
-          "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll": {}
-        }
-      },
-      "Microsoft.Extensions.Logging.NLog/1.0.0-rc1-15675": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-15675",
-          "NLog": "3.1.0"
-        },
-        "frameworkAssemblies": [
-          "Microsoft.CSharp",
-          "mscorlib",
-          "System",
-          "System.Core"
-        ],
-        "compile": {
-          "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll": {}
-        },
-        "runtime": {
-          "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll": {}
-        }
-      },
-      "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
+      "Microsoft.Extensions.Logging.Observer/1.0.0-t151013012019": {
         "type": "project",
         "framework": "DNX,Version=v4.5.1",
         "dependencies": {
@@ -973,15 +844,6 @@
         },
         "runtime": {
           "lib/dnx451/Microsoft.Extensions.TypeNameHelper.Sources.dll": {}
-        }
-      },
-      "NLog/3.1.0": {
-        "type": "package",
-        "compile": {
-          "lib/net45/NLog.dll": {}
-        },
-        "runtime": {
-          "lib/net45/NLog.dll": {}
         }
       },
       "System.Diagnostics.DiagnosticSource/4.0.0-beta-23405": {
@@ -1095,7 +957,7 @@
           "lib/dnxcore50/Microsoft.Extensions.Logging.Console.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
+      "Microsoft.Extensions.Logging.Observer/1.0.0-t151013012019": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
         "dependencies": {
@@ -1636,7 +1498,7 @@
           "lib/dnxcore50/Microsoft.Extensions.Logging.Console.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
+      "Microsoft.Extensions.Logging.Observer/1.0.0-t151013012019": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
         "dependencies": {
@@ -2121,7 +1983,7 @@
       "type": "project",
       "path": "../../src/Microsoft.Extensions.Logging.Abstractions/project.json"
     },
-    "Microsoft.Extensions.Logging.Observer/1.0.0-t151012191603": {
+    "Microsoft.Extensions.Logging.Observer/1.0.0-t151013012019": {
       "type": "project",
       "path": "../../src/Microsoft.Extensions.Logging.Observer/project.json"
     },
@@ -2161,33 +2023,6 @@
         "Microsoft.Extensions.Logging.Console.nuspec"
       ]
     },
-    "Microsoft.Extensions.Logging.EventLog/1.0.0-rc1-15675": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "B9cL4M4GvwKpYF+wcDYlQnzRnNv+utyppe+VmRDW/4Fz7P4hLJZJJTJEJnX9IAG2sZJK/ISypdHUUfr77bqU9g==",
-      "files": [
-        "lib/dnx451/Microsoft.Extensions.Logging.EventLog.dll",
-        "lib/dnx451/Microsoft.Extensions.Logging.EventLog.xml",
-        "lib/net45/Microsoft.Extensions.Logging.EventLog.dll",
-        "lib/net45/Microsoft.Extensions.Logging.EventLog.xml",
-        "Microsoft.Extensions.Logging.EventLog.1.0.0-rc1-15675.nupkg",
-        "Microsoft.Extensions.Logging.EventLog.1.0.0-rc1-15675.nupkg.sha512",
-        "Microsoft.Extensions.Logging.EventLog.nuspec"
-      ]
-    },
-    "Microsoft.Extensions.Logging.NLog/1.0.0-rc1-15675": {
-      "type": "package",
-      "sha512": "ATqrNF55D2hfy/BN9lKORZGXaV3tyYlCZz0EvZMp6QgMcOVLuH8bvmJU95cl/Y+uiSDAHTdfMfjIKcegmNXaRw==",
-      "files": [
-        "lib/dnx451/Microsoft.Extensions.Logging.NLog.dll",
-        "lib/dnx451/Microsoft.Extensions.Logging.NLog.xml",
-        "lib/net45/Microsoft.Extensions.Logging.NLog.dll",
-        "lib/net45/Microsoft.Extensions.Logging.NLog.xml",
-        "Microsoft.Extensions.Logging.NLog.1.0.0-rc1-15675.nupkg",
-        "Microsoft.Extensions.Logging.NLog.1.0.0-rc1-15675.nupkg.sha512",
-        "Microsoft.Extensions.Logging.NLog.nuspec"
-      ]
-    },
     "Microsoft.Extensions.TypeNameHelper.Sources/1.0.0-rc1-15720": {
       "type": "package",
       "sha512": "/lob4jDc0UrYdvvIGG5IeUiTs2jvVFoMWW04GBrMMrp8wxVA0g3aDFGGtX/WN/VMjjMFYncjvwMyniZBsOtJ/g==",
@@ -2204,25 +2039,6 @@
         "Microsoft.Extensions.TypeNameHelper.Sources.1.0.0-rc1-15720.nupkg.sha512",
         "Microsoft.Extensions.TypeNameHelper.Sources.nuspec",
         "shared/TypeNameHelper.cs"
-      ]
-    },
-    "NLog/3.1.0": {
-      "type": "package",
-      "sha512": "ZPnrEdDzD720XUd6Z3fICglWF00vfSHUwMbZuDH+5W7fzYUkPCATaw+iZKJfmXk00wWozaLQ1TVv5W+q+jXASA==",
-      "files": [
-        "lib/net35/NLog.dll",
-        "lib/net35/NLog.xml",
-        "lib/net40/NLog.dll",
-        "lib/net40/NLog.xml",
-        "lib/net45/NLog.dll",
-        "lib/net45/NLog.xml",
-        "lib/sl4/NLog.dll",
-        "lib/sl4/NLog.xml",
-        "lib/sl5/NLog.dll",
-        "lib/sl5/NLog.xml",
-        "NLog.3.1.0.nupkg",
-        "NLog.3.1.0.nupkg.sha512",
-        "NLog.nuspec"
       ]
     },
     "runtime.win7.System.Diagnostics.Debug/4.0.11-beta-23405": {
@@ -3212,10 +3028,7 @@
       "Microsoft.Extensions.Logging.Console >= 1.0.0-*",
       "Microsoft.Extensions.Logging.Observer >= 1.0.0-*"
     ],
-    "DNX,Version=v4.5.1": [
-      "Microsoft.Extensions.Logging.EventLog >= 1.0.0-*",
-      "Microsoft.Extensions.Logging.NLog >= 1.0.0-*"
-    ],
+    "DNX,Version=v4.5.1": [],
     "DNXCore,Version=v5.0": [
       "System.Console >= 4.0.0-beta-23225"
     ]
