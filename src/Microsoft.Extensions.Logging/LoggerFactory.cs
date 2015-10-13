@@ -11,14 +11,14 @@ namespace Microsoft.Extensions.Logging
     {
         public LoggerFactory() { }
 
-        public LogLevel MinimumLevel { get; set; } = LogLevel.Verbose;
+        public LogLevel MaximumLevel { get; set; } = LogLevel.Debug;
 
         public virtual ILogger CreateLogger(string name)
         {
             Logger ret;
             if (!_cache.TryGetValue(name, out ret))
             {
-                ret = new Logger(name, MinimumLevel);
+                ret = new Logger(name, MaximumLevel);
 
                 if (_loggerCreated != null)
                     _loggerCreated(ret);

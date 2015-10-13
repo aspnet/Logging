@@ -42,7 +42,7 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         public virtual IDisposable Subscribe(IObserver<KeyValuePair<string, object>> observer, Func<string, LogLevel, bool> filter = null)
         {
-            return _logger.Subscribe(observer, filter);
+            return (_logger as Logger).Subscribe(observer, filter);
         }
     }
 }

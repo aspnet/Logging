@@ -14,7 +14,7 @@ namespace SampleApp
             // a DI based application would get ILoggerFactory injected instead
             var factory = new LoggerFactory();
 
-            factory.MinimumLevel = LogLevel.Verbose;
+            factory.MaximumLevel = LogLevel.Verbose;
 
             _logger = factory.CreateLogger(typeof(Program).FullName);
 

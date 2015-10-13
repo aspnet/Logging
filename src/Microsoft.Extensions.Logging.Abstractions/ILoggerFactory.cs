@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// The minimum level of log messages sent to registered loggers.
         /// </summary>
-        LogLevel MinimumLevel { get; set; }
+        LogLevel MaximumLevel { get; set; }
 
         /// <summary>
         /// Creates a new ILogger instance of the given name.
