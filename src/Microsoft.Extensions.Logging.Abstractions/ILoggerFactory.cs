@@ -23,12 +23,5 @@ namespace Microsoft.Extensions.Logging
         /// <param name="categoryName"></param>
         /// <returns></returns>
         ILogger CreateLogger(string categoryName);
-
-        /// <summary>
-        /// Adds an observer to the factory
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        IDisposable Subscribe(IObserver<KeyValuePair<string, object>> target, Func<string, LogLevel, bool> filter = null);
-    }
+     }
 }
