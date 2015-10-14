@@ -7,7 +7,6 @@ namespace SampleApp
     public class Program
     {
         private readonly ILogger _logger;
-        private readonly CaptureData _capture = new CaptureData();
 
         public Program()
         {
@@ -23,7 +22,6 @@ namespace SampleApp
             factory.AddEventLog();
 #endif
             factory.AddConsole();
-            factory.AddProvider(_capture);
         }
 
         public void Main(string[] args)
@@ -63,10 +61,7 @@ namespace SampleApp
             // or
             _logger.ProgramStopping(endTime);
 
-
             _logger.LogInformation("Stopping");
-
-            _capture.Rewrite(Console.Out);
         }
     }
 }
