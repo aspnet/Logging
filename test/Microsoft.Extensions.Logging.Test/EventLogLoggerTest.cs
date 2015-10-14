@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 #if DNX451
+using System;
+using System.Linq;
 using Microsoft.Extensions.Logging.EventLog;
 using Xunit;
 
@@ -36,6 +38,34 @@ namespace Microsoft.Extensions.Logging
 
             // Assert
             Assert.NotNull(disposable);
+        }
+
+        [Fact]
+        public void EventLoggerProvider_UsesLoggerFactoryDefault_MinimumLevel()
+        {
+            // Arrange
+            var loggerFactory = new LoggerFactory();
+            var minimumLogLevel = loggerFactory.MinimumLevel;
+
+            // Act
+            loggerFactory.AddEventLog();
+
+            // Assert
+            var providers = loggerFactory.GetProviders();
+            var eventLogProvider = Assert.IsType<EventLogLoggerProvider>(providers.FirstOrDefault());
+            Assert.NotNull(eventLogProvider.Settings);
+            var filter = eventLogProvider.Settings.Filter;
+            Assert.NotNull(filter);
+            Assert.True(filter("testlogger", minimumLogLevel));
+
+            // less than minimum log level
+            LogLevel level;
+            Assert.True(Enum.TryParse(Enum.GetName(typeof(LogLevel), (int)minimumLogLevel - 1), out level));
+            Assert.False(filter("testlogger", level));
+
+            // more than minimum log level
+            Assert.True(Enum.TryParse(Enum.GetName(typeof(LogLevel), (int)minimumLogLevel + 1), out level));
+            Assert.True(filter("testlogger", level));
         }
     }
 }

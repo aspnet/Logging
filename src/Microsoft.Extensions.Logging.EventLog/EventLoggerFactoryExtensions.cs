@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(factory));
             }
 
-            return AddEventLog(factory, LogLevel.Information);
+            return AddEventLog(factory, factory.MinimumLevel);
         }
 
         /// <summary>

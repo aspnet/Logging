@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="factory">The extension method argument.</param>
         public static ILoggerFactory AddDebug(this ILoggerFactory factory)
         {
-            return AddDebug(factory, LogLevel.Information);
+            return AddDebug(factory, factory.MinimumLevel);
         }
 
         /// <summary>
