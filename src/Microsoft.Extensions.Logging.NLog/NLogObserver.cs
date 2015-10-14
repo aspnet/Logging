@@ -39,6 +39,7 @@ namespace Microsoft.Extensions.Logging.NLog
                 {
                     return;
                 }
+                //TODO: pass exception object to nlog instead of ToString()
                 var eventInfo = LogEventInfo.Create(nLogLogLevel, _logger.Name, payloadStr);
                 eventInfo.Properties["EventId"] = logItemName;
                 _logger.Log(eventInfo);

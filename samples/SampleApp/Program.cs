@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics.Tracing;
-using Microsoft.Extensions.Logging.Observer;
+using Microsoft.Extensions.Logging.Console;
 
 namespace SampleApp
 {
@@ -18,9 +18,9 @@ namespace SampleApp
 
             _logger = factory.CreateLogger(typeof(Program).FullName);
 
-            var observer = new ConsoleObserver((name, level) => level < LogLevel.Verbose);
+            var provider = new ConsoleProvider((name, level) => level < LogLevel.Verbose);
 
-            factory.Subscribe(observer, observer.Filter);
+            factory.Subscribe(provider);
 
         }
 
