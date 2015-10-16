@@ -1,13 +1,13 @@
 {
-    "version": "1.0.0-*",
+    "version": "1.0.0-beta8",
     "description": "Logging infrastructure.",
     "repository": {
         "type": "git",
         "url": "git://github.com/aspnet/logging"
     },
     "dependencies": {
-        "Microsoft.Framework.DependencyInjection.Abstractions": "1.0.0-*",
-        "Microsoft.Framework.Logging.Abstractions": "1.0.0-*"
+        "Microsoft.Framework.DependencyInjection.Abstractions": "1.0.0-beta8",
+        "Microsoft.Framework.Logging.Abstractions": "1.0.0-beta8"
     },
     "compilationOptions": {
         "define": [
@@ -17,7 +17,10 @@
     "frameworks": {
         "net45": {
             "frameworkAssemblies": {
-                "System.Collections.Concurrent": { "version": "", "type": "build" }
+                "System.Collections.Concurrent": {
+                    "version": "",
+                    "type": "build"
+                }
             }
         },
         "dnx451": {
@@ -27,24 +30,24 @@
         },
         "dnxcore50": {
             "dependencies": {
-                "System.Collections.Concurrent": "4.0.11-beta-*",
-                "System.Collections": "4.0.11-beta-*",
-                "System.ComponentModel": "4.0.1-beta-*",
-                "System.Globalization": "4.0.11-beta-*",
-                "System.Linq": "4.0.1-beta-*",
-                "System.Threading": "4.0.11-beta-*"
+                "System.Collections.Concurrent": "4.0.11-beta-23409",
+                "System.Collections": "4.0.11-beta-23409",
+                "System.ComponentModel": "4.0.1-beta-23409",
+                "System.Globalization": "4.0.11-beta-23409",
+                "System.Linq": "4.0.1-beta-23409",
+                "System.Threading": "4.0.11-beta-23409"
             }
         },
         "dotnet": {
             "dependencies": {
-                "System.Collections": "4.0.10",
-                "System.Diagnostics.Debug": "4.0.10",
-                "System.Linq": "4.0.0",
-                "System.Resources.ResourceManager": "4.0.0",
-                "System.Runtime": "4.0.20",
-                "System.Runtime.Extensions": "4.0.10",
-                "System.Threading": "4.0.10",
-                "System.Threading.Tasks": "4.0.10"
+                "System.Collections": "4.0.11-beta-23409",
+                "System.Diagnostics.Debug": "4.0.11-beta-23409",
+                "System.Linq": "4.0.1-beta-23409",
+                "System.Resources.ResourceManager": "4.0.1-beta-23409",
+                "System.Runtime": "4.0.21-beta-23409",
+                "System.Runtime.Extensions": "4.0.11-beta-23409",
+                "System.Threading": "4.0.11-beta-23409",
+                "System.Threading.Tasks": "4.0.11-beta-23409"
             }
         }
     }
