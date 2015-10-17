@@ -33,7 +33,7 @@ namespace SampleApp
             // or
             _logger.ProgramStarting(startTime, 42);
 
-            using (_logger.PurchaceOrderScope("00655321"))
+            using (_logger.PurchaseOrderScope("00655321"))
             {
                 try
                 {
