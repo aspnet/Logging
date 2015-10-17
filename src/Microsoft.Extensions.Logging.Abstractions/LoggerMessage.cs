@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.Logging
     public static class LoggerMessage
     {
         /// <summary>
-        /// Creates a delegate which can be used for creating a log scope.
+        /// Creates a delegate which can be invoked to create a log scope.
         /// </summary>
         /// <param name="scope">A delegate which creates a log scope</param>
         /// <param name="formatString">The named format string</param>
@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        /// Creates a delegate which can be used for creating a log scope.
+        /// Creates a delegate which can be invoked to create a log scope.
         /// </summary>
         /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
         /// <param name="scope">A delegate which creates a log scope</param>
@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        /// Creates a delegate which can be used for creating a log scope.
+        /// Creates a delegate which can be invoked to create a log scope.
         /// </summary>
         /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
         /// <typeparam name="T2">The parameter passed to the named format string</typeparam>
@@ -52,7 +52,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        /// Creates a delegate which can be used for creating a log scope.
+        /// Creates a delegate which can be invoked to create a log scope.
         /// </summary>
         /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
         /// <typeparam name="T2">The parameter passed to the named format string</typeparam>
@@ -67,7 +67,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        /// Creates a delegate which can be used for logging a message.
+        /// Creates a delegate which can be invoked for logging a message.
         /// </summary>
         /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
         /// <param name="message">A delegate which creates a log message</param>
@@ -88,7 +88,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        /// Creates a delegate which can be used for logging a message.
+        /// Creates a delegate which can be invoked for logging a message.
         /// </summary>
         /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
         /// <typeparam name="T2">The parameter passed to the named format string</typeparam>
@@ -110,7 +110,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        /// Creates a delegate which can be used for logging a message.
+        /// Creates a delegate which can be invoked for logging a message.
         /// </summary>
         /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
         /// <typeparam name="T2">The parameter passed to the named format string</typeparam>
@@ -133,7 +133,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        /// Creates a delegate which can be used for logging a message.
+        /// Creates a delegate which can be invoked for logging a message.
         /// </summary>
         /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
         /// <param name="message">A delegate which creates a log message</param>
@@ -156,7 +156,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        /// Creates a delegate which can be used for logging a message.
+        /// Creates a delegate which can be invoked for logging a message.
         /// </summary>
         /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
         /// <typeparam name="T2">The parameter passed to the named format string</typeparam>
@@ -180,7 +180,7 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        /// Creates a delegate which can be used for logging a message.
+        /// Creates a delegate which can be invoked for logging a message.
         /// </summary>
         /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
         /// <typeparam name="T2">The parameter passed to the named format string</typeparam>
