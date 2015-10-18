@@ -4,13 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Framework.Logging.Test;
+using Microsoft.Extensions.Logging.Test;
 using Xunit;
 using Xunit.Sdk;
 
-namespace Microsoft.Framework.Logging
+namespace Microsoft.Extensions.Logging
 {
-    [Trait("test", "loggermessage")]
     public class LoggerMessageTest
     {
         [Fact]
@@ -32,7 +31,7 @@ namespace Microsoft.Framework.Logging
             AssertLogValues(
                 new[] {
                     new KeyValuePair<string, object>("EventName", TestLoggerExtensions.ActionMatchedWithEventNameInfo.EventName),
-                    new KeyValuePair<string, object>("OriginalFormat", TestLoggerExtensions.ActionMatchedWithEventNameInfo.NamedStringFormatWithEventName),
+                    new KeyValuePair<string, object>("{OriginalFormat}", TestLoggerExtensions.ActionMatchedWithEventNameInfo.NamedStringFormatWithEventName),
                     new KeyValuePair<string, object>("controller", controller),
                     new KeyValuePair<string, object>("action", action)
                 },
@@ -67,7 +66,7 @@ namespace Microsoft.Framework.Logging
             var actualLogValues = Assert.IsAssignableFrom<ILogValues>(writeContext.State);
             AssertLogValues(
                 new[] {
-                    new KeyValuePair<string, object>("OriginalFormat", TestLoggerExtensions.ActionMatchedWithoutEventNameInfo.NamedStringFormat),
+                    new KeyValuePair<string, object>("{OriginalFormat}", TestLoggerExtensions.ActionMatchedWithoutEventNameInfo.NamedStringFormat),
                     new KeyValuePair<string, object>("controller", controller),
                     new KeyValuePair<string, object>("action", action)
                 },
@@ -80,6 +79,28 @@ namespace Microsoft.Framework.Logging
                     TestLoggerExtensions.ActionMatchedWithoutEventNameInfo.FormatString,
                     controller,
                     action),
+                actualLogValues.ToString());
+        }
+
+        [Fact]
+        public void LogScope_WithoutAnyParameters()
+        {
+            // Arrange
+            var testSink = new TestSink();
+            var testLogger = new TestLogger("testlogger", testSink, enabled: true);
+
+            // Act
+            var disposable = testLogger.ScopeWithoutAnyParams();
+
+            // Assert
+            Assert.NotNull(disposable);
+            Assert.Equal(0, testSink.Writes.Count);
+            Assert.Equal(1, testSink.Scopes.Count);
+            var scopeContext = testSink.Scopes.First();
+            var actualLogValues = Assert.IsAssignableFrom<ILogValues>(scopeContext.Scope);
+            Assert.Empty(actualLogValues.GetValues());
+            Assert.Equal(
+                TestLoggerExtensions.ScopeWithoutAnyParameters.Message,
                 actualLogValues.ToString());
         }
 
@@ -103,7 +124,7 @@ namespace Microsoft.Framework.Logging
             AssertLogValues(new[]
             {
                 new KeyValuePair<string, object>("RequestId", param1),
-                new KeyValuePair<string, object>("OriginalFormat", TestLoggerExtensions.ScopeWithOneParameter.NamedStringFormat)
+                new KeyValuePair<string, object>("{OriginalFormat}", TestLoggerExtensions.ScopeWithOneParameter.NamedStringFormat)
             },
             actualLogValues.GetValues());
             Assert.Equal(
@@ -133,7 +154,7 @@ namespace Microsoft.Framework.Logging
             {
                 new KeyValuePair<string, object>("param1", param1),
                 new KeyValuePair<string, object>("param2", param2),
-                new KeyValuePair<string, object>("OriginalFormat", TestLoggerExtensions.ScopeInfoWithTwoParameters.NamedStringFormat)
+                new KeyValuePair<string, object>("{OriginalFormat}", TestLoggerExtensions.ScopeInfoWithTwoParameters.NamedStringFormat)
             },
             actualLogValues.GetValues());
             Assert.Equal(
@@ -165,7 +186,7 @@ namespace Microsoft.Framework.Logging
                 new KeyValuePair<string, object>("param1", param1),
                 new KeyValuePair<string, object>("param2", param2),
                 new KeyValuePair<string, object>("param3", param3),
-                new KeyValuePair<string, object>("OriginalFormat", TestLoggerExtensions.ScopeInfoWithThreeParameters.NamedStringFormat)
+                new KeyValuePair<string, object>("{OriginalFormat}", TestLoggerExtensions.ScopeInfoWithThreeParameters.NamedStringFormat)
             },
             actualLogValues.GetValues());
             Assert.Equal(

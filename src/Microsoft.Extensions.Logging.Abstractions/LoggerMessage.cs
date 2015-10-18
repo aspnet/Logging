@@ -241,7 +241,7 @@ namespace Microsoft.Extensions.Logging
             public IEnumerable<KeyValuePair<string, object>> GetValues() => new[]
             {
                 new KeyValuePair<string, object>(_formatter.ValueNames[0], _value0),
-                new KeyValuePair<string, object>("OriginalFormat", _formatter.OriginalFormat),
+                new KeyValuePair<string, object>("{OriginalFormat}", _formatter.OriginalFormat),
             };
 
             public object[] ToArray() => new object[] { _value0 };
@@ -268,7 +268,7 @@ namespace Microsoft.Extensions.Logging
             {
                 new KeyValuePair<string, object>(_formatter.ValueNames[0], _value0),
                 new KeyValuePair<string, object>(_formatter.ValueNames[1], _value1),
-                new KeyValuePair<string, object>("OriginalFormat", _formatter.OriginalFormat),
+                new KeyValuePair<string, object>("{OriginalFormat}", _formatter.OriginalFormat),
             };
 
             public object[] ToArray() => new object[] { _value0, _value1 };
@@ -298,7 +298,7 @@ namespace Microsoft.Extensions.Logging
                 new KeyValuePair<string, object>(_formatter.ValueNames[0], _value0),
                 new KeyValuePair<string, object>(_formatter.ValueNames[1], _value1),
                 new KeyValuePair<string, object>(_formatter.ValueNames[2], _value2),
-                new KeyValuePair<string, object>("OriginalFormat", _formatter.OriginalFormat),
+                new KeyValuePair<string, object>("{OriginalFormat}", _formatter.OriginalFormat),
             };
 
             public object[] ToArray() => new object[] { _value0, _value1, _value2 };
@@ -331,7 +331,7 @@ namespace Microsoft.Extensions.Logging
                 new KeyValuePair<string, object>(_formatter.ValueNames[1], _value1),
                 new KeyValuePair<string, object>(_formatter.ValueNames[2], _value2),
                 new KeyValuePair<string, object>(_formatter.ValueNames[3], _value3),
-                new KeyValuePair<string, object>("OriginalFormat", _formatter.OriginalFormat),
+                new KeyValuePair<string, object>("{OriginalFormat}", _formatter.OriginalFormat),
             };
 
             public object[] ToArray() => new object[] { _value0, _value1, _value2, _value3 };

@@ -1,12 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-namespace Microsoft.Framework.Logging.Test
+using System;
+
+namespace Microsoft.Extensions.Logging
 {
     public static class TestLoggerExtensions
     {
+        public class ScopeWithoutAnyParameters
+        {
+            public static Func<ILogger, IDisposable> ScopeDelegate;
+            public const string Message = "Order creation started.";
+            public const string OriginalFormat = Message;
+
+            static ScopeWithoutAnyParameters()
+            {
+                LoggerMessage.DefineScope(out ScopeDelegate, Message);
+            }
+        }
+
         public class ActionMatchedWithEventNameInfo
         {
             public static Action<ILogger, string, string, Exception> MessageDelegate;
@@ -78,8 +90,6 @@ namespace Microsoft.Framework.Logging.Test
             }
         }
 
-        //-------------
-
         public static void ActionMatchedWithEventName(
             this ILogger logger, string controller, string action, Exception exception = null)
         {
@@ -90,6 +100,11 @@ namespace Microsoft.Framework.Logging.Test
             this ILogger logger, string controller, string action, Exception exception = null)
         {
             ActionMatchedWithoutEventNameInfo.MessageDelegate(logger, controller, action, exception);
+        }
+
+        public static IDisposable ScopeWithoutAnyParams(this ILogger logger)
+        {
+            return ScopeWithoutAnyParameters.ScopeDelegate(logger);
         }
 
         public static IDisposable ScopeWithOneParam(this ILogger logger, string requestId)
