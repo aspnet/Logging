@@ -13,8 +13,7 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         public static ILoggerFactory AddConsole(this ILoggerFactory factory)
         {
-            factory.AddProvider(new ConsoleLoggerProvider((category, logLevel) => logLevel >= LogLevel.Information));
-            return factory;
+            return factory.AddConsole(factory.MinimumLevel);
         }
 
         /// <summary>

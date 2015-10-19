@@ -7,16 +7,17 @@ namespace Microsoft.Extensions.Logging.Console
 {
     public class ConsoleLoggerProvider : ILoggerProvider
     {
-        private readonly Func<string, LogLevel, bool> _filter;
-
         public ConsoleLoggerProvider(Func<string, LogLevel, bool> filter)
         {
-            _filter = filter;
+            Filter = filter;
         }
+
+        // to enable unit testing
+        internal Func<string, LogLevel, bool> Filter { get; }
 
         public ILogger CreateLogger(string name)
         {
-            return new ConsoleLogger(name, _filter);
+            return new ConsoleLogger(name, Filter);
         }
 
         public void Dispose()

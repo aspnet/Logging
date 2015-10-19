@@ -1,6 +1,8 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
+using System.Linq;
 using Microsoft.Extensions.Logging.Debug;
 using Xunit;
 
@@ -35,6 +37,33 @@ namespace Microsoft.Extensions.Logging
 
             // Assert
             Assert.NotNull(disposable);
+        }
+
+        [Fact]
+        public void DebugLoggerProvider_UsesLoggerFactoryDefault_MinimumLevel()
+        {
+            // Arrange
+            var loggerFactory = new LoggerFactory();
+            var minimumLogLevel = loggerFactory.MinimumLevel;
+
+            // Act
+            loggerFactory.AddDebug();
+
+            // Assert
+            var providers = loggerFactory.GetProviders();
+            var debugLogProvider = Assert.IsType<DebugLoggerProvider>(providers.FirstOrDefault());
+            var filter = debugLogProvider.Filter;
+            Assert.NotNull(filter);
+            Assert.True(filter("testlogger", minimumLogLevel));
+
+            // less than minimum log level
+            LogLevel level;
+            Assert.True(Enum.TryParse(Enum.GetName(typeof(LogLevel), (int)minimumLogLevel - 1), out level));
+            Assert.False(filter("testlogger", level));
+
+            // more than minimum log level
+            Assert.True(Enum.TryParse(Enum.GetName(typeof(LogLevel), (int)minimumLogLevel + 1), out level));
+            Assert.True(filter("testlogger", level));
         }
     }
 }

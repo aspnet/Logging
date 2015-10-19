@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 using System.Globalization;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Logging.Test.Console;
@@ -447,6 +448,33 @@ namespace Microsoft.Extensions.Logging.Test
 
             // Assert
             Assert.NotNull(disposable);
+        }
+
+        [Fact]
+        public void ConsoleLoggerProvider_UsesLoggerFactoryDefault_MinimumLevel()
+        {
+            // Arrange
+            var loggerFactory = new LoggerFactory();
+            var minimumLogLevel = loggerFactory.MinimumLevel;
+
+            // Act
+            loggerFactory.AddConsole();
+
+            // Assert
+            var providers = loggerFactory.GetProviders();
+            var consoleProvider = Assert.IsType<ConsoleLoggerProvider>(providers.FirstOrDefault());
+            var filter = consoleProvider.Filter;
+            Assert.NotNull(filter);
+            Assert.True(filter("testlogger", minimumLogLevel));
+
+            // less than minimum log level
+            LogLevel level;
+            Assert.True(Enum.TryParse(Enum.GetName(typeof(LogLevel), (int)minimumLogLevel - 1), out level));
+            Assert.False(filter("testlogger", level));
+
+            // more than minimum log level
+            Assert.True(Enum.TryParse(Enum.GetName(typeof(LogLevel), (int)minimumLogLevel + 1), out level));
+            Assert.True(filter("testlogger", level));
         }
 
         private string getMessage(string logLevelString, Exception exception)

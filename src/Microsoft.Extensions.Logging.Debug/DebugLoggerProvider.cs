@@ -10,25 +10,26 @@ namespace Microsoft.Extensions.Logging.Debug
     /// </summary>
     public class DebugLoggerProvider : ILoggerProvider
     {
-        private readonly Func<string, LogLevel, bool> _filter;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DebugLoggerProvider"/> class.
         /// </summary>
         /// <param name="filter">The function used to filter events based on the log level.</param>
         public DebugLoggerProvider(Func<string, LogLevel, bool> filter)
         {
-            _filter = filter;
+            Filter = filter;
         }
 
-        /// <inheritdoc /> 
+        // to enable unit testing
+        internal Func<string, LogLevel, bool> Filter { get; }
+
+        /// <inheritdoc />
         public ILogger CreateLogger(string name)
         {
-            return new DebugLogger(name, _filter);
+            return new DebugLogger(name, Filter);
         }
 
         public void Dispose()
-        {            
+        {
         }
     }
 }

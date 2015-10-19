@@ -10,8 +10,6 @@ namespace Microsoft.Extensions.Logging.EventLog
     /// </summary>
     public class EventLogLoggerProvider : ILoggerProvider
     {
-        private readonly EventLogSettings _settings;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="EventLogLoggerProvider"/> class.
         /// </summary>
@@ -26,13 +24,16 @@ namespace Microsoft.Extensions.Logging.EventLog
         /// <param name="settings">The <see cref="EventLogSettings"/>.</param>
         public EventLogLoggerProvider(EventLogSettings settings)
         {
-            _settings = settings;
+            Settings = settings;
         }
+
+        // to enable unit testing
+        internal EventLogSettings Settings { get; }
 
         /// <inheritdoc />
         public ILogger CreateLogger(string name)
         {
-            return new EventLogLogger(name, _settings ?? new EventLogSettings());
+            return new EventLogLogger(name, Settings ?? new EventLogSettings());
         }
 
         public void Dispose()
