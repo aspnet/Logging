@@ -1,9 +1,9 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.Extensions.Logging.Internal;
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging.Internal;
 
 namespace Microsoft.Extensions.Logging
 {
@@ -15,70 +15,70 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Creates a delegate which can be invoked to create a log scope.
         /// </summary>
-        /// <param name="scope">A delegate which creates a log scope</param>
         /// <param name="formatString">The named format string</param>
-        public static void DefineScope(out Func<ILogger, IDisposable> scope, string formatString)
+        /// <returns>A delegate which when invoked creates a log scope.</returns>
+        public static Func<ILogger, IDisposable> DefineScope(string formatString)
         {
-            var formatter = new LogValuesFormatter(formatString);
+            var logValues = new LogValues(new LogValuesFormatter(formatString));
 
-            scope = logger => logger.BeginScopeImpl(new LogValues(formatter));
+            return logger => logger.BeginScopeImpl(logValues);
         }
 
         /// <summary>
         /// Creates a delegate which can be invoked to create a log scope.
         /// </summary>
-        /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
-        /// <param name="scope">A delegate which creates a log scope</param>
+        /// <typeparam name="T1">The type of the first parameter passed to the named format string.</typeparam>
         /// <param name="formatString">The named format string</param>
-        public static void DefineScope<T1>(out Func<ILogger, T1, IDisposable> scope, string formatString)
+        /// <returns>A delegate which when invoked creates a log scope.</returns>
+        public static Func<ILogger, T1, IDisposable> DefineScope<T1>(string formatString)
         {
             var formatter = new LogValuesFormatter(formatString);
 
-            scope = (logger, arg1) => logger.BeginScopeImpl(new LogValues<T1>(formatter, arg1));
+            return (logger, arg1) => logger.BeginScopeImpl(new LogValues<T1>(formatter, arg1));
         }
 
         /// <summary>
         /// Creates a delegate which can be invoked to create a log scope.
         /// </summary>
-        /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
-        /// <typeparam name="T2">The parameter passed to the named format string</typeparam>
-        /// <param name="scope">A delegate which creates a log scope</param>
+        /// <typeparam name="T1">The type of the first parameter passed to the named format string.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter passed to the named format string.</typeparam>
         /// <param name="formatString">The named format string</param>
-        public static void DefineScope<T1, T2>(out Func<ILogger, T1, T2, IDisposable> scope, string formatString)
+        /// <returns>A delegate which when invoked creates a log scope.</returns>
+        public static Func<ILogger, T1, T2, IDisposable> DefineScope<T1, T2>(string formatString)
         {
             var formatter = new LogValuesFormatter(formatString);
 
-            scope = (logger, arg1, arg2) => logger.BeginScopeImpl(new LogValues<T1, T2>(formatter, arg1, arg2));
+            return (logger, arg1, arg2) => logger.BeginScopeImpl(new LogValues<T1, T2>(formatter, arg1, arg2));
         }
 
         /// <summary>
         /// Creates a delegate which can be invoked to create a log scope.
         /// </summary>
-        /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
-        /// <typeparam name="T2">The parameter passed to the named format string</typeparam>
-        /// <typeparam name="T3">The parameter passed to the named format string</typeparam>
-        /// <param name="scope">A delegate which creates a log scope</param>
+        /// <typeparam name="T1">The type of the first parameter passed to the named format string.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter passed to the named format string.</typeparam>
+        /// <typeparam name="T3">The type of the third parameter passed to the named format string.</typeparam>
         /// <param name="formatString">The named format string</param>
-        public static void DefineScope<T1, T2, T3>(out Func<ILogger, T1, T2, T3, IDisposable> scope, string formatString)
+        /// <returns>A delegate which when invoked creates a log scope.</returns>
+        public static Func<ILogger, T1, T2, T3, IDisposable> DefineScope<T1, T2, T3>(string formatString)
         {
             var formatter = new LogValuesFormatter(formatString);
 
-            scope = (logger, arg1, arg2, arg3) => logger.BeginScopeImpl(new LogValues<T1, T2, T3>(formatter, arg1, arg2, arg3));
+            return (logger, arg1, arg2, arg3) => logger.BeginScopeImpl(new LogValues<T1, T2, T3>(formatter, arg1, arg2, arg3));
         }
 
         /// <summary>
         /// Creates a delegate which can be invoked for logging a message.
         /// </summary>
-        /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
-        /// <param name="message">A delegate which creates a log message</param>
+        /// <typeparam name="T1">The type of the first parameter passed to the named format string.</typeparam>
         /// <param name="logLevel">The <see cref="LogLevel"/></param>
         /// <param name="eventId">The event id</param>
         /// <param name="formatString">The named format string</param>
-        public static void Define<T1>(out Action<ILogger, T1, Exception> message, LogLevel logLevel, int eventId, string formatString)
+        /// <returns>A delegate which when invoked creates a log message.</returns>
+        public static Action<ILogger, T1, Exception> Define<T1>(LogLevel logLevel, int eventId, string formatString)
         {
             var formatter = new LogValuesFormatter(formatString);
 
-            message = (logger, arg1, exception) =>
+            return (logger, arg1, exception) =>
             {
                 if (logger.IsEnabled(logLevel))
                 {
@@ -90,17 +90,17 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Creates a delegate which can be invoked for logging a message.
         /// </summary>
-        /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
-        /// <typeparam name="T2">The parameter passed to the named format string</typeparam>
-        /// <param name="message">A delegate which creates a log message</param>
+        /// <typeparam name="T1">The type of the first parameter passed to the named format string.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter passed to the named format string.</typeparam>
         /// <param name="logLevel">The <see cref="LogLevel"/></param>
         /// <param name="eventId">The event id</param>
         /// <param name="formatString">The named format string</param>
-        public static void Define<T1, T2>(out Action<ILogger, T1, T2, Exception> message, LogLevel logLevel, int eventId, string formatString)
+        /// <returns>A delegate which when invoked creates a log message.</returns>
+        public static Action<ILogger, T1, T2, Exception> Define<T1, T2>(LogLevel logLevel, int eventId, string formatString)
         {
             var formatter = new LogValuesFormatter(formatString);
 
-            message = (logger, arg1, arg2, exception) =>
+            return (logger, arg1, arg2, exception) =>
             {
                 if (logger.IsEnabled(logLevel))
                 {
@@ -112,18 +112,18 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Creates a delegate which can be invoked for logging a message.
         /// </summary>
-        /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
-        /// <typeparam name="T2">The parameter passed to the named format string</typeparam>
-        /// <typeparam name="T3">The parameter passed to the named format string</typeparam>
-        /// <param name="message">A delegate which creates a log message</param>
+        /// <typeparam name="T1">The type of the first parameter passed to the named format string.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter passed to the named format string.</typeparam>
+        /// <typeparam name="T3">The type of the third parameter passed to the named format string.</typeparam>
         /// <param name="logLevel">The <see cref="LogLevel"/></param>
         /// <param name="eventId">The event id</param>
         /// <param name="formatString">The named format string</param>
-        public static void Define<T1, T2, T3>(out Action<ILogger, T1, T2, T3, Exception> message, LogLevel logLevel, int eventId, string formatString)
+        /// <returns>A delegate which when invoked creates a log message.</returns>
+        public static Action<ILogger, T1, T2, T3, Exception> Define<T1, T2, T3>(LogLevel logLevel, int eventId, string formatString)
         {
             var formatter = new LogValuesFormatter(formatString);
 
-            message = (logger, arg1, arg2, arg3, exception) =>
+            return (logger, arg1, arg2, arg3, exception) =>
             {
                 if (logger.IsEnabled(logLevel))
                 {
@@ -132,84 +132,11 @@ namespace Microsoft.Extensions.Logging
             };
         }
 
-        /// <summary>
-        /// Creates a delegate which can be invoked for logging a message.
-        /// </summary>
-        /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
-        /// <param name="message">A delegate which creates a log message</param>
-        /// <param name="logLevel">The <see cref="LogLevel"/></param>
-        /// <param name="eventId">The event id</param>
-        /// <param name="eventName">The event name</param>
-        /// <param name="formatString">The named format string</param>
-        public static void Define<T1>(out Action<ILogger, T1, Exception> message, LogLevel logLevel, int eventId, string eventName, string formatString)
-        {
-            var formatter = new LogValuesFormatter("{EventName}: " + formatString);
-            Func<object, Exception, string> callback = (state, error) => formatter.Format(((LogValues<string, T1>)state).ToArray());
-
-            message = (logger, arg1, exception) =>
-            {
-                if (logger.IsEnabled(logLevel))
-                {
-                    logger.Log(logLevel, eventId, new LogValues<string, T1>(formatter, eventName, arg1), exception, LogValues<string, T1>.Callback);
-                }
-            };
-        }
-
-        /// <summary>
-        /// Creates a delegate which can be invoked for logging a message.
-        /// </summary>
-        /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
-        /// <typeparam name="T2">The parameter passed to the named format string</typeparam>
-        /// <param name="message">A delegate which creates a log message</param>
-        /// <param name="logLevel">The <see cref="LogLevel"/></param>
-        /// <param name="eventId">The event id</param>
-        /// <param name="eventName">The event name</param>
-        /// <param name="formatString">The named format string</param>
-        public static void Define<T1, T2>(out Action<ILogger, T1, T2, Exception> message, LogLevel logLevel, int eventId, string eventName, string formatString)
-        {
-            var formatter = new LogValuesFormatter("{EventName}: " + formatString);
-            Func<object, Exception, string> callback = (state, error) => formatter.Format(((LogValues<string, T1, T2>)state).ToArray());
-
-            message = (logger, arg1, arg2, exception) =>
-            {
-                if (logger.IsEnabled(logLevel))
-                {
-                    logger.Log(logLevel, eventId, new LogValues<string, T1, T2>(formatter, eventName, arg1, arg2), exception, LogValues<string, T1, T2>.Callback);
-                }
-            };
-        }
-
-        /// <summary>
-        /// Creates a delegate which can be invoked for logging a message.
-        /// </summary>
-        /// <typeparam name="T1">The parameter passed to the named format string</typeparam>
-        /// <typeparam name="T2">The parameter passed to the named format string</typeparam>
-        /// <typeparam name="T3">The parameter passed to the named format string</typeparam>
-        /// <param name="message">A delegate which creates a log message</param>
-        /// <param name="logLevel">The <see cref="LogLevel"/></param>
-        /// <param name="eventId">The event id</param>
-        /// <param name="eventName">The event name</param>
-        /// <param name="formatString">The named format string</param>
-        public static void Define<T1, T2, T3>(out Action<ILogger, T1, T2, T3, Exception> message, LogLevel logLevel, int eventId, string eventName, string formatString)
-        {
-            var formatter = new LogValuesFormatter("{EventName}: " + formatString);
-            Func<object, Exception, string> callback = (state, error) => formatter.Format(((LogValues<string, T1, T2, T3>)state).ToArray());
-
-            message = (logger, arg1, arg2, arg3, exception) =>
-            {
-                if (logger.IsEnabled(logLevel))
-                {
-                    logger.Log(logLevel, eventId, new LogValues<string, T1, T2, T3>(formatter, eventName, arg1, arg2, arg3), exception, LogValues<string, T1, T2, T3>.Callback);
-                }
-            };
-        }
-
         private class LogValues : ILogValues
         {
             public static Func<object, Exception, string> Callback = (state, exception) => ((LogValues)state)._formatter.Format(((LogValues)state).ToArray());
 
-            private static IEnumerable<KeyValuePair<string, object>> _getValues = new KeyValuePair<string, object>[0];
-            private static object[] _toArray = new object[0];
+            private static object[] _valueArray = new object[0];
 
             private readonly LogValuesFormatter _formatter;
 
@@ -218,9 +145,12 @@ namespace Microsoft.Extensions.Logging
                 _formatter = formatter;
             }
 
-            public IEnumerable<KeyValuePair<string, object>> GetValues() => _getValues;
+            public IEnumerable<KeyValuePair<string, object>> GetValues() => new[]
+            {
+                new KeyValuePair<string, object>("{OriginalFormat}", _formatter.OriginalFormat),
+            };
 
-            public object[] ToArray() => _toArray;
+            public object[] ToArray() => _valueArray;
 
             public override string ToString() => _formatter.Format(ToArray());
         }

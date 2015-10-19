@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.Logging
     public class LoggerMessageTest
     {
         [Fact]
-        public void LogMessageWithEventName()
+        public void LogMessage()
         {
             // Arrange
             var controller = "home";
@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.Logging
             var testLogger = new TestLogger("testlogger", testSink, enabled: true);
 
             // Act
-            testLogger.ActionMatchedWithEventName(controller, action);
+            testLogger.ActionMatched(controller, action);
 
             // Assert
             Assert.Equal(1, testSink.Writes.Count);
@@ -30,8 +30,7 @@ namespace Microsoft.Extensions.Logging
             var actualLogValues = Assert.IsAssignableFrom<ILogValues>(writeContext.State);
             AssertLogValues(
                 new[] {
-                    new KeyValuePair<string, object>("EventName", TestLoggerExtensions.ActionMatchedWithEventNameInfo.EventName),
-                    new KeyValuePair<string, object>("{OriginalFormat}", TestLoggerExtensions.ActionMatchedWithEventNameInfo.NamedStringFormatWithEventName),
+                    new KeyValuePair<string, object>("{OriginalFormat}", TestLoggerExtensions.ActionMatchedInfo.NamedStringFormat),
                     new KeyValuePair<string, object>("controller", controller),
                     new KeyValuePair<string, object>("action", action)
                 },
@@ -41,42 +40,7 @@ namespace Microsoft.Extensions.Logging
             Assert.Null(writeContext.Exception);
             Assert.Equal(
                 string.Format(
-                    TestLoggerExtensions.ActionMatchedWithEventNameInfo.FormatString,
-                    TestLoggerExtensions.ActionMatchedWithEventNameInfo.EventName,
-                    controller,
-                    action),
-                actualLogValues.ToString());
-        }
-
-        [Fact]
-        public void LogMessageWithoutEventName()
-        {
-            // Arrange
-            var controller = "home";
-            var action = "index";
-            var testSink = new TestSink();
-            var testLogger = new TestLogger("testlogger", testSink, enabled: true);
-
-            // Act
-            testLogger.ActionMatchedWithoutEventName(controller, action);
-
-            // Assert
-            Assert.Equal(1, testSink.Writes.Count);
-            var writeContext = testSink.Writes.First();
-            var actualLogValues = Assert.IsAssignableFrom<ILogValues>(writeContext.State);
-            AssertLogValues(
-                new[] {
-                    new KeyValuePair<string, object>("{OriginalFormat}", TestLoggerExtensions.ActionMatchedWithoutEventNameInfo.NamedStringFormat),
-                    new KeyValuePair<string, object>("controller", controller),
-                    new KeyValuePair<string, object>("action", action)
-                },
-                actualLogValues.GetValues());
-            Assert.Equal(LogLevel.Information, writeContext.LogLevel);
-            Assert.Equal(1, writeContext.EventId);
-            Assert.Null(writeContext.Exception);
-            Assert.Equal(
-                string.Format(
-                    TestLoggerExtensions.ActionMatchedWithoutEventNameInfo.FormatString,
+                    TestLoggerExtensions.ActionMatchedInfo.FormatString,
                     controller,
                     action),
                 actualLogValues.ToString());
@@ -98,7 +62,11 @@ namespace Microsoft.Extensions.Logging
             Assert.Equal(1, testSink.Scopes.Count);
             var scopeContext = testSink.Scopes.First();
             var actualLogValues = Assert.IsAssignableFrom<ILogValues>(scopeContext.Scope);
-            Assert.Empty(actualLogValues.GetValues());
+            AssertLogValues(new[]
+            {
+                new KeyValuePair<string, object>("{OriginalFormat}", TestLoggerExtensions.ScopeWithoutAnyParameters.Message)
+            },
+            actualLogValues.GetValues());
             Assert.Equal(
                 TestLoggerExtensions.ScopeWithoutAnyParameters.Message,
                 actualLogValues.ToString());

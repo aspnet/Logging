@@ -11,9 +11,9 @@ namespace SampleApp
 
         static LoggerExtensions()
         {
-            LoggerMessage.DefineScope(out _purchaseOrderScope, "PO:{PurchaseOrder}");
-            LoggerMessage.Define(out _programStarting, LogLevel.Information, 1, "Starting", "at '{StartTime}' and 0x{Hello:X} is hex of 42");
-            LoggerMessage.Define(out _programStopping, LogLevel.Information, 2, "Stopping", "at '{StopTime}'");
+            _purchaseOrderScope = LoggerMessage.DefineScope<string>("PO:{PurchaseOrder}");
+            _programStarting = LoggerMessage.Define<DateTimeOffset, int>(LogLevel.Information, 1, "Starting at '{StartTime}' and 0x{Hello:X} is hex of 42");
+            _programStopping = LoggerMessage.Define<DateTimeOffset>(LogLevel.Information, 2, "Stopping at '{StopTime}'");
         }
 
         public static IDisposable PurchaseOrderScope(this ILogger logger, string purchaseOrder)

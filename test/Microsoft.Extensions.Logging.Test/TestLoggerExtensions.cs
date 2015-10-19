@@ -15,39 +15,19 @@ namespace Microsoft.Extensions.Logging
 
             static ScopeWithoutAnyParameters()
             {
-                LoggerMessage.DefineScope(out ScopeDelegate, Message);
+                ScopeDelegate = LoggerMessage.DefineScope(Message);
             }
         }
 
-        public class ActionMatchedWithEventNameInfo
-        {
-            public static Action<ILogger, string, string, Exception> MessageDelegate;
-            public const string EventName = "ActionMatch";
-            public const string NamedStringFormat = "Request matched controller '{controller}' and action '{action}'.";
-            public const string NamedStringFormatWithEventName = "{EventName}: Request matched controller '{controller}' and action '{action}'.";
-            public const string FormatString = "{0}: Request matched controller '{1}' and action '{2}'.";
-
-            static ActionMatchedWithEventNameInfo()
-            {
-                LoggerMessage.Define(
-                    out MessageDelegate,
-                    LogLevel.Information,
-                    eventId: 1,
-                    eventName: "ActionMatch",
-                    formatString: NamedStringFormat);
-            }
-        }
-
-        public class ActionMatchedWithoutEventNameInfo
+        public class ActionMatchedInfo
         {
             public static Action<ILogger, string, string, Exception> MessageDelegate;
             public const string NamedStringFormat = "Request matched controller '{controller}' and action '{action}'.";
             public const string FormatString = "Request matched controller '{0}' and action '{1}'.";
 
-            static ActionMatchedWithoutEventNameInfo()
+            static ActionMatchedInfo()
             {
-                LoggerMessage.Define(
-                    out MessageDelegate,
+                MessageDelegate = LoggerMessage.Define<string, string>(
                     LogLevel.Information,
                     eventId: 1,
                     formatString: NamedStringFormat);
@@ -62,7 +42,7 @@ namespace Microsoft.Extensions.Logging
 
             static ScopeWithOneParameter()
             {
-                LoggerMessage.DefineScope(out ScopeDelegate, NamedStringFormat);
+                ScopeDelegate = LoggerMessage.DefineScope<string>(NamedStringFormat);
             }
         }
 
@@ -74,7 +54,7 @@ namespace Microsoft.Extensions.Logging
 
             static ScopeInfoWithTwoParameters()
             {
-                LoggerMessage.DefineScope(out ScopeDelegate, NamedStringFormat);
+                ScopeDelegate = LoggerMessage.DefineScope<string, string>(NamedStringFormat);
             }
         }
 
@@ -86,20 +66,14 @@ namespace Microsoft.Extensions.Logging
 
             static ScopeInfoWithThreeParameters()
             {
-                LoggerMessage.DefineScope(out ScopeDelegate, NamedStringFormat);
+                ScopeDelegate = LoggerMessage.DefineScope<string, string, int>(NamedStringFormat);
             }
         }
 
-        public static void ActionMatchedWithEventName(
+        public static void ActionMatched(
             this ILogger logger, string controller, string action, Exception exception = null)
         {
-            ActionMatchedWithEventNameInfo.MessageDelegate(logger, controller, action, exception);
-        }
-
-        public static void ActionMatchedWithoutEventName(
-            this ILogger logger, string controller, string action, Exception exception = null)
-        {
-            ActionMatchedWithoutEventNameInfo.MessageDelegate(logger, controller, action, exception);
+            ActionMatchedInfo.MessageDelegate(logger, controller, action, exception);
         }
 
         public static IDisposable ScopeWithoutAnyParams(this ILogger logger)
