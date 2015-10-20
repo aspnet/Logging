@@ -3,6 +3,9 @@
 
 namespace Microsoft.Extensions.Logging
 {
+    /// <summary>
+    /// Defines logging severity levels.
+    /// </summary>
     public enum LogLevel
     {
         Debug = 1,
