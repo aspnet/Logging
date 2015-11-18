@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.0.0-rc1-final",
   "repository": {
     "type": "git",
     "url": "git://github.com/aspnet/logging"
@@ -10,7 +10,7 @@
   },
   "description": "Logger for Windows Event Log.",
   "dependencies": {
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*"
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final"
   },
   "frameworks": {
     "net451": {}

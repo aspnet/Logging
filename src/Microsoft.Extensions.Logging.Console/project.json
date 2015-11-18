@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.0.0-rc1-final",
   "repository": {
     "type": "git",
     "url": "git://github.com/aspnet/logging"
@@ -11,27 +11,27 @@
   },
   "dependencies": {
     "Microsoft.Dnx.Runtime.Sources": {
-      "version": "1.0.0-*",
+      "version": "1.0.0-rc1-final",
       "type": "build"
     },
-    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.PlatformAbstractions": "1.0.0-*"
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final"
   },
   "frameworks": {
-    "net451": { },
+    "net451": {},
     "dotnet5.4": {
       "dependencies": {
-        "System.Console": "4.0.0-beta-*",
-        "System.IO": "4.0.11-beta-*",
-        "System.Reflection.Extensions": "4.0.1-beta-*",
-        "System.Runtime": "4.0.21-beta-*",
-        "System.Threading": "4.0.11-beta-*"
+        "System.Console": "4.0.0-beta-23516",
+        "System.IO": "4.0.11-beta-23516",
+        "System.Reflection.Extensions": "4.0.1-beta-23516",
+        "System.Runtime": "4.0.21-beta-23516",
+        "System.Threading": "4.0.11-beta-23516"
       }
     },
     "netcore50": {
       "dependencies": {
-        "System.Console": "4.0.0-*"
+        "System.Console": "4.0.0-beta-23516"
       }
     }
   }

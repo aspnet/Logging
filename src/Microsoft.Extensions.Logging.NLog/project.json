@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.0.0-rc1-final",
   "repository": {
     "type": "git",
     "url": "git://github.com/aspnet/logging"
@@ -9,7 +9,7 @@
     "keyFile": "../../tools/Key.snk"
   },
   "dependencies": {
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
     "NLog": "3.1.0"
   },
   "frameworks": {

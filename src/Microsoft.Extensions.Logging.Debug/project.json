@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.0.0-rc1-final",
   "repository": {
     "type": "git",
     "url": "git://github.com/aspnet/logging"
@@ -9,15 +9,15 @@
     "keyFile": "../../tools/Key.snk"
   },
   "dependencies": {
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*"
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final"
   },
   "frameworks": {
     "net451": {},
     "dotnet5.4": {
       "dependencies": {
-        "System.Collections": "4.0.11-beta-*",
-        "System.Globalization": "4.0.11-beta-*",
-        "System.Linq": "4.0.1-beta-*"
+        "System.Collections": "4.0.11-beta-23516",
+        "System.Globalization": "4.0.11-beta-23516",
+        "System.Linq": "4.0.1-beta-23516"
       }
     },
     "netcore50": {}

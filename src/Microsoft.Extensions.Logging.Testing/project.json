@@ -1,6 +1,6 @@
 {
   "description": "Helpers for writing tests that use Microsoft.Extensions.Logging.",
-  "version": "1.0.0-*",
+  "version": "1.0.0-rc1-final",
   "compilationOptions": {
     "warningsAsErrors": true,
     "keyFile": "../../tools/Key.snk"
@@ -10,7 +10,7 @@
     "url": "git://github.com/aspnet/logging"
   },
   "dependencies": {
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
     "xunit.assert": "2.1.0-*"
   },
   "frameworks": {
