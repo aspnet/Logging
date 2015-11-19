@@ -25,7 +25,7 @@ namespace SampleApp
             // providers may be added to an ILoggerFactory at any time, existing ILoggers are updated
 #if !DNXCORE50
             factory.AddNLog(new global::NLog.LogFactory());
-            factory.AddEventLog();
+            //factory.AddEventLog();
 #endif
 
             // How to configure the console logger to reload based on a configuration file.
@@ -67,6 +67,8 @@ namespace SampleApp
             public IChangeToken ChangeToken { get; private set; }
 
             public bool IncludeScopes { get; }
+            public string TimestampFormat { get; }
+            public bool IncludeTimestamp => DateTime.Now.Second % 2 == 0;
 
             private Dictionary<string, LogLevel> Switches { get; set; }
 

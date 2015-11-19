@@ -31,7 +31,7 @@ namespace Microsoft.Extensions.Logging.Console
             _messagePadding = new string(' ', logLevelString.Length + _loglevelPadding.Length);
         }
 
-        public ConsoleLogger(string name, Func<string, LogLevel, bool> filter, bool includeScopes)
+        public ConsoleLogger(string name, Func<string, LogLevel, bool> filter, bool includeScopes, bool includeTimestamp, string timeStampFormat)
         {
             if (name == null)
             {
@@ -41,6 +41,8 @@ namespace Microsoft.Extensions.Logging.Console
             Name = name;
             Filter = filter ?? ((category, logLevel) => true);
             IncludeScopes = includeScopes;
+            IncludeTimestamp = includeTimestamp;
+            TimeStampFormat = timeStampFormat;
 
             if (RuntimeEnvironmentHelper.IsWindows)
             {
@@ -81,6 +83,9 @@ namespace Microsoft.Extensions.Logging.Console
         }
 
         public bool IncludeScopes { get; set; }
+        public bool IncludeTimestamp { get; set; }
+        public string TimeStampFormat { get; set; }
+        public string TimestampFormat { get; set; }
 
         public string Name { get; }
 
@@ -144,10 +149,18 @@ namespace Microsoft.Extensions.Logging.Console
 
                 // category and event id
                 // use default colors
+
+                var header = new StringBuilder(_loglevelPadding);
+                if (IncludeTimestamp)
+                {
+                    header.Append($"[{DateTime.Now.ToString(TimeStampFormat)}] ");
+                }
+                header.Append(logName + $"[{eventId}]");
+
                 WriteWithColor(
                     ConsoleColor.Gray,
                     DefaultConsoleColor,
-                    _loglevelPadding + logName + $"[{eventId}]",
+                    header.ToString(),
                     newLine: true);
 
                 // scope information

@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.Logging.Console
         private readonly Func<string, LogLevel, bool> _filter;
         private IConsoleLoggerSettings _settings;
 
-        public ConsoleLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
+        public ConsoleLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes, bool includeTimestamp)
         {
             if (filter == null)
             {
@@ -25,6 +25,7 @@ namespace Microsoft.Extensions.Logging.Console
             _settings = new ConsoleLoggerSettings()
             {
                 IncludeScopes = includeScopes,
+                IncludeTimestamp = includeTimestamp
             };
         }
 
@@ -36,11 +37,7 @@ namespace Microsoft.Extensions.Logging.Console
             }
 
             _settings = settings;
-
-            if (_settings.ChangeToken != null)
-            {
-                _settings.ChangeToken.RegisterChangeCallback(OnConfigurationReload, null);
-            }
+            _settings.ChangeToken?.RegisterChangeCallback(OnConfigurationReload, null);
         }
 
         private void OnConfigurationReload(object state)
@@ -53,13 +50,12 @@ namespace Microsoft.Extensions.Logging.Console
             {
                 logger.Filter = GetFilter(logger.Name, _settings);
                 logger.IncludeScopes = _settings.IncludeScopes;
+                logger.TimestampFormat = _settings.TimestampFormat;
+                logger.IncludeTimestamp = _settings.IncludeTimestamp;
             }
 
             // The token will change each time it reloads, so we need to register again.
-            if (_settings?.ChangeToken != null)
-            {
-                _settings.ChangeToken.RegisterChangeCallback(OnConfigurationReload, null);
-            }
+            _settings?.ChangeToken?.RegisterChangeCallback(OnConfigurationReload, null);
         }
 
         public ILogger CreateLogger(string name)
@@ -69,7 +65,8 @@ namespace Microsoft.Extensions.Logging.Console
 
         private ConsoleLogger CreateLoggerImplementation(string name)
         {
-            return new ConsoleLogger(name, GetFilter(name, _settings), _settings.IncludeScopes);
+            return new ConsoleLogger(name, GetFilter(name, _settings), _settings.IncludeScopes,
+                _settings.IncludeTimestamp, _settings.TimestampFormat);
         }
 
         private Func<string, LogLevel, bool> GetFilter(string name, IConsoleLoggerSettings settings)

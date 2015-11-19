@@ -25,13 +25,14 @@ namespace Microsoft.Extensions.Logging
         /// in the output.</param>
         public static ILoggerFactory AddConsole(this ILoggerFactory factory, bool includeScopes)
         {
-            factory.AddConsole((n, l) => l >= LogLevel.Information, includeScopes);
+            factory.AddConsole((n, l) => l >= LogLevel.Information, includeScopes, includeTimestamp: false);
             return factory;
         }
 
         /// <summary>
         /// Adds a console logger that is enabled for <see cref="LogLevel"/>s of minLevel or higher.
         /// </summary>
+        /// <param name="factory"></param>
         /// <param name="minLevel">The minimum <see cref="LogLevel"/> to be logged</param>
         public static ILoggerFactory AddConsole(this ILoggerFactory factory, LogLevel minLevel)
         {
@@ -51,7 +52,7 @@ namespace Microsoft.Extensions.Logging
             LogLevel minLevel,
             bool includeScopes)
         {
-            factory.AddConsole((category, logLevel) => logLevel >= minLevel, includeScopes);
+            factory.AddConsole((category, logLevel) => logLevel >= minLevel, includeScopes, includeTimestamp: false);
             return factory;
         }
 
@@ -64,7 +65,7 @@ namespace Microsoft.Extensions.Logging
             this ILoggerFactory factory,
             Func<string, LogLevel, bool> filter)
         {
-            factory.AddConsole(filter, includeScopes: false);
+            factory.AddConsole(filter, includeScopes: false, includeTimestamp: false);
             return factory;
         }
 
@@ -75,12 +76,13 @@ namespace Microsoft.Extensions.Logging
         /// <param name="filter"></param>
         /// <param name="includeScopes">A value which indicates whether log scope information should be displayed
         /// in the output.</param>
+        /// <param name="includeTimestamp"></param>
         public static ILoggerFactory AddConsole(
             this ILoggerFactory factory,
             Func<string, LogLevel, bool> filter,
-            bool includeScopes)
+            bool includeScopes, bool includeTimestamp)
         {
-            factory.AddProvider(new ConsoleLoggerProvider(filter, includeScopes));
+            factory.AddProvider(new ConsoleLoggerProvider(filter, includeScopes, includeTimestamp));
             return factory;
         }
 

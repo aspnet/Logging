@@ -8,6 +8,9 @@ namespace Microsoft.Extensions.Logging.Console
         bool IncludeScopes { get; }
 
         IChangeToken ChangeToken { get; }
+        string TimestampFormat { get; }
+
+        bool IncludeTimestamp { get; }
 
         bool TryGetSwitch(string name, out LogLevel level);
 

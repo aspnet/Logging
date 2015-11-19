@@ -22,12 +22,12 @@ namespace Microsoft.Extensions.Logging.Test
         private const string _state = "This is a test, and {curly braces} are just fine!";
         private readonly Func<object, Exception, string> _theMessageAndError;
 
-        private Tuple<ConsoleLogger, ConsoleSink> SetUp(Func<string, LogLevel, bool> filter, bool includeScopes = false)
+        private Tuple<ConsoleLogger, ConsoleSink> SetUp(Func<string, LogLevel, bool> filter, bool includeScopes = false, bool includeTimestamp = false)
         {
             // Arrange
             var sink = new ConsoleSink();
             var console = new TestConsole(sink);
-            var logger = new ConsoleLogger(_loggerName, filter, includeScopes);
+            var logger = new ConsoleLogger(_loggerName, filter, includeScopes, includeTimestamp);
             logger.Console = console;
             return new Tuple<ConsoleLogger, ConsoleSink>(logger, sink);
         }
@@ -746,6 +746,8 @@ namespace Microsoft.Extensions.Logging.Test
             public IDictionary<string, LogLevel> Switches { get; } = new Dictionary<string, LogLevel>();
 
             public bool IncludeScopes { get; set; }
+            string TimestampFormat { get; set; }
+            bool IncludeTimestamp { get; set; }
 
             public IConsoleLoggerSettings Reload()
             {
