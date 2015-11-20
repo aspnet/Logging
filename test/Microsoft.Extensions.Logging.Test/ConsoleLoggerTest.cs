@@ -746,8 +746,8 @@ namespace Microsoft.Extensions.Logging.Test
             public IDictionary<string, LogLevel> Switches { get; } = new Dictionary<string, LogLevel>();
 
             public bool IncludeScopes { get; set; }
-            string TimestampFormat { get; set; }
-            bool IncludeTimestamp { get; set; }
+            public string TimestampFormat { get; set; }
+            public bool IncludeTimestamp { get; set; }
 
             public IConsoleLoggerSettings Reload()
             {
