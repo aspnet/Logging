@@ -1,5 +1,7 @@
 ﻿{
-  "IncludeScopes" : "false",
+  "IncludeScopes": "true",
+  "IncludeTimestamp": "true",
+  "TimestampFormat": "s",
   "LogLevel": {
     "Default": "Verbose",
     "System": "Information",

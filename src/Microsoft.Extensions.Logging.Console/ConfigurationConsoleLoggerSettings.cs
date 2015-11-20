@@ -19,6 +19,30 @@ namespace Microsoft.Extensions.Logging.Console
 
         public IChangeToken ChangeToken { get; private set; }
 
+        public string TimestampFormat => _configuration["TimestampFormat"];
+
+        public bool IncludeTimestamp
+        {
+            get
+            {
+                bool includeTimestamp;
+                var value = _configuration["IncludeTimestamp"];
+                if (string.IsNullOrEmpty(value))
+                {
+                    return false;
+                }
+                else if (bool.TryParse(value, out includeTimestamp))
+                {
+                    return includeTimestamp;
+                }
+                else
+                {
+                    var message = $"Configuration value '{value}' for setting '{nameof(IncludeTimestamp)}' is not supported.";
+                    throw new InvalidOperationException(message);
+                }
+            }
+        }
+
         public bool IncludeScopes
         {
             get
