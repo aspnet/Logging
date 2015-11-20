@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.Logging.Test
             // Arrange
             var sink = new ConsoleSink();
             var console = new TestConsole(sink);
-            var logger = new ConsoleLogger(_loggerName, filter, includeScopes, includeTimestamp);
+            var logger = new ConsoleLogger(_loggerName, filter, includeScopes, includeTimestamp, null);
             logger.Console = console;
             return new Tuple<ConsoleLogger, ConsoleSink>(logger, sink);
         }
