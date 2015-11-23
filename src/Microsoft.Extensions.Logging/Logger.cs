@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.Logging
         private readonly LoggerFactory _loggerFactory;
         private readonly string _name;
         private ILogger[] _loggers;
-        private readonly Dictionary<ILoggerProvider, ILogger> _providerLoggerMap = new Dictionary<ILoggerProvider, ILogger>(1);
+        private Dictionary<ILoggerProvider, ILogger> _providerLoggerMap;
 
         public Logger(LoggerFactory loggerFactory, string name)
         {
@@ -25,6 +25,8 @@ namespace Microsoft.Extensions.Logging
 
             if (providers.Length > 0)
             {
+                _providerLoggerMap = new Dictionary<ILoggerProvider, ILogger>(providers.Length);
+                _loggers = new ILogger[providers.Length];
                 for (var index = 0; index != providers.Length; index++)
                 {
                     var provider = providers[index];
@@ -158,6 +160,7 @@ namespace Microsoft.Extensions.Logging
 
         internal void AddProvider(ILoggerProvider provider)
         {
+            if (_providerLoggerMap == null) _providerLoggerMap = new Dictionary<ILoggerProvider, ILogger>(1);
             var logger = provider.CreateLogger(_name);
             _providerLoggerMap[provider] = logger;
             int logIndex;
@@ -175,8 +178,11 @@ namespace Microsoft.Extensions.Logging
         }
         internal void RemoveProvider(ILoggerProvider provider)
         {
-            var logger = _providerLoggerMap[provider];
-            RemoveLogger(logger);
+            if (_providerLoggerMap != null)
+            {
+                var logger = _providerLoggerMap[provider];
+                RemoveLogger(logger);
+            }
         }
 
         private void RemoveLogger(ILogger logger)
