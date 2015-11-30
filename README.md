@@ -1,13 +1,16 @@
 Logging
 =======
-
 **Package**: `Microsoft.Extensions.Logging`  
-NuGet (`master`): [![](http://img.shields.io/nuget/v/Microsoft.Extensions.Logging.svg?style=flat-square)](http://www.nuget.org/packages/Microsoft.Extensions.Logging) [![](http://img.shields.io/nuget/dt/Microsoft.Extensions.Logging.svg?style=flat-square)](http://www.nuget.org/packages/Microsoft.Extensions.Logging)  
-MyGet (`aspnetvnext`): [![](http://img.shields.io/myget/aspnetvnext/v/Microsoft.Extensions.Logging.svg?style=flat-square)](https://www.myget.org/gallery/aspnetvnext)  
-MyGet (`aspnetcidev`): [![](http://img.shields.io/myget/aspnetcidev/v/Microsoft.Extensions.Logging.svg?style=flat-square)](https://www.myget.org/gallery/aspnetcidev)  
 
-AppVeyor: [![AppVeyor](https://ci.appveyor.com/api/projects/status/i0hdtuq4m6pwfp2s/branch/dev?svg=true)](https://ci.appveyor.com/project/aspnetci/Logging/branch/dev)  
-Travis:   [![Travis](https://travis-ci.org/aspnet/Logging.svg?branch=dev)](https://travis-ci.org/aspnet/Logging)
+| NuGet | MyGet(`aspnetvnext`) | MyGet(`aspnetcidev`) |
+|:-----:|:--------------------:|:--------------------:|
+|[![](http://img.shields.io/nuget/v/Microsoft.Extensions.Logging.svg?style=flat-square)](http://www.nuget.org/packages/Microsoft.Extensions.Logging) [![](http://img.shields.io/nuget/dt/Microsoft.Extensions.Logging.svg?style=flat-square)](http://www.nuget.org/packages/Microsoft.Extensions.Logging)|[![](http://img.shields.io/myget/aspnetvnext/v/Microsoft.Extensions.Logging.svg?style=flat-square)](https://www.myget.org/gallery/aspnetvnext)|[![](http://img.shields.io/myget/aspnetcidev/v/Microsoft.Extensions.Logging.svg?style=flat-square)](https://www.myget.org/gallery/aspnetcidev)|
+
+**Build status**
+
+| AppVeyor | Travis |
+|----------|--------|
+|[![AppVeyor](https://ci.appveyor.com/api/projects/status/i0hdtuq4m6pwfp2s/branch/dev?svg=true)](https://ci.appveyor.com/project/aspnetci/Logging/branch/dev)|[![Travis](https://travis-ci.org/aspnet/Logging.svg?branch=dev)](https://travis-ci.org/aspnet/Logging)|
 
 Contains common logging abstractions for ASP.NET 5. Refer to the [wiki](https://github.com/aspnet/Logging/wiki) for more information
 
