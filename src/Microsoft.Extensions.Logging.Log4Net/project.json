@@ -1,0 +1,18 @@
+﻿{
+  "version": "1.0.0-*",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fengjb/Logging"
+  },
+  "compilationOptions": {
+    "warningsAsErrors": true,
+    "keyFile": "../../tools/Key.snk"
+  },
+  "dependencies": {
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    "log4net": "2.0.0"
+  },
+  "frameworks": {
+    "net451": { }
+  }
+}
