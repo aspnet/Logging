@@ -6,6 +6,7 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Extensions.Logging.Console.Internal;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Microsoft.Extensions.Logging.Console
 {
@@ -37,12 +38,12 @@ namespace Microsoft.Extensions.Logging.Console
             {
                 throw new ArgumentNullException(nameof(name));
             }
-            
+
             Name = name;
             Filter = filter ?? ((category, logLevel) => true);
             IncludeScopes = includeScopes;
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (PlatformServices.Default.Runtime.OperatingSystem.Equals("Windows", StringComparison.OrdinalIgnoreCase))
             {
                 Console = new WindowsLogConsole();
             }
