@@ -25,8 +25,12 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="type">The type.</param>
-        public static ILogger CreateLogger([NotNull] this ILoggerFactory factory, Type type)
+        public static ILogger CreateLogger(this ILoggerFactory factory, Type type)
         {
+            if (factory == null)
+            {
+                throw new ArgumentNullException(nameof(factory));
+            }
             return factory.CreateLogger(TypeNameHelper.GetTypeDisplayName(type, fullName: true));
         }
     }
