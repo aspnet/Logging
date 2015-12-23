@@ -1,6 +1,12 @@
-﻿using System;
-using Microsoft.Framework.Logging;
-using ILogger = Microsoft.Framework.Logging.ILogger;
+using System;
+using System.Collections.Generic;
+using Microsoft.AspNet.FileProviders;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.Extensions.Primitives;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace SampleApp
 {
@@ -14,55 +20,120 @@ namespace SampleApp
             var factory = new LoggerFactory();
 
             // getting the logger immediately using the class's name is conventional
-            _logger = factory.CreateLogger(typeof(Program).FullName);
+            _logger = factory.CreateLogger<Program>();
 
             // providers may be added to an ILoggerFactory at any time, existing ILoggers are updated
 #if !DNXCORE50
             factory.AddNLog(new global::NLog.LogFactory());
             factory.AddEventLog();
 #endif
-            factory.AddConsole();
-            factory.AddConsole((category, logLevel) => logLevel >= LogLevel.Critical && category.Equals(typeof(Program).FullName));
+
+            // How to configure the console logger to reload based on a configuration file.
+            //
+            //
+            var loggingConfiguration = new ConfigurationBuilder().AddJsonFile("logging.json").Build();
+            factory.AddConsole(loggingConfiguration);
+            loggingConfiguration.ReloadOnChanged("logging.json");
+
+            // How to configure the console logger to use settings provided in code.
+            //
+            //
+            //var settings = new ConsoleLoggerSettings()
+            //{
+            //    IncludeScopes = true,
+            //    Switches =
+            //    {
+            //        ["Default"] = LogLevel.Debug,
+            //        ["Microsoft"] = LogLevel.Information,
+            //    }
+            //};
+            //factory.AddConsole(settings);
+
+            // How to manually wire up file-watching without a configuration file
+            //
+            //
+            //factory.AddConsole(new RandomReloadingConsoleSettings());
+        }
+
+        private class RandomReloadingConsoleSettings : IConsoleLoggerSettings
+        {
+            private PhysicalFileProvider _files = new PhysicalFileProvider(PlatformServices.Default.Application.ApplicationBasePath);
+
+            public RandomReloadingConsoleSettings()
+            {
+                Reload();
+            }
+
+            public IChangeToken ChangeToken { get; private set; }
+
+            public bool IncludeScopes { get; }
+
+            private Dictionary<string, LogLevel> Switches { get; set; }
+
+            public IConsoleLoggerSettings Reload()
+            {
+                ChangeToken = _files.Watch("logging.json");
+                Switches = new Dictionary<string, LogLevel>()
+                {
+                    ["Default"] = (LogLevel)(DateTimeOffset.Now.Second % 5 + 1),
+                    ["Microsoft"] = (LogLevel)(DateTimeOffset.Now.Second % 5 + 1),
+                };
+
+                return this;
+            }
+
+            public bool TryGetSwitch(string name, out LogLevel level)
+            {
+                return Switches.TryGetValue(name, out level);
+            }
         }
 
         public void Main(string[] args)
         {
             _logger.LogInformation("Starting");
 
-            var startTime = DateTimeOffset.UtcNow;
+            var startTime = DateTimeOffset.Now;
             _logger.LogInformation(1, "Started at '{StartTime}' and 0x{Hello:X} is hex of 42", startTime, 42);
+            // or
+            _logger.ProgramStarting(startTime, 42);
 
-            try
+            using (_logger.PurchaseOrderScope("00655321"))
             {
-                throw new Exception("Boom");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogCritical("Unexpected critical error starting application", ex);
-                _logger.Log(LogLevel.Critical, 0, "Unexpected critical error", ex, null);
-                // This write should not log anything
-                _logger.Log(LogLevel.Critical, 0, null, null, null);
-                _logger.LogError("Unexpected error", ex);
-                _logger.LogWarning("Unexpected warning", ex);
+                try
+                {
+                    throw new Exception("Boom");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogCritical("Unexpected critical error starting application", ex);
+                    _logger.LogError("Unexpected error", ex);
+                    _logger.LogWarning("Unexpected warning", ex);
+                }
+
+                using (_logger.BeginScopeImpl("Main"))
+                {
+
+                    _logger.LogInformation("Waiting for user input");
+
+                    string input;
+                    do
+                    {
+                        Console.WriteLine("Enter some test to log more, or 'quit' to exit.");
+                        input = Console.ReadLine();
+
+                        _logger.LogInformation("User typed '{input}' on the command line", input);
+                        _logger.LogWarning("The time is now {Time}, it's getting late!", DateTimeOffset.Now);
+                    }
+                    while (input != "quit");
+                }
             }
 
-            using (_logger.BeginScopeImpl("Main"))
-            {
-                Console.WriteLine("Hello World");
-
-                _logger.LogInformation("Waiting for user input");
-                Console.ReadLine();
-            }
-
-            var endTime = DateTimeOffset.UtcNow;
+            var endTime = DateTimeOffset.Now;
             _logger.LogInformation(2, "Stopping at '{StopTime}'", endTime);
+            // or
+            _logger.ProgramStopping(endTime);
 
             _logger.LogInformation("Stopping");
-
-            _logger.LogInformation(Environment.NewLine);
-            _logger.LogInformation("{Result,-10}{StartTime,15}{EndTime,15}{Duration,15}", "RESULT", "START TIME", "END TIME", "DURATION(ms)");
-            _logger.LogInformation("{Result,-10}{StartTime,15}{EndTime,15}{Duration,15}", "------", "----- ----", "--- ----", "------------");
-            _logger.LogInformation("{Result,-10}{StartTime,15:mm:s tt}{EndTime,15:mm:s tt}{Duration,15}", "SUCCESS", startTime, endTime, (endTime - startTime).TotalMilliseconds);
         }
     }
 }

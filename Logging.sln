@@ -1,31 +1,34 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Framework.Logging", "src\Microsoft.Framework.Logging\Microsoft.Framework.Logging.xproj", "{19D1B6C5-8A62-4387-8816-C54874D1DF5F}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Logging", "src\Microsoft.Extensions.Logging\Microsoft.Extensions.Logging.xproj", "{19D1B6C5-8A62-4387-8816-C54874D1DF5F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{09920C51-6220-4D8D-94DC-E70C13446187}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Framework.Logging.Test", "test\Microsoft.Framework.Logging.Test\Microsoft.Framework.Logging.Test.xproj", "{96B1D6A8-7E40-43C7-813F-898DC8192DDE}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Logging.Test", "test\Microsoft.Extensions.Logging.Test\Microsoft.Extensions.Logging.Test.xproj", "{96B1D6A8-7E40-43C7-813F-898DC8192DDE}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Framework.Logging.Abstractions", "src\Microsoft.Framework.Logging.Abstractions\Microsoft.Framework.Logging.Abstractions.xproj", "{8221FA95-4B1A-44BF-925F-8AC1A317CC7C}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Logging.Abstractions", "src\Microsoft.Extensions.Logging.Abstractions\Microsoft.Extensions.Logging.Abstractions.xproj", "{8221FA95-4B1A-44BF-925F-8AC1A317CC7C}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Framework.Logging.NLog", "src\Microsoft.Framework.Logging.NLog\Microsoft.Framework.Logging.NLog.xproj", "{718CBC9D-1E65-447D-A64A-7AC467FB5D6A}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Logging.NLog", "src\Microsoft.Extensions.Logging.NLog\Microsoft.Extensions.Logging.NLog.xproj", "{718CBC9D-1E65-447D-A64A-7AC467FB5D6A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{8C1F5D80-88EA-4961-84DC-7AC6E13951F4}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SampleApp", "samples\SampleApp\SampleApp.xproj", "{550E0247-0BDD-4016-A29B-250F075686FD}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Framework.Logging.Console", "src\Microsoft.Framework.Logging.Console\Microsoft.Framework.Logging.Console.xproj", "{75A4DE6D-BBAA-4D59-829D-94009E759A18}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Logging.Console", "src\Microsoft.Extensions.Logging.Console\Microsoft.Extensions.Logging.Console.xproj", "{75A4DE6D-BBAA-4D59-829D-94009E759A18}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{699DB330-0095-4266-B7B0-3EAB3710CA49}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Framework.Logging.TraceSource", "src\Microsoft.Framework.Logging.TraceSource\Microsoft.Framework.Logging.TraceSource.xproj", "{1A3EB66F-9E64-4676-852F-24995549ED8A}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Logging.TraceSource", "src\Microsoft.Extensions.Logging.TraceSource\Microsoft.Extensions.Logging.TraceSource.xproj", "{1A3EB66F-9E64-4676-852F-24995549ED8A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Framework.Logging.Debug", "src\Microsoft.Framework.Logging.Debug\Microsoft.Framework.Logging.Debug.xproj", "{FFEDC225-D5BD-44E0-B7A6-A98FCFECC694}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Logging.Debug", "src\Microsoft.Extensions.Logging.Debug\Microsoft.Extensions.Logging.Debug.xproj", "{FFEDC225-D5BD-44E0-B7A6-A98FCFECC694}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Framework.Logging.EventLog", "src\Microsoft.Framework.Logging.EventLog\Microsoft.Framework.Logging.EventLog.xproj", "{5D211C4A-6421-48F8-8AF9-D3BDC7DECD97}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Logging.EventLog", "src\Microsoft.Extensions.Logging.EventLog\Microsoft.Extensions.Logging.EventLog.xproj", "{5D211C4A-6421-48F8-8AF9-D3BDC7DECD97}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Logging.Testing", "src\Microsoft.Extensions.Logging.Testing\Microsoft.Extensions.Logging.Testing.xproj", "{379AA56B-E1A6-4133-9A45-7F70385F39FB}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Logging.Testing.Tests", "test\Microsoft.Extensions.Logging.Testing.Tests\Microsoft.Extensions.Logging.Testing.Tests.xproj", "{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,6 +136,30 @@ Global
 		{5D211C4A-6421-48F8-8AF9-D3BDC7DECD97}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{5D211C4A-6421-48F8-8AF9-D3BDC7DECD97}.Release|x86.ActiveCfg = Release|Any CPU
 		{5D211C4A-6421-48F8-8AF9-D3BDC7DECD97}.Release|x86.Build.0 = Release|Any CPU
+		{379AA56B-E1A6-4133-9A45-7F70385F39FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{379AA56B-E1A6-4133-9A45-7F70385F39FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{379AA56B-E1A6-4133-9A45-7F70385F39FB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{379AA56B-E1A6-4133-9A45-7F70385F39FB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{379AA56B-E1A6-4133-9A45-7F70385F39FB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{379AA56B-E1A6-4133-9A45-7F70385F39FB}.Debug|x86.Build.0 = Debug|Any CPU
+		{379AA56B-E1A6-4133-9A45-7F70385F39FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{379AA56B-E1A6-4133-9A45-7F70385F39FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{379AA56B-E1A6-4133-9A45-7F70385F39FB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{379AA56B-E1A6-4133-9A45-7F70385F39FB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{379AA56B-E1A6-4133-9A45-7F70385F39FB}.Release|x86.ActiveCfg = Release|Any CPU
+		{379AA56B-E1A6-4133-9A45-7F70385F39FB}.Release|x86.Build.0 = Release|Any CPU
+		{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F}.Debug|x86.Build.0 = Debug|Any CPU
+		{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F}.Release|x86.ActiveCfg = Release|Any CPU
+		{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -147,5 +174,7 @@ Global
 		{1A3EB66F-9E64-4676-852F-24995549ED8A} = {699DB330-0095-4266-B7B0-3EAB3710CA49}
 		{FFEDC225-D5BD-44E0-B7A6-A98FCFECC694} = {699DB330-0095-4266-B7B0-3EAB3710CA49}
 		{5D211C4A-6421-48F8-8AF9-D3BDC7DECD97} = {699DB330-0095-4266-B7B0-3EAB3710CA49}
+		{379AA56B-E1A6-4133-9A45-7F70385F39FB} = {699DB330-0095-4266-B7B0-3EAB3710CA49}
+		{6FA3EFAE-2DBC-4532-A5A0-C2EBD8DD672F} = {09920C51-6220-4D8D-94DC-E70C13446187}
 	EndGlobalSection
 EndGlobal
