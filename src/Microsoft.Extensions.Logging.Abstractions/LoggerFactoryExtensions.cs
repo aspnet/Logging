@@ -16,9 +16,13 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <typeparam name="T">The type.</typeparam>
         /// <param name="factory">The factory.</param>
-        public static ILogger CreateLogger<T>(this ILoggerFactory factory)
+        public static ILogger<T> CreateLogger<T>(this ILoggerFactory factory)
         {
-            return factory.CreateLogger(typeof(T));
+            if (factory == null)
+            {
+                throw new ArgumentNullException(nameof(factory));
+            }
+            return new Logger<T>(factory);
         }
         /// <summary>
         /// Creates a new ILogger instance using the full name of the given type.
