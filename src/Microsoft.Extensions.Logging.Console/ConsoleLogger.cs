@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections;
-using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Extensions.Logging.Console.Internal;
 using Microsoft.Extensions.PlatformAbstractions;
