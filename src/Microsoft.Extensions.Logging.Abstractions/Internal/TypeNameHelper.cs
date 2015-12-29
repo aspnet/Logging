@@ -28,42 +28,39 @@ namespace Microsoft.Extensions.Logging.Abstractions.Internal
             { typeof(ushort), "ushort" }
             };
 
-        public static string GetTypeDisplayName(object item, bool fullName = true)
-        {
-            return item == null ? null : GetTypeDisplayName(item.GetType(), fullName);
-        }
-
-        public static string GetTypeDisplayName(Type type, bool fullName = true)
+        public static string GetTypeDisplayName(Type type)
         {
             if (type.GetTypeInfo().IsGenericType)
             {
-                string name;
-                if (fullName)
-                {
-                    name = type.GetGenericTypeDefinition().FullName;
+                var fullName = type.GetGenericTypeDefinition().FullName;
 
-                    if (type.IsNested)
+                // Nested types (public or private) have a '+' in their full name
+                var parts = fullName.Split('+');
+
+                // Handle nested generic types
+                // Examples:
+                // ConsoleApp.Program+Foo`1+Bar
+                // ConsoleApp.Program+Foo`1+Bar`1
+                var partNames = new List<string>(parts.Length);
+                for (var i = 0; i < parts.Length; i++)
+                {
+                    var partName = parts[i];
+
+                    var backTickIndex = partName.IndexOf('`');
+                    if (backTickIndex >= 0)
                     {
-                        name = name.Replace('+', '.');
+                        // Since '.' is typically used to filter log messages in a hierarchy kind of scenario,
+                        // do not include any generic type information as part of the name.
+                        // Example:
+                        // Microsoft.AspNet.Mvc -> logl level set as Warning
+                        // Microsoft.AspNet.Mvc.ModelBinding -> log level set as Verbose
+                        partName = partName.Substring(0, backTickIndex);
                     }
-                }
-                else
-                {
-                    name = type.GetGenericTypeDefinition().Name;
+
+                    partNames.Add(partName);
                 }
 
-                var tildaIndex = name.IndexOf('`');
-                if (tildaIndex >= 0)
-                {
-                    // Since '.' is typically used to filter log messages in a hierarchy kind of scenario,
-                    // do not include any generic type information as part of the name.
-                    // Example:
-                    // Microsoft.AspNet.Mvc -> logl level set as Warning
-                    // Microsoft.AspNet.Mvc.ModelBinding -> log level set as Verbose
-                    return name.Substring(0, tildaIndex);
-                }
-
-                return name;
+                return string.Join(".", partNames);
             }
 
             if (_builtInTypeNames.ContainsKey(type))
@@ -72,19 +69,14 @@ namespace Microsoft.Extensions.Logging.Abstractions.Internal
             }
             else
             {
-                if (fullName)
+                var fullName = type.FullName;
+
+                if (type.IsNested)
                 {
-                    var name = type.FullName;
-
-                    if (type.IsNested)
-                    {
-                        name = name.Replace('+', '.');
-                    }
-
-                    return name;
+                    fullName = fullName.Replace('+', '.');
                 }
 
-                return type.Name;
+                return fullName;
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -8,104 +9,82 @@ namespace Microsoft.Extensions.Logging.Abstractions.Internal
 {
     public class TypeNameHelperTest
     {
-        [Fact]
-        public void Can_pretty_print_CLR_full_name()
+        public static TheoryData<Type, string> FullTypeNameData
         {
-            // Predefined Types
-            Assert.Equal("int",
-                TypeNameHelper.GetTypeDisplayName(typeof(int)));
-            Assert.Equal("System.Collections.Generic.List",
-                TypeNameHelper.GetTypeDisplayName(typeof(List<int>)));
-            Assert.Equal("System.Collections.Generic.Dictionary",
-                TypeNameHelper.GetTypeDisplayName(typeof(Dictionary<int, string>)));
-            Assert.Equal("System.Collections.Generic.Dictionary",
-                TypeNameHelper.GetTypeDisplayName(typeof(Dictionary<int, List<string>>)));
-            Assert.Equal("System.Collections.Generic.List",
-                TypeNameHelper.GetTypeDisplayName(typeof(List<List<string>>)));
+            get
+            {
+                return new TheoryData<Type, string>
+                {
+                    // Predefined Types
+                    { typeof(int), "int" },
+                    { typeof(List<int>), "System.Collections.Generic.List" },
+                    { typeof(Dictionary<int, string>), "System.Collections.Generic.Dictionary" },
+                    { typeof(Dictionary<int, List<string>>), "System.Collections.Generic.Dictionary" },
+                    { typeof(List<List<string>>), "System.Collections.Generic.List" },
 
-            // Classes inside NonGeneric class
-            Assert.Equal("Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.A",
-                TypeNameHelper.GetTypeDisplayName(typeof(A)));
-            Assert.Equal("Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.B",
-                TypeNameHelper.GetTypeDisplayName(typeof(B<int>)));
-            Assert.Equal("Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.C",
-                TypeNameHelper.GetTypeDisplayName(typeof(C<int, string>)));
-            Assert.Equal("Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.C",
-                TypeNameHelper.GetTypeDisplayName(typeof(C<int, B<string>>)));
-            Assert.Equal("Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.B",
-                TypeNameHelper.GetTypeDisplayName(typeof(B<B<string>>)));
+                    // Classes inside NonGeneric class
+                    { typeof(A), "Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.A" },
+                    { typeof(B<int>), "Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.B" },
+                    { typeof(C<int, string>), "Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.C" },
+                    { typeof(C<int, B<string>>), "Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.C" },
+                    { typeof(B<B<string>>), "Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.B" },
 
-            // Classes inside Generic class
-            Assert.Equal("Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.Outer",
-                TypeNameHelper.GetTypeDisplayName(typeof(Outer<int>.D)));
-            Assert.Equal("Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.Outer",
-                TypeNameHelper.GetTypeDisplayName(typeof(Outer<int>.E<int>)));
-            Assert.Equal("Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.Outer",
-                TypeNameHelper.GetTypeDisplayName(typeof(Outer<int>.F<int, string>)));
-            Assert.Equal("Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.Outer",
-                TypeNameHelper.GetTypeDisplayName(typeof(Outer<int>.F<int, Outer<int>.E<string>>)));
-            Assert.Equal("Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.Outer",
-                TypeNameHelper.GetTypeDisplayName(typeof(Outer<int>.E<Outer<int>.E<string>>)));
+                    // Classes inside Generic class
+                    { typeof(Outer<int>.D), "Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.Outer.D" },
+                    { typeof(Outer<int>.E<int>), "Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.Outer.E" },
+                    { typeof(Outer<int>.F<int, string>), "Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.Outer.F" },
+                    { typeof(Outer<int>.F<int, Outer<int>.E<string>>),"Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.Outer.F" },
+                    { typeof(Outer<int>.E<Outer<int>.E<string>>), "Microsoft.Extensions.Logging.Abstractions.Internal.TypeNameHelperTest.Outer.E" }
+                };
+            }
         }
 
-        [Fact]
-        public void Can_pretty_print_CLR_name()
+        [Theory]
+        [MemberData(nameof(FullTypeNameData))]
+        public void Can_PrettyPrint_FullTypeName(Type type, string expectedTypeName)
         {
-            // Predefined Types
-            Assert.Equal("int",
-                TypeNameHelper.GetTypeDisplayName(typeof(int), false));
-            Assert.Equal("List",
-                TypeNameHelper.GetTypeDisplayName(typeof(List<int>), false));
-            Assert.Equal("Dictionary",
-                TypeNameHelper.GetTypeDisplayName(typeof(Dictionary<int, string>), false));
-            Assert.Equal("Dictionary",
-                TypeNameHelper.GetTypeDisplayName(typeof(Dictionary<int, List<string>>), false));
-            Assert.Equal("List",
-                TypeNameHelper.GetTypeDisplayName(typeof(List<List<string>>), false));
+            // Arrange & Act
+            var displayName = TypeNameHelper.GetTypeDisplayName(type);
 
-            // Classes inside NonGeneric class
-            Assert.Equal("A",
-                TypeNameHelper.GetTypeDisplayName(typeof(A), false));
-            Assert.Equal("B",
-                TypeNameHelper.GetTypeDisplayName(typeof(B<int>), false));
-            Assert.Equal("C",
-                TypeNameHelper.GetTypeDisplayName(typeof(C<int, string>), false));
-            Assert.Equal("C",
-                TypeNameHelper.GetTypeDisplayName(typeof(C<int, B<string>>), false));
-            Assert.Equal("B",
-                TypeNameHelper.GetTypeDisplayName(typeof(B<B<string>>), false));
-
-            // Classes inside Generic class
-            Assert.Equal("D",
-                TypeNameHelper.GetTypeDisplayName(typeof(Outer<int>.D), false));
-            Assert.Equal("E",
-                TypeNameHelper.GetTypeDisplayName(typeof(Outer<int>.E<int>), false));
-            Assert.Equal("F",
-                TypeNameHelper.GetTypeDisplayName(typeof(Outer<int>.F<int, string>), false));
-            Assert.Equal("F",
-                TypeNameHelper.GetTypeDisplayName(typeof(Outer<int>.F<int, Outer<int>.E<string>>), false));
-            Assert.Equal("E",
-                TypeNameHelper.GetTypeDisplayName(typeof(Outer<int>.E<Outer<int>.E<string>>), false));
+            // Assert
+            Assert.Equal(expectedTypeName, displayName);
         }
 
-        [Fact]
-        public void Returns_common_name_for_built_in_types()
+        public static TheoryData<Type, string> BuiltInTypesData
         {
-            Assert.Equal("bool", TypeNameHelper.GetTypeDisplayName(typeof(bool)));
-            Assert.Equal("byte", TypeNameHelper.GetTypeDisplayName(typeof(byte)));
-            Assert.Equal("char", TypeNameHelper.GetTypeDisplayName(typeof(char)));
-            Assert.Equal("decimal", TypeNameHelper.GetTypeDisplayName(typeof(decimal)));
-            Assert.Equal("double", TypeNameHelper.GetTypeDisplayName(typeof(double)));
-            Assert.Equal("float", TypeNameHelper.GetTypeDisplayName(typeof(float)));
-            Assert.Equal("int", TypeNameHelper.GetTypeDisplayName(typeof(int)));
-            Assert.Equal("long", TypeNameHelper.GetTypeDisplayName(typeof(long)));
-            Assert.Equal("object", TypeNameHelper.GetTypeDisplayName(typeof(object)));
-            Assert.Equal("sbyte", TypeNameHelper.GetTypeDisplayName(typeof(sbyte)));
-            Assert.Equal("short", TypeNameHelper.GetTypeDisplayName(typeof(short)));
-            Assert.Equal("string", TypeNameHelper.GetTypeDisplayName(typeof(string)));
-            Assert.Equal("uint", TypeNameHelper.GetTypeDisplayName(typeof(uint)));
-            Assert.Equal("ulong", TypeNameHelper.GetTypeDisplayName(typeof(ulong)));
-            Assert.Equal("ushort", TypeNameHelper.GetTypeDisplayName(typeof(ushort)));
+            get
+            {
+                return new TheoryData<Type, string>
+                {
+                    // Predefined Types
+                    { typeof(bool), "bool" },
+                    { typeof(byte), "byte" },
+                    { typeof(char), "char" },
+                    { typeof(decimal), "decimal" },
+                    { typeof(double), "double" },
+                    { typeof(float), "float" },
+                    { typeof(int), "int" },
+                    { typeof(long), "long" },
+                    { typeof(object), "object" },
+                    { typeof(sbyte), "sbyte" },
+                    { typeof(short), "short" },
+                    { typeof(string), "string" },
+                    { typeof(uint), "uint" },
+                    { typeof(ulong), "ulong" },
+                    { typeof(ushort), "ushort" },
+                };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(BuiltInTypesData))]
+        public void ReturnsCommonName_ForBuiltinTypes(Type type, string expectedTypeName)
+        {
+            // Arrange & Act
+            var displayName = TypeNameHelper.GetTypeDisplayName(type);
+
+            // Assert
+            Assert.Equal(expectedTypeName, displayName);
         }
 
         private class A { }
