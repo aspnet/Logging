@@ -145,6 +145,7 @@ namespace Microsoft.Extensions.Logging.EventLog
                     }
                     else
                     {
+                        // Example: ...red while writ...
                         messageSegment =
                             ContinuationString
                             + message.Substring(startIndex, _intermediateMessageSegmentSize)
