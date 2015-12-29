@@ -47,8 +47,11 @@ namespace Microsoft.Extensions.Logging.Abstractions.Internal
                     name = type.GetGenericTypeDefinition().Name;
                 }
 
-                // Since '.' is typically used to filter log messages based on logger name,
+                // Since '.' is typically used to filter log messages in a hierarchy kind of scenario,
                 // do not include any generic type information as part of the name.
+                // Example:
+                // Microsoft.AspNet.Mvc -> logl level set as Warning
+                // Microsoft.AspNet.Mvc.ModelBinding -> loglevel set as Verbose
                 return name.Substring(0, name.IndexOf('`'));
             }
             if (_builtInTypeNames.ContainsKey(type))
