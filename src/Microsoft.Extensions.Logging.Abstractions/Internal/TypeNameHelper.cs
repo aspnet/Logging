@@ -46,6 +46,9 @@ namespace Microsoft.Extensions.Logging.Abstractions.Internal
                 {
                     name = type.GetGenericTypeDefinition().Name;
                 }
+
+                // Since '.' is typically used to filter log messages based on logger name,
+                // do not include any generic type information as part of the name.
                 return name.Substring(0, name.IndexOf('`'));
             }
             if (_builtInTypeNames.ContainsKey(type))
