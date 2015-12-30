@@ -32,7 +32,7 @@ namespace Microsoft.Extensions.Logging.EventLog
         public Func<string, LogLevel, bool> Filter { get; set; }
 
         /// <summary>
-        /// For unit testing purposes only
+        /// For unit testing purposes only.
         /// </summary>
         public IEventLog EventLog { get; set; }
     }

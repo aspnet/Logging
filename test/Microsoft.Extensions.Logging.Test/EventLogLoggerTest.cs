@@ -123,7 +123,6 @@ namespace Microsoft.Extensions.Logging
             get
             {
                 var loggerName = "Test";
-                var continuationString = "...";
 
                 return new TheoryData<int, string[]>
                 {
@@ -140,7 +139,7 @@ namespace Microsoft.Extensions.Logging
                         new[]
                         {
                             loggerName + Environment.NewLine + "a...",
-                            continuationString + new string('a', 4)
+                            "...aaaa"
                         }
                     },
                     {
@@ -148,8 +147,8 @@ namespace Microsoft.Extensions.Logging
                         new[]
                         {
                             loggerName + Environment.NewLine + "a...",
-                            continuationString + new string('a', 4) + continuationString,
-                            continuationString + new string('a', 5)
+                            "...aaaa...",
+                            "...aaaaa"
                         }
                     },
                     {
@@ -157,9 +156,9 @@ namespace Microsoft.Extensions.Logging
                         new[]
                         {
                             loggerName + Environment.NewLine + "a...",
-                            continuationString + new string('a', 4) + continuationString,
-                            continuationString + new string('a', 4) + continuationString,
-                            continuationString + new string('a', 6)
+                            "...aaaa...",
+                            "...aaaa...",
+                            "...aaaaaa"
                         }
                     }
                 };
