@@ -41,7 +41,6 @@ namespace Microsoft.Extensions.Logging.Abstractions.Internal
                 // Examples:
                 // ConsoleApp.Program+Foo`1+Bar
                 // ConsoleApp.Program+Foo`1+Bar`1
-                var partNames = new List<string>(parts.Length);
                 for (var i = 0; i < parts.Length; i++)
                 {
                     var partName = parts[i];
@@ -52,18 +51,17 @@ namespace Microsoft.Extensions.Logging.Abstractions.Internal
                         // Since '.' is typically used to filter log messages in a hierarchy kind of scenario,
                         // do not include any generic type information as part of the name.
                         // Example:
-                        // Microsoft.AspNet.Mvc -> logl level set as Warning
+                        // Microsoft.AspNet.Mvc -> log level set as Warning
                         // Microsoft.AspNet.Mvc.ModelBinding -> log level set as Verbose
                         partName = partName.Substring(0, backTickIndex);
                     }
 
-                    partNames.Add(partName);
+                    parts[i] = partName;
                 }
 
-                return string.Join(".", partNames);
+                return string.Join(".", parts);
             }
-
-            if (_builtInTypeNames.ContainsKey(type))
+            else if (_builtInTypeNames.ContainsKey(type))
             {
                 return _builtInTypeNames[type];
             }
