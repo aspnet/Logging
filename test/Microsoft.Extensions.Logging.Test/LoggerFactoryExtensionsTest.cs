@@ -62,7 +62,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             // Arrange
             var fullName = typeof(GenericClass<string>).GetGenericTypeDefinition().FullName;
-            var fullNameWithoutTilda = fullName.Substring(0, fullName.IndexOf('`'));
+            var fullNameWithoutBacktick = fullName.Substring(0, fullName.IndexOf('`'));
             var testSink = new TestSink();
             var factory = new TestLoggerFactory(testSink, enabled: true);
 
@@ -72,7 +72,7 @@ namespace Microsoft.Extensions.Logging.Test
 
             // Assert
             Assert.Single(testSink.Writes);
-            Assert.Equal(fullNameWithoutTilda, testSink.Writes[0].LoggerName);
+            Assert.Equal(fullNameWithoutBacktick, testSink.Writes[0].LoggerName);
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             // Arrange
             var fullName = typeof(GenericClass<GenericClass<string>>).GetGenericTypeDefinition().FullName;
-            var fullNameWithoutTilda = fullName.Substring(0, fullName.IndexOf('`'));
+            var fullNameWithoutBacktick = fullName.Substring(0, fullName.IndexOf('`'));
             var testSink = new TestSink();
             var factory = new TestLoggerFactory(testSink, enabled: true);
 
@@ -90,7 +90,7 @@ namespace Microsoft.Extensions.Logging.Test
 
             // Assert
             Assert.Single(testSink.Writes);
-            Assert.Equal(fullNameWithoutTilda, testSink.Writes[0].LoggerName);
+            Assert.Equal(fullNameWithoutBacktick, testSink.Writes[0].LoggerName);
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             // Arrange
             var fullName = typeof(GenericClass<string, string>).GetGenericTypeDefinition().FullName;
-            var fullNameWithoutTilda = fullName.Substring(0, fullName.IndexOf('`'));
+            var fullNameWithoutBacktick = fullName.Substring(0, fullName.IndexOf('`'));
             var testSink = new TestSink();
             var factory = new TestLoggerFactory(testSink, enabled: true);
 
@@ -108,7 +108,7 @@ namespace Microsoft.Extensions.Logging.Test
 
             // Assert
             Assert.Single(testSink.Writes);
-            Assert.Equal(fullNameWithoutTilda, testSink.Writes[0].LoggerName);
+            Assert.Equal(fullNameWithoutBacktick, testSink.Writes[0].LoggerName);
         }
     }
 
