@@ -10,6 +10,7 @@
     "keyFile": "../../tools/Key.snk"
   },
   "dependencies": {
+    "System.Runtime.InteropServices.RuntimeInformation": "4.0.0-*",
     "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.PlatformAbstractions": "1.0.0-*"
