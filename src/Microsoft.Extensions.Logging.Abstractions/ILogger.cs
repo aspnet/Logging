@@ -8,24 +8,24 @@ namespace Microsoft.Extensions.Logging
     /// <summary>
     /// Represents a type used to perform logging.
     /// </summary>
+    /// <remarks>Aggregates most logging patterns to a single method.</remarks>
     public interface ILogger
     {
         /// <summary>
-        /// Aggregates most logging patterns to a single method.
+        /// Writes a event to the logger.
         /// </summary>
-        /// <param name="logLevel"></param>
-        /// <param name="eventId"></param>
-        /// <param name="state"></param>
-        /// <param name="exception"></param>
-        /// <param name="formatter"></param>
-        /// <returns></returns>
+        /// <param name="logLevel">Event will be written on this level.</param>
+        /// <param name="eventId">Id of this event.</param>
+        /// <param name="state">The event to be written. Can be also an object.</param>
+        /// <param name="exception">The exception correlated to this event.</param>
+        /// <param name="formatter">Method to create a <c>string</c> message of the <paramref name="state"/> and <paramref name="exception"/>.</param>
         void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter);
 
         /// <summary>
         /// Checks if the given LogLevel is enabled.
         /// </summary>
-        /// <param name="logLevel"></param>
-        /// <returns></returns>
+        /// <param name="logLevel">level to be checked.</param>
+        /// <returns><c>true</c> if enabled.</returns>
         bool IsEnabled(LogLevel logLevel);
 
         /// <summary>
