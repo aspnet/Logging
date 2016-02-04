@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Extensions.Internal;
+using Microsoft.Extensions.Logging.Abstractions.Internal;
 
 namespace Microsoft.Extensions.Logging
 {
@@ -35,7 +35,7 @@ namespace Microsoft.Extensions.Logging
             {
                 throw new ArgumentNullException(nameof(factory));
             }
-            return factory.CreateLogger(TypeNameHelper.GetTypeDisplayName(type, fullName: true));
+            return factory.CreateLogger(TypeNameHelper.GetTypeDisplayName(type));
         }
     }
 }
