@@ -1,0 +1,23 @@
+﻿{
+  "version": "1.0.0-*",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aspnet/logging"
+  },
+  "description": "Logging interface definitions.",
+  "compilationOptions": {
+    "warningsAsErrors": true,
+    "keyFile": "../../tools/Key.snk",
+    "nowarn": [ "CS1591" ],
+    "xmlDoc": true
+  },
+  "frameworks": {
+    "net451": {},
+    "dotnet5.4": {
+      "dependencies": {
+        "System.Collections": "4.0.11-*",
+        "System.Collections.Concurrent": "4.0.12-*"
+      }
+    }
+  }
+}

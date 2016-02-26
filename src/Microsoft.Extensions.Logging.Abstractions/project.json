@@ -4,7 +4,7 @@
     "type": "git",
     "url": "git://github.com/aspnet/logging"
   },
-  "description": "Logging interface definitions.",
+  "description": "Logging abstractions to be used by library authors.",
   "compilationOptions": {
     "warningsAsErrors": true,
     "keyFile": "../../tools/Key.snk",
@@ -12,7 +12,7 @@
     "xmlDoc": true
   },
   "frameworks": {
-    "net451": {},
+    "net451": { },
     "dotnet5.4": {
       "dependencies": {
         "System.Collections": "4.0.11-*",
@@ -24,5 +24,8 @@
         "System.Runtime.InteropServices": "4.1.0-*"
       }
     }
+  },
+  "dependencies": {
+    "Microsoft.Logging.Extensions.Contract": "1.0.0-*"
   }
 }
