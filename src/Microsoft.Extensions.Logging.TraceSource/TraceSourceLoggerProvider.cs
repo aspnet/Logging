@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.Logging.TraceSource
     /// <summary>
     /// Provides an ILoggerFactory based on System.Diagnostics.TraceSource.
     /// </summary>
-    public class TraceSourceLoggerProvider : ILoggerProvider
+    public class TraceSourceLoggerProvider : ILoggerProvider, IDisposable
     {
         private readonly SourceSwitch _rootSourceSwitch;
         private readonly TraceListener _rootTraceListener;

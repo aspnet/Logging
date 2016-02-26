@@ -118,10 +118,6 @@ namespace Microsoft.Extensions.Logging
             {
                 return new CustomLogger($"{_providerName}.{name}", _throwExceptionAt, _store);
             }
-
-            public void Dispose()
-            {
-            }
         }
 
         private class CustomLogger : ILogger

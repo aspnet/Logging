@@ -108,9 +108,5 @@ namespace Microsoft.Extensions.Logging.Console
                 name = name.Substring(0, lastIndexOfDot);
             }
         }
-
-        public void Dispose()
-        {
-        }
     }
 }

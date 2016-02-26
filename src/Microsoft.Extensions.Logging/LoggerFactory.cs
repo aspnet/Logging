@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.Logging
     /// <summary>
     /// Summary description for LoggerFactory
     /// </summary>
-    public class LoggerFactory : ILoggerFactory
+    public class LoggerFactory : ILoggerFactory, IDisposable
     {
         private readonly Dictionary<string, Logger> _loggers = new Dictionary<string, Logger>(StringComparer.Ordinal);
         private ILoggerProvider[] _providers = new ILoggerProvider[0];
@@ -56,7 +56,7 @@ namespace Microsoft.Extensions.Logging
                 {
                     try
                     {
-                        provider.Dispose();
+                        (provider as IDisposable)?.Dispose();
                     }
                     catch
                     {

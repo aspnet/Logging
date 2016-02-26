@@ -23,9 +23,9 @@ namespace Microsoft.Extensions.Logging.Test
             factory.Dispose();
 
             // Assert
-            Mock.Get<IDisposable>(disposableProvider1)
+            Mock.Get<IDisposable>((IDisposable)disposableProvider1)
                     .Verify(p => p.Dispose(), Times.Once());
-            Mock.Get<IDisposable>(disposableProvider2)
+            Mock.Get<IDisposable>((IDisposable)disposableProvider2)
                      .Verify(p => p.Dispose(), Times.Once());
         }
 
