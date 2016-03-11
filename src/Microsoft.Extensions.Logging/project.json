@@ -26,6 +26,11 @@
         "System.Runtime": { "type": "build" }
       }
     },
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Collections.Concurrent": ""
+      }
+    },
     "netstandard1.3": {
       "dependencies": {
         "System.Collections.Concurrent": "4.0.12-*"
