@@ -57,6 +57,7 @@ namespace SampleApp
             //factory.AddConsole(new RandomReloadingConsoleSettings());
         }
 
+
         private class RandomReloadingConsoleSettings : IConsoleLoggerSettings
         {
             private PhysicalFileProvider _files = new PhysicalFileProvider(PlatformServices.Default.Application.ApplicationBasePath);
@@ -64,7 +65,9 @@ namespace SampleApp
             public RandomReloadingConsoleSettings()
             {
                 Monitor = new ChangeMonitor<IConsoleLoggerSettings>(this);
-                ChangeToken = _files.Watch("logging.json");
+                // TODO: we should push Monitor into FileSystem as well
+                //_files.Monitor.RegisterOnChanged(_ => Monitor.RaiseChanged());
+                //ChangeToken = _files.Watch("logging.json");
                 Switches = new Dictionary<string, LogLevel>()
                 {
                     ["Default"] = (LogLevel)(DateTimeOffset.Now.Second % 5 + 1),
