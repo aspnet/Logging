@@ -725,6 +725,11 @@ namespace Microsoft.Extensions.Logging.Test
 
         private class MockConsoleLoggerSettings : IConsoleLoggerSettings
         {
+            public MockConsoleLoggerSettings()
+            {
+                Monitor = new ChangeMonitor<IConsoleLoggerSettings>(this);
+            }
+
             public CancellationTokenSource Cancel { get; set; }
 
             public IChangeToken ChangeToken => new CancellationChangeToken(Cancel.Token);
@@ -733,10 +738,7 @@ namespace Microsoft.Extensions.Logging.Test
 
             public bool IncludeScopes { get; set; }
 
-            public IConsoleLoggerSettings Reload()
-            {
-                return this;
-            }
+            public IChangeMonitor<IConsoleLoggerSettings> Monitor { get; }
 
             public bool TryGetSwitch(string name, out LogLevel level)
             {

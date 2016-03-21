@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Primitives;
+﻿using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Extensions.Logging.Console
 {
@@ -7,10 +6,8 @@ namespace Microsoft.Extensions.Logging.Console
     {
         bool IncludeScopes { get; }
 
-        IChangeToken ChangeToken { get; }
+        IChangeMonitor<IConsoleLoggerSettings> Monitor { get; }
 
         bool TryGetSwitch(string name, out LogLevel level);
-
-        IConsoleLoggerSettings Reload();
     }
 }

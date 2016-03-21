@@ -37,28 +37,21 @@ namespace Microsoft.Extensions.Logging.Console
 
             _settings = settings;
 
-            if (_settings.ChangeToken != null)
+            if (_settings.Monitor != null)
             {
-                _settings.ChangeToken.RegisterChangeCallback(OnConfigurationReload, null);
+                _settings.Monitor.RegisterOnChanged(OnSettingsChange);
             }
         }
 
-        private void OnConfigurationReload(object state)
+        private void OnSettingsChange(IConsoleLoggerSettings settings)
         {
-            // The settings object needs to change here, because the old one is probably holding on
-            // to an old change token.
-            _settings = _settings.Reload();
+            // This is most likely the same object
+            _settings = settings;
 
             foreach (var logger in _loggers.Values)
             {
                 logger.Filter = GetFilter(logger.Name, _settings);
                 logger.IncludeScopes = _settings.IncludeScopes;
-            }
-
-            // The token will change each time it reloads, so we need to register again.
-            if (_settings?.ChangeToken != null)
-            {
-                _settings.ChangeToken.RegisterChangeCallback(OnConfigurationReload, null);
             }
         }
 
