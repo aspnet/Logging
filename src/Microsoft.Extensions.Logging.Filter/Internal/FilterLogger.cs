@@ -10,8 +10,8 @@ namespace Microsoft.Extensions.Logging.Filter.Internal
     {
         private readonly ILogger _innerLogger;
         private readonly string _categoryName;
-        private IFilterLoggerSettings _settings;
-        private Func<LogLevel, bool> _filter;
+        private readonly IFilterLoggerSettings _settings;
+        private readonly Func<LogLevel, bool> _filter;
 
         public FilterLogger(ILogger innerLogger, string categoryName, IFilterLoggerSettings settings)
         {

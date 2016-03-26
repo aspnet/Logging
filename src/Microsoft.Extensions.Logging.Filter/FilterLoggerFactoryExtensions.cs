@@ -25,20 +25,5 @@ namespace Microsoft.Extensions.Logging
         {
             return new FilterLoggerFactory(loggerFactory, settings);
         }
-
-        /// <summary>
-        /// Registers a wrapper logger which provides a common way to filter log messages across all registered
-        ///  <see cref="ILoggerProvider"/>s.
-        /// </summary>
-        /// <param name="loggerFactory">The logger factory.</param>
-        /// <param name="settings">The filter settings which get applied to all registered logger providers.</param>
-        /// <returns>
-        /// A wrapped <see cref="ILoggerFactory"/> which provides common filtering across all registered
-        ///  logger providers.
-        /// </returns>
-        public static ILoggerFactory WithFilter(this ILoggerFactory loggerFactory, FilterLoggerSettings settings)
-        {
-            return new FilterLoggerFactory(loggerFactory, settings);
-        }
     }
 }

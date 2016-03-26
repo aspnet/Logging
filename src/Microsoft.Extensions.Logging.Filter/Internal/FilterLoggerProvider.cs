@@ -5,8 +5,8 @@ namespace Microsoft.Extensions.Logging.Filter.Internal
 {
     public class FilterLoggerProvider : ILoggerProvider
     {
-        private ILoggerProvider _innerLoggerProvider;
-        private IFilterLoggerSettings _settings;
+        private readonly ILoggerProvider _innerLoggerProvider;
+        private readonly IFilterLoggerSettings _settings;
 
         public FilterLoggerProvider(ILoggerProvider innerLoggerProvider, IFilterLoggerSettings settings)
         {

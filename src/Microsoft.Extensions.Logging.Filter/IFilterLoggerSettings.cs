@@ -1,8 +1,6 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.Extensions.Primitives;
-
 namespace Microsoft.Extensions.Logging
 {
     /// <summary>
@@ -10,10 +8,6 @@ namespace Microsoft.Extensions.Logging
     /// </summary>
     public interface IFilterLoggerSettings
     {
-        IChangeToken ChangeToken { get; }
-
-        bool TryGetSwitch(string name, out LogLevel level);
-
-        IFilterLoggerSettings Reload();
+        bool TryGetSwitch(string categoryName, out LogLevel level);
     }
 }
