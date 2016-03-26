@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging.EventLog.Internal;
 
@@ -11,9 +10,8 @@ namespace Microsoft.Extensions.Logging.EventLog
     /// <summary>
     /// A logger that writes messages to Windows Event Log.
     /// </summary>
-    public class EventLogLogger : ILogger
+    public class EventLogLogger
     {
-        private readonly string _name;
         private readonly EventLogSettings _settings;
         private const string ContinuationString = "...";
         private readonly int _beginOrEndMessageSegmentSize;
@@ -22,20 +20,9 @@ namespace Microsoft.Extensions.Logging.EventLog
         /// <summary>
         /// Initializes a new instance of the <see cref="EventLogLogger"/> class.
         /// </summary>
-        /// <param name="name">The name of the logger.</param>
-        public EventLogLogger(string name)
-            : this(name, settings: new EventLogSettings())
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventLogLogger"/> class.
-        /// </summary>
-        /// <param name="name">The name of the logger.</param>
         /// <param name="settings">The <see cref="EventLogSettings"/>.</param>
-        public EventLogLogger(string name, EventLogSettings settings)
+        public EventLogLogger(EventLogSettings settings)
         {
-            _name = string.IsNullOrEmpty(name) ? nameof(EventLogLogger) : name;
             _settings = settings;
 
             var logName = string.IsNullOrEmpty(settings.LogName) ? "Application" : settings.LogName;
@@ -67,20 +54,21 @@ namespace Microsoft.Extensions.Logging.EventLog
         }
 
         /// <inheritdoc />
-        public bool IsEnabled(LogLevel logLevel)
+        public bool IsEnabled(string categoryName, LogLevel logLevel)
         {
-            return _settings.Filter == null || _settings.Filter(_name, logLevel);
+            return _settings.Filter == null || _settings.Filter(categoryName, logLevel);
         }
 
         /// <inheritdoc />
         public void Log<TState>(
+            string categoryName,
             LogLevel logLevel,
             EventId eventId,
             TState state,
             Exception exception,
             Func<TState, Exception, string> formatter)
         {
-            if (!IsEnabled(logLevel))
+            if (!IsEnabled(categoryName, logLevel))
             {
                 return;
             }
@@ -97,7 +85,7 @@ namespace Microsoft.Extensions.Logging.EventLog
                 return;
             }
 
-            message = _name + Environment.NewLine + message;
+            message = categoryName + Environment.NewLine + message;
 
             if (exception != null)
             {

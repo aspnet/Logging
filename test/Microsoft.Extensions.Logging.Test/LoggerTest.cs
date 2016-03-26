@@ -119,6 +119,21 @@ namespace Microsoft.Extensions.Logging
                 return new CustomLogger($"{_providerName}.{name}", _throwExceptionAt, _store);
             }
 
+            public void Log<TState>(string categoryName, LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool IsEnabled(string categoryName, LogLevel logLevel)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IDisposable BeginScopeImpl(string categoryName, object state)
+            {
+                throw new NotImplementedException();
+            }
+
             public void Dispose()
             {
             }

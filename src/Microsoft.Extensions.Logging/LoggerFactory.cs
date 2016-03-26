@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Microsoft.Extensions.Logging
 {
@@ -12,10 +11,14 @@ namespace Microsoft.Extensions.Logging
     /// </summary>
     public class LoggerFactory : ILoggerFactory
     {
+        private readonly LoggerObservable _observable;
         private readonly Dictionary<string, Logger> _loggers = new Dictionary<string, Logger>(StringComparer.Ordinal);
-        private ILoggerProvider[] _providers = new ILoggerProvider[0];
         private readonly object _sync = new object();
-        private bool _disposed = false;
+
+        public LoggerFactory()
+        {
+            _observable = new LoggerObservable();
+        }
 
         public ILogger CreateLogger(string categoryName)
         {
@@ -24,7 +27,7 @@ namespace Microsoft.Extensions.Logging
             {
                 if (!_loggers.TryGetValue(categoryName, out logger))
                 {
-                    logger = new Logger(this, categoryName);
+                    logger = new Logger(_observable, categoryName);
                     _loggers[categoryName] = logger;
                 }
             }
@@ -33,39 +36,12 @@ namespace Microsoft.Extensions.Logging
 
         public void AddProvider(ILoggerProvider provider)
         {
-            lock (_sync)
-            {
-                _providers = _providers.Concat(new[] { provider }).ToArray();
-                foreach (var logger in _loggers)
-                {
-                    logger.Value.AddProvider(provider);
-                }
-            }
-        }
-
-        internal ILoggerProvider[] GetProviders()
-        {
-            return _providers;
+            _observable.AddProvider(provider);
         }
 
         public void Dispose()
         {
-            if (!_disposed)
-            {
-                foreach (var provider in _providers)
-                {
-                    try
-                    {
-                        provider.Dispose();
-                    }
-                    catch
-                    {
-                        // Swallow exceptions on dispose
-                    }
-                }
-
-                _disposed = true;
-            }
+            _observable?.Dispose();
         }
     }
 }

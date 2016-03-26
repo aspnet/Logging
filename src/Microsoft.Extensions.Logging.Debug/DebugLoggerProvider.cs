@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.Logging.Debug
     /// </summary>
     public class DebugLoggerProvider : ILoggerProvider
     {
-        private readonly Func<string, LogLevel, bool> _filter;
+        private readonly DebugLogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DebugLoggerProvider"/> class.
@@ -18,17 +18,32 @@ namespace Microsoft.Extensions.Logging.Debug
         /// <param name="filter">The function used to filter events based on the log level.</param>
         public DebugLoggerProvider(Func<string, LogLevel, bool> filter)
         {
-            _filter = filter;
+            _logger = new DebugLogger(filter);
         }
 
-        /// <inheritdoc /> 
-        public ILogger CreateLogger(string name)
+        public void Log<TState>(
+            string categoryName,
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception exception,
+            Func<TState, Exception, string> formatter)
         {
-            return new DebugLogger(name, _filter);
+            _logger.Log(categoryName, logLevel, eventId, state, exception, formatter);
+        }
+
+        public bool IsEnabled(string categoryName, LogLevel logLevel)
+        {
+            return _logger.IsEnabled(categoryName, logLevel);
+        }
+
+        public IDisposable BeginScopeImpl(string categoryName, object state)
+        {
+            return _logger.BeginScopeImpl(state);
         }
 
         public void Dispose()
-        {            
+        {
         }
     }
 }

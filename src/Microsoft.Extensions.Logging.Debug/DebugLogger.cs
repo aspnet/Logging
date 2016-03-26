@@ -9,28 +9,24 @@ namespace Microsoft.Extensions.Logging.Debug
     /// <summary>
     /// A logger that writes messages in the debug output window only when a debugger is attached.
     /// </summary>
-    public partial class DebugLogger : ILogger
+    public partial class DebugLogger
     {
         private readonly Func<string, LogLevel, bool> _filter;
-        private readonly string _name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DebugLogger"/> class.
         /// </summary>
-        /// <param name="name">The name of the logger.</param>
-        public DebugLogger(string name)
-            : this(name, filter: null)
+        public DebugLogger()
+            : this(filter: null)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DebugLogger"/> class.
         /// </summary>
-        /// <param name="name">The name of the logger.</param>
         /// <param name="filter">The function used to filter events based on the log level.</param>
-        public DebugLogger(string name, Func<string, LogLevel, bool> filter)
+        public DebugLogger(Func<string, LogLevel, bool> filter)
         {
-            _name = string.IsNullOrEmpty(name) ? nameof(DebugLogger) : name;
             _filter = filter;
         }
 
@@ -42,18 +38,24 @@ namespace Microsoft.Extensions.Logging.Debug
         }
 
         /// <inheritdoc />
-        public bool IsEnabled(LogLevel logLevel)
+        public bool IsEnabled(string categoryName, LogLevel logLevel)
         {
             // If the filter is null, everything is enabled
             // unless the debugger is not attached
             return Debugger.IsAttached &&
-                (_filter == null || _filter(_name, logLevel));
+                (_filter == null || _filter(categoryName, logLevel));
         }
 
         /// <inheritdoc />
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(
+            string categoryName,
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception exception,
+            Func<TState, Exception, string> formatter)
         {
-            if (!IsEnabled(logLevel))
+            if (!IsEnabled(categoryName, logLevel))
             {
                 return;
             }
@@ -71,7 +73,7 @@ namespace Microsoft.Extensions.Logging.Debug
             }
 
             message = $"{ logLevel }: {message}";
-            DebugWriteLine(message, _name);
+            DebugWriteLine(message, categoryName);
         }
 
         private class NoopDisposable : IDisposable

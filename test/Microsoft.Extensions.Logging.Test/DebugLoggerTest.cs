@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.Logging
         public void CallingBeginScopeOnLogger_AlwaysReturnsNewDisposableInstance()
         {
             // Arrange
-            var logger = new DebugLogger("Test");
+            var logger = new DebugLogger();
 
             // Act
             var disposable1 = logger.BeginScopeImpl("Scope1");
@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.Logging
         public void CallingBeginScopeOnLogger_ReturnsNonNullableInstance()
         {
             // Arrange
-            var logger = new DebugLogger("Test");
+            var logger = new DebugLogger();
 
             // Act
             var disposable = logger.BeginScopeImpl("Scope1");

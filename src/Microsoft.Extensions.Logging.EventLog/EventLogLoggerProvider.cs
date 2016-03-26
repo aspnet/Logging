@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.Logging.EventLog
     /// </summary>
     public class EventLogLoggerProvider : ILoggerProvider
     {
-        private readonly EventLogSettings _settings;
+        private readonly EventLogLogger _eventLogLogger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventLogLoggerProvider"/> class.
@@ -26,13 +26,28 @@ namespace Microsoft.Extensions.Logging.EventLog
         /// <param name="settings">The <see cref="EventLogSettings"/>.</param>
         public EventLogLoggerProvider(EventLogSettings settings)
         {
-            _settings = settings;
+            _eventLogLogger = new EventLogLogger(settings ?? new EventLogSettings());
         }
 
-        /// <inheritdoc />
-        public ILogger CreateLogger(string name)
+        public void Log<TState>(
+            string categoryName,
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception exception,
+            Func<TState, Exception, string> formatter)
         {
-            return new EventLogLogger(name, _settings ?? new EventLogSettings());
+            _eventLogLogger.Log(categoryName, logLevel, eventId, state, exception, formatter);
+        }
+
+        public bool IsEnabled(string categoryName, LogLevel logLevel)
+        {
+            return _eventLogLogger.IsEnabled(categoryName, logLevel);
+        }
+
+        public IDisposable BeginScopeImpl(string categoryName, object state)
+        {
+            return _eventLogLogger.BeginScopeImpl(state);
         }
 
         public void Dispose()
