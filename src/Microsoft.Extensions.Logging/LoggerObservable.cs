@@ -30,36 +30,35 @@ namespace Microsoft.Extensions.Logging
                 return false;
             }
 
-            return true;
-            //List<Exception> exceptions = null;
-            //foreach (var provider in _providers)
-            //{
-            //    try
-            //    {
-            //        if (provider.IsEnabled(logLevel))
-            //        {
-            //            return true;
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        if (exceptions == null)
-            //        {
-            //            exceptions = new List<Exception>();
-            //        }
+            List<Exception> exceptions = null;
+            foreach (var provider in _providers)
+            {
+                try
+                {
+                    if (provider.IsEnabled(categoryName, logLevel))
+                    {
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (exceptions == null)
+                    {
+                        exceptions = new List<Exception>();
+                    }
 
-            //        exceptions.Add(ex);
-            //    }
-            //}
+                    exceptions.Add(ex);
+                }
+            }
 
-            //if (exceptions != null && exceptions.Count > 0)
-            //{
-            //    throw new AggregateException(
-            //        message: "An error occurred while writing to provider(s).",
-            //        innerExceptions: exceptions);
-            //}
+            if (exceptions != null && exceptions.Count > 0)
+            {
+                throw new AggregateException(
+                    message: "An error occurred while writing to provider(s).",
+                    innerExceptions: exceptions);
+            }
 
-            //return false;
+            return false;
         }
 
         public void Log<TState>(string categoryName, LogLevel logLevel, EventId eventId, TState state, Exception exception, 
