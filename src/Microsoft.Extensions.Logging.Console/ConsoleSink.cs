@@ -2,15 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Logging.Console.Internal;
 using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Microsoft.Extensions.Logging.Console
 {
-    public class ConsoleLogger
+    public class ConsoleSink : ILogSink
     {
         // Writing to console is not an atomic operation in the current implementation and since multiple logger
         // instances are created with a different name. Also since Console is global, using a static lock is fine.
@@ -26,20 +24,19 @@ namespace Microsoft.Extensions.Logging.Console
         private IConsole _console;
         private Func<string, LogLevel, bool> _filter;
 
-        static ConsoleLogger()
+        static ConsoleSink()
         {
             var logLevelString = GetLogLevelString(LogLevel.Information);
             _messagePadding = new string(' ', logLevelString.Length + _loglevelPadding.Length);
         }
 
-        public ConsoleLogger(string name, Func<string, LogLevel, bool> filter, bool includeScopes)
+        public ConsoleSink(IConsoleLoggerSettings settings)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            throw new NotImplementedException(); // TODO !!!
+        }
 
-            Name = name;
+        public ConsoleSink(Func<string, LogLevel, bool> filter, bool includeScopes)
+        {
             Filter = filter ?? ((category, logLevel) => true);
             IncludeScopes = includeScopes;
 
@@ -83,11 +80,15 @@ namespace Microsoft.Extensions.Logging.Console
 
         public bool IncludeScopes { get; set; }
 
-        public string Name { get; }
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(
+            string categoryName,
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception exception,
+            Func<TState, Exception, string> formatter)
         {
-            if (!IsEnabled(logLevel))
+            if (!IsEnabled(categoryName, logLevel))
             {
                 return;
             }
@@ -101,12 +102,12 @@ namespace Microsoft.Extensions.Logging.Console
 
             if (!string.IsNullOrEmpty(message))
             {
-                WriteMessage(logLevel, Name, eventId.Id, message);
+                WriteMessage(logLevel, categoryName, eventId.Id, message);
             }
 
             if (exception != null)
             {
-                WriteException(logLevel, Name, eventId.Id, exception);
+                WriteException(logLevel, categoryName, eventId.Id, exception);
             }
         }
 
@@ -194,19 +195,23 @@ namespace Microsoft.Extensions.Logging.Console
             }
         }
 
-        public bool IsEnabled(LogLevel logLevel)
+        public bool IsEnabled(string categoryName, LogLevel logLevel)
         {
-            return Filter(Name, logLevel);
+            return Filter(categoryName, logLevel);
         }
 
-        public IDisposable BeginScopeImpl(object state)
+        public IDisposable BeginScope(string categoryName, object state)
         {
             if (state == null)
             {
                 throw new ArgumentNullException(nameof(state));
             }
 
-            return ConsoleLogScope.Push(Name, state);
+            return ConsoleLogScope.Push(categoryName, state);
+        }
+
+        public void Dispose()
+        {
         }
 
         private static string GetLogLevelString(LogLevel logLevel)

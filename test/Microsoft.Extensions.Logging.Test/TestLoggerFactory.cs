@@ -19,10 +19,6 @@ namespace Microsoft.Extensions.Logging.Test
             return new TestLogger(categoryName, _sink, _enabled);
         }
 
-        public void AddProvider(ILoggerProvider provider)
-        {
-        }
-
         public void Dispose()
         {
         }

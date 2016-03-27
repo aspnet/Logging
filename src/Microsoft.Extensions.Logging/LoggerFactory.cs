@@ -11,13 +11,18 @@ namespace Microsoft.Extensions.Logging
     /// </summary>
     public class LoggerFactory : ILoggerFactory
     {
-        private readonly LoggerObservable _observable;
         private readonly Dictionary<string, Logger> _loggers = new Dictionary<string, Logger>(StringComparer.Ordinal);
+        private readonly ILogSinkProvider _logSinkProvider;
         private readonly object _sync = new object();
 
         public LoggerFactory()
+            : this(logSinkProvider: null)
         {
-            _observable = new LoggerObservable();
+        }
+
+        public LoggerFactory(ILogSinkProvider logSinkProvider)
+        {
+            _logSinkProvider = logSinkProvider ?? new LoggerProviderProvider();
         }
 
         public ILogger CreateLogger(string categoryName)
@@ -27,21 +32,26 @@ namespace Microsoft.Extensions.Logging
             {
                 if (!_loggers.TryGetValue(categoryName, out logger))
                 {
-                    logger = new Logger(_observable, categoryName);
+                    logger = new Logger(_logSinkProvider, categoryName);
                     _loggers[categoryName] = logger;
                 }
             }
             return logger;
         }
 
-        public void AddProvider(ILoggerProvider provider)
+        public void AddSink(ILogSink provider)
         {
-            _observable.AddProvider(provider);
+            if (provider == null)
+            {
+                throw new ArgumentNullException(nameof(provider));
+            }
+
+            _logSinkProvider.AddSink(provider);
         }
 
         public void Dispose()
         {
-            _observable?.Dispose();
+            _logSinkProvider?.Dispose();
         }
     }
 }

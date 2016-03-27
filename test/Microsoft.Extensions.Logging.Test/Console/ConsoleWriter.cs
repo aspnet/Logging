@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Extensions.Logging.Test.Console
 {
-    public class ConsoleSink
+    public class ConsoleWriter
     {
         public List<ConsoleContext> Writes { get; set; } = new List<ConsoleContext>();
 

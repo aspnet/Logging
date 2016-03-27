@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging.EventLog;
 namespace Microsoft.Extensions.Logging
 {
     /// <summary>
-    /// Extension methods for the <see cref="ILoggerFactory"/> class.
+    /// Extension methods for the <see cref="LoggerFactory"/> class.
     /// </summary>
     public static class EventLoggerFactoryExtensions
     {
@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.Logging
         /// Adds an event logger that is enabled for <see cref="LogLevel"/>.Information or higher.
         /// </summary>
         /// <param name="factory">The extension method argument.</param>
-        public static ILoggerFactory AddEventLog(this ILoggerFactory factory)
+        public static LoggerFactory AddEventLog(this LoggerFactory factory)
         {
             if (factory == null)
             {
@@ -30,7 +30,7 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="factory">The extension method argument.</param>
         /// <param name="minLevel">The minimum <see cref="LogLevel"/> to be logged</param>
-        public static ILoggerFactory AddEventLog(this ILoggerFactory factory, LogLevel minLevel)
+        public static LoggerFactory AddEventLog(this LoggerFactory factory, LogLevel minLevel)
         {
             if (factory == null)
             {
@@ -48,8 +48,8 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="factory">The extension method argument.</param>
         /// <param name="settings">The <see cref="EventLogSettings"/>.</param>
-        public static ILoggerFactory AddEventLog(
-            this ILoggerFactory factory,
+        public static LoggerFactory AddEventLog(
+            this LoggerFactory factory,
             EventLogSettings settings)
         {
             if (factory == null)
@@ -62,7 +62,7 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            factory.AddProvider(new EventLogLoggerProvider(settings));
+            factory.AddSink(new EventLogSink(settings));
             return factory;
         }
     }

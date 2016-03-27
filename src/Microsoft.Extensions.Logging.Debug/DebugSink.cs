@@ -9,30 +9,28 @@ namespace Microsoft.Extensions.Logging.Debug
     /// <summary>
     /// A logger that writes messages in the debug output window only when a debugger is attached.
     /// </summary>
-    public partial class DebugLogger
+    public partial class DebugSink : ILogSink
     {
         private readonly Func<string, LogLevel, bool> _filter;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DebugLogger"/> class.
+        /// Initializes a new instance of the <see cref="DebugSink"/> class.
         /// </summary>
-        public DebugLogger()
+        public DebugSink()
             : this(filter: null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DebugLogger"/> class.
+        /// Initializes a new instance of the <see cref="DebugSink"/> class.
         /// </summary>
         /// <param name="filter">The function used to filter events based on the log level.</param>
-        public DebugLogger(Func<string, LogLevel, bool> filter)
+        public DebugSink(Func<string, LogLevel, bool> filter)
         {
             _filter = filter;
         }
 
-
-        /// <inheritdoc />
-        public IDisposable BeginScopeImpl(object state)
+        public IDisposable BeginScope(string categoryName, object state)
         {
             return new NoopDisposable();
         }
@@ -74,6 +72,10 @@ namespace Microsoft.Extensions.Logging.Debug
 
             message = $"{ logLevel }: {message}";
             DebugWriteLine(message, categoryName);
+        }
+
+        public void Dispose()
+        {
         }
 
         private class NoopDisposable : IDisposable

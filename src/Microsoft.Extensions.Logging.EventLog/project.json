@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "Windows Event Log logger provider implementation for Microsoft.Extensions.Logging.",
+  "description": "Windows Event Log sink for Microsoft.Extensions.Logging.",
   "tags": [
     "eventlog",
     "logging",
@@ -17,7 +17,7 @@
     "xmlDoc": true
   },
   "dependencies": {
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*"
+    "Microsoft.Extensions.Logging": "1.0.0-*"
   },
   "frameworks": {
     "net451": {

@@ -14,15 +14,18 @@ namespace Microsoft.Extensions.Logging
 {
     public class EventLogLoggerTest
     {
+        private const string _categoryName = "test";
+        private Func<object, Exception, string> _defaultFormatter = (state, exception) => state.ToString();
+
         [Fact]
         public void CallingBeginScopeOnLogger_AlwaysReturnsNewDisposableInstance()
         {
             // Arrange
-            var logger = new EventLogLogger("Test");
+            var sink = new EventLogSink();
 
             // Act
-            var disposable1 = logger.BeginScopeImpl("Scope1");
-            var disposable2 = logger.BeginScopeImpl("Scope2");
+            var disposable1 = sink.BeginScope(_categoryName, "Scope1");
+            var disposable2 = sink.BeginScope(_categoryName, "Scope2");
 
             // Assert
             Assert.NotNull(disposable1);
@@ -34,10 +37,10 @@ namespace Microsoft.Extensions.Logging
         public void CallingBeginScopeOnLogger_ReturnsNonNullableInstance()
         {
             // Arrange
-            var logger = new EventLogLogger("Test");
+            var sink = new EventLogSink();
 
             // Act
-            var disposable = logger.BeginScopeImpl("Scope1");
+            var disposable = sink.BeginScope(_categoryName, "Scope1");
 
             // Assert
             Assert.NotNull(disposable);
@@ -65,10 +68,10 @@ namespace Microsoft.Extensions.Logging
         public void Constructor_CreatesWindowsEventLog_WithExpectedInformation()
         {
             // Arrange & Act
-            var eventLogLogger = new EventLogLogger("Test");
+            var sink = new EventLogSink();
 
             // Assert
-            var windowsEventLog = Assert.IsType<WindowsEventLog>(eventLogLogger.EventLog);
+            var windowsEventLog = Assert.IsType<WindowsEventLog>(sink.EventLog);
             Assert.Equal("Application", windowsEventLog.DiagnosticsEventLog.Log);
             Assert.Equal("Application", windowsEventLog.DiagnosticsEventLog.Source);
             Assert.Equal(".", windowsEventLog.DiagnosticsEventLog.MachineName);
@@ -87,10 +90,10 @@ namespace Microsoft.Extensions.Logging
             };
 
             // Act
-            var eventLogLogger = new EventLogLogger("Test", settings);
+            var sink = new EventLogSink(settings);
 
             // Assert
-            var windowsEventLog = Assert.IsType<WindowsEventLog>(eventLogLogger.EventLog);
+            var windowsEventLog = Assert.IsType<WindowsEventLog>(sink.EventLog);
             Assert.Equal(settings.LogName, windowsEventLog.DiagnosticsEventLog.Log);
             Assert.Equal(settings.SourceName, windowsEventLog.DiagnosticsEventLog.Source);
             Assert.Equal(settings.MachineName, windowsEventLog.DiagnosticsEventLog.MachineName);
@@ -108,10 +111,10 @@ namespace Microsoft.Extensions.Logging
             var message = new string('a', messageSize);
             var expectedMessage = loggerName + Environment.NewLine + message;
             var testEventLog = new TestEventLog(maxMessageSize);
-            var logger = new EventLogLogger(loggerName, new EventLogSettings() { EventLog = testEventLog });
+            var sink = new EventLogSink(new EventLogSettings() { EventLog = testEventLog });
 
             // Act
-            logger.LogInformation(message);
+            sink.Log(loggerName, LogLevel.Information, 0, message, null, _defaultFormatter);
 
             // Assert
             Assert.Equal(1, testEventLog.Messages.Count);
@@ -176,10 +179,10 @@ namespace Microsoft.Extensions.Logging
             var maxMessageSize = 10;
             var message = new string('a', messageSize);
             var testEventLog = new TestEventLog(maxMessageSize);
-            var logger = new EventLogLogger(loggerName, new EventLogSettings() { EventLog = testEventLog });
+            var sink = new EventLogSink(new EventLogSettings() { EventLog = testEventLog });
 
             // Act
-            logger.LogInformation(message);
+            sink.Log(loggerName, LogLevel.Information, 0, message, null, _defaultFormatter);
 
             // Assert
             Assert.Equal(expectedMessages.Length, testEventLog.Messages.Count);

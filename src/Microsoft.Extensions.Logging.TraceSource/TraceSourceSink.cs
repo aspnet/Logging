@@ -8,25 +8,21 @@ using DiagnosticsTraceSource = System.Diagnostics.TraceSource;
 
 namespace Microsoft.Extensions.Logging.TraceSource
 {
-    /// <summary>
-    /// Provides an ILoggerFactory based on System.Diagnostics.TraceSource.
-    /// </summary>
-    public class TraceSourceLoggerProvider : ILoggerProvider
+    public class TraceSourceSink : ILogSink
     {
         private readonly SourceSwitch _rootSourceSwitch;
         private readonly TraceListener _rootTraceListener;
-        private readonly TraceSourceLogger _traceSourceLogger;
 
         private readonly ConcurrentDictionary<string, DiagnosticsTraceSource> _sources = new ConcurrentDictionary<string, DiagnosticsTraceSource>(StringComparer.OrdinalIgnoreCase);
 
         private bool _disposed = false;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TraceSourceLoggerProvider"/> class.
+        /// Initializes a new instance of the <see cref="TraceSourceSink"/> class.
         /// </summary>
         /// <param name="rootSourceSwitch"></param>
         /// <param name="rootTraceListener"></param>
-        public TraceSourceLoggerProvider(SourceSwitch rootSourceSwitch, TraceListener rootTraceListener)
+        public TraceSourceSink(SourceSwitch rootSourceSwitch, TraceListener rootTraceListener)
         {
             if (rootSourceSwitch == null)
             {
@@ -40,8 +36,6 @@ namespace Microsoft.Extensions.Logging.TraceSource
 
             _rootSourceSwitch = rootSourceSwitch;
             _rootTraceListener = rootTraceListener;
-
-            _traceSourceLogger = new TraceSourceLogger();
         }
 
         public void Log<TState>(
@@ -52,19 +46,53 @@ namespace Microsoft.Extensions.Logging.TraceSource
             Exception exception,
             Func<TState, Exception, string> formatter)
         {
-            var traceSource = GetOrAddTraceSource(categoryName);
-            _traceSourceLogger.Log(traceSource, logLevel, eventId, state, exception, formatter);
+            if (!IsEnabled(categoryName, logLevel))
+            {
+                return;
+            }
+            var message = string.Empty;
+            if (formatter != null)
+            {
+                message = formatter(state, exception);
+            }
+            else
+            {
+                if (state != null)
+                {
+                    message += state;
+                }
+                if (exception != null)
+                {
+                    message += Environment.NewLine + exception;
+                }
+            }
+            if (!string.IsNullOrEmpty(message))
+            {
+                var traceSource = GetOrAddTraceSource(categoryName);
+                traceSource.TraceEvent(GetEventType(logLevel), eventId.Id, message);
+            }
         }
 
         public bool IsEnabled(string categoryName, LogLevel logLevel)
         {
             var traceSource = GetOrAddTraceSource(categoryName);
-            return _traceSourceLogger.IsEnabled(traceSource, logLevel);
+            var traceEventType = GetEventType(logLevel);
+            return traceSource.Switch.ShouldTrace(traceEventType);
         }
 
-        public IDisposable BeginScopeImpl(string categoryName, object state)
+        public IDisposable BeginScope(string categoryName, object state)
         {
-            return _traceSourceLogger.BeginScopeImpl(state);
+            return new TraceSourceScope(state);
+        }
+
+        public void Dispose()
+        {
+            if (!_disposed)
+            {
+                _disposed = true;
+                _rootTraceListener.Flush();
+                _rootTraceListener.Dispose();
+            }
         }
 
         private DiagnosticsTraceSource GetOrAddTraceSource(string name)
@@ -108,6 +136,19 @@ namespace Microsoft.Extensions.Logging.TraceSource
             return traceSource;
         }
 
+        private static TraceEventType GetEventType(LogLevel logLevel)
+        {
+            switch (logLevel)
+            {
+                case LogLevel.Critical: return TraceEventType.Critical;
+                case LogLevel.Error: return TraceEventType.Error;
+                case LogLevel.Warning: return TraceEventType.Warning;
+                case LogLevel.Information: return TraceEventType.Information;
+                case LogLevel.Trace:
+                default: return TraceEventType.Verbose;
+            }
+        }
+
         private static string ParentSourceName(string traceSourceName)
         {
             int indexOfLastDot = traceSourceName.LastIndexOf('.');
@@ -123,16 +164,6 @@ namespace Microsoft.Extensions.Logging.TraceSource
         {
             return string.IsNullOrEmpty(traceSource.Switch.DisplayName) == string.IsNullOrEmpty(traceSource.Name) &&
                 traceSource.Switch.Level == SourceLevels.Off;
-        }
-
-        public void Dispose()
-        {
-            if (!_disposed)
-            {
-                _disposed = true;
-                _rootTraceListener.Flush();
-                _rootTraceListener.Dispose();
-            }
         }
     }
 }

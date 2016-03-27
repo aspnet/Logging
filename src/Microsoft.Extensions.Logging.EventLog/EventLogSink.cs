@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.Logging.EventLog
     /// <summary>
     /// A logger that writes messages to Windows Event Log.
     /// </summary>
-    public class EventLogLogger
+    public class EventLogSink : ILogSink
     {
         private readonly EventLogSettings _settings;
         private const string ContinuationString = "...";
@@ -18,10 +18,10 @@ namespace Microsoft.Extensions.Logging.EventLog
         private readonly int _intermediateMessageSegmentSize;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EventLogLogger"/> class.
+        /// Initializes a new instance of the <see cref="EventLogSink"/> class.
         /// </summary>
         /// <param name="settings">The <see cref="EventLogSettings"/>.</param>
-        public EventLogLogger(EventLogSettings settings)
+        public EventLogSink(EventLogSettings settings)
         {
             _settings = settings;
 
@@ -48,11 +48,11 @@ namespace Microsoft.Extensions.Logging.EventLog
         public IEventLog EventLog { get; }
 
         /// <inheritdoc />
-        public IDisposable BeginScopeImpl(object state)
+        public IDisposable BeginScope(string categoryName, object state)
         {
             return new NoopDisposable();
         }
-
+        
         /// <inheritdoc />
         public bool IsEnabled(string categoryName, LogLevel logLevel)
         {
@@ -94,6 +94,12 @@ namespace Microsoft.Extensions.Logging.EventLog
 
             WriteMessage(message, GetEventLogEntryType(logLevel), eventId.Id);
         }
+
+        public void Dispose()
+        {
+            
+        }
+
 
         // category '0' translates to 'None' in event log
         private void WriteMessage(string message, EventLogEntryType eventLogEntryType, int eventId)

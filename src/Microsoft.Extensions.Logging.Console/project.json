@@ -4,7 +4,7 @@
     "type": "git",
     "url": "git://github.com/aspnet/logging"
   },
-  "description": "Console logger provider implementation for Microsoft.Extensions.Logging.",
+  "description": "Console sink for Microsoft.Extensions.Logging.",
   "tags": [
     "logging"
   ],
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    "Microsoft.Extensions.Logging": "1.0.0-*",
     "Microsoft.Extensions.PlatformAbstractions": "1.0.0-*"
   },
   "frameworks": {

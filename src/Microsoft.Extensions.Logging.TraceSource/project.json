@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "TraceSource logger provider implementation for Microsoft.Extensions.Logging.  This logger logs messages to a trace listener by writing messages with System.Diagnostics.TraceSource.TraceEvent().",
+  "description": "TraceSource sink for Microsoft.Extensions.Logging.  This sinks logs messages to a trace listener by writing messages with System.Diagnostics.TraceSource.TraceEvent().",
   "tags": [
     "logging",
     "tracesource"
@@ -18,7 +18,7 @@
     "xmlDoc": true
   },
   "dependencies": {
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*"
+    "Microsoft.Extensions.Logging": "1.0.0-*"
   },
   "frameworks": {
     "net451": {

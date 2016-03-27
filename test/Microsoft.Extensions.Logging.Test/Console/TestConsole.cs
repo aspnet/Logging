@@ -11,11 +11,11 @@ namespace Microsoft.Extensions.Logging.Test.Console
         public static readonly ConsoleColor? DefaultBackgroundColor;
         public static readonly ConsoleColor? DefaultForegroundColor;
 
-        private ConsoleSink _sink;
+        private ConsoleWriter _writer;
 
-        public TestConsole(ConsoleSink sink)
+        public TestConsole(ConsoleWriter writer)
         {
-            _sink = sink;
+            _writer = writer;
             BackgroundColor = DefaultBackgroundColor;
             ForegroundColor = DefaultForegroundColor;
         }
@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.Logging.Test.Console
                 consoleContext.ForegroundColor = foreground.Value;
             }
 
-            _sink.Write(consoleContext);
+            _writer.Write(consoleContext);
 
             ResetColor();
         }

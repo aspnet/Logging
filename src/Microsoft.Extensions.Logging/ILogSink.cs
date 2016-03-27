@@ -6,9 +6,9 @@ using System;
 namespace Microsoft.Extensions.Logging
 {
     /// <summary>
-    /// Represents a type that can process log entries.
+    /// Represents a type that can write log entries to some output system.
     /// </summary>
-    public interface ILoggerProvider : IDisposable
+    public interface ILogSink : IDisposable
     {
         /// <summary>
         /// Writes a log entry.
@@ -35,6 +35,6 @@ namespace Microsoft.Extensions.Logging
         /// <param name="categoryName">The category name of the logger that invoked this method.</param>
         /// <param name="state">The identifier for the scope.</param>
         /// <returns>An IDisposable that ends the logical operation scope on dispose.</returns>
-        IDisposable BeginScopeImpl(string categoryName, object state);
+        IDisposable BeginScope(string categoryName, object state);
     }
 }

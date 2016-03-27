@@ -9,8 +9,8 @@ namespace Microsoft.Extensions.Logging
 {
     public static class TraceSourceFactoryExtensions
     {
-        public static ILoggerFactory AddTraceSource(
-            this ILoggerFactory factory,
+        public static LoggerFactory AddTraceSource(
+            this LoggerFactory factory,
             string switchName,
             TraceListener listener)
         {
@@ -32,8 +32,8 @@ namespace Microsoft.Extensions.Logging
             return factory.AddTraceSource(new SourceSwitch(switchName), listener);
         }
 
-        public static ILoggerFactory AddTraceSource(
-            this ILoggerFactory factory,
+        public static LoggerFactory AddTraceSource(
+            this LoggerFactory factory,
             SourceSwitch sourceSwitch,
             TraceListener listener)
         {
@@ -52,7 +52,7 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(listener));
             }
 
-            factory.AddProvider(new TraceSourceLoggerProvider(sourceSwitch, listener));
+            factory.AddSink(new TraceSourceSink(sourceSwitch, listener));
 
             return factory;
         }

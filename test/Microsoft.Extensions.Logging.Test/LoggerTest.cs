@@ -15,9 +15,9 @@ namespace Microsoft.Extensions.Logging
             // Arrange
             var store = new List<string>();
             var loggerFactory = new LoggerFactory();
-            loggerFactory.AddProvider(new CustomLoggerProvider("provider1", ThrowExceptionAt.None, store));
-            loggerFactory.AddProvider(new CustomLoggerProvider("provider2", ThrowExceptionAt.Log, store));
-            loggerFactory.AddProvider(new CustomLoggerProvider("provider3", ThrowExceptionAt.None, store));
+            loggerFactory.AddSink(new CustomSink(ThrowExceptionAt.None, store));
+            loggerFactory.AddSink(new CustomSink(ThrowExceptionAt.Log, store));
+            loggerFactory.AddSink(new CustomSink(ThrowExceptionAt.None, store));
             var logger = loggerFactory.CreateLogger("Test");
 
             // Act
@@ -38,9 +38,9 @@ namespace Microsoft.Extensions.Logging
             // Arrange
             var store = new List<string>();
             var loggerFactory = new LoggerFactory();
-            loggerFactory.AddProvider(new CustomLoggerProvider("provider1", ThrowExceptionAt.None, store));
-            loggerFactory.AddProvider(new CustomLoggerProvider("provider2", ThrowExceptionAt.BeginScope, store));
-            loggerFactory.AddProvider(new CustomLoggerProvider("provider3", ThrowExceptionAt.None, store));
+            loggerFactory.AddSink(new CustomSink(ThrowExceptionAt.None, store));
+            loggerFactory.AddSink(new CustomSink(ThrowExceptionAt.BeginScope, store));
+            loggerFactory.AddSink(new CustomSink(ThrowExceptionAt.None, store));
             var logger = loggerFactory.CreateLogger("Test");
 
             // Act
@@ -61,9 +61,9 @@ namespace Microsoft.Extensions.Logging
             // Arrange
             var store = new List<string>();
             var loggerFactory = new LoggerFactory();
-            loggerFactory.AddProvider(new CustomLoggerProvider("provider1", ThrowExceptionAt.None, store));
-            loggerFactory.AddProvider(new CustomLoggerProvider("provider2", ThrowExceptionAt.IsEnabled, store));
-            loggerFactory.AddProvider(new CustomLoggerProvider("provider3", ThrowExceptionAt.None, store));
+            loggerFactory.AddSink(new CustomSink(ThrowExceptionAt.None, store));
+            loggerFactory.AddSink(new CustomSink(ThrowExceptionAt.IsEnabled, store));
+            loggerFactory.AddSink(new CustomSink(ThrowExceptionAt.None, store));
             var logger = loggerFactory.CreateLogger("Test");
 
             // Act
@@ -84,8 +84,8 @@ namespace Microsoft.Extensions.Logging
             // Arrange
             var store = new List<string>();
             var loggerFactory = new LoggerFactory();
-            loggerFactory.AddProvider(new CustomLoggerProvider("provider1", ThrowExceptionAt.Log, store));
-            loggerFactory.AddProvider(new CustomLoggerProvider("provider2", ThrowExceptionAt.Log, store));
+            loggerFactory.AddSink(new CustomSink(ThrowExceptionAt.Log, store));
+            loggerFactory.AddSink(new CustomSink(ThrowExceptionAt.Log, store));
             var logger = loggerFactory.CreateLogger("Test");
 
             // Act
@@ -101,95 +101,60 @@ namespace Microsoft.Extensions.Logging
             Assert.Equal("provider2.Test-Error occurred while logging data.", exceptions[1].Message);
         }
 
-        private class CustomLoggerProvider : ILoggerProvider
+        private class CustomSink : ILogSink
         {
-            private readonly string _providerName;
             private readonly ThrowExceptionAt _throwExceptionAt;
             private readonly List<string> _store;
 
-            public CustomLoggerProvider(string providerName, ThrowExceptionAt throwExceptionAt, List<string> store)
+            public CustomSink(ThrowExceptionAt throwExceptionAt, List<string> store)
             {
-                _providerName = providerName;
                 _throwExceptionAt = throwExceptionAt;
                 _store = store;
             }
 
-            public ILogger CreateLogger(string name)
-            {
-                return new CustomLogger($"{_providerName}.{name}", _throwExceptionAt, _store);
-            }
-
-            public void Log<TState>(string categoryName, LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool IsEnabled(string categoryName, LogLevel logLevel)
-            {
-                throw new NotImplementedException();
-            }
-
-            public IDisposable BeginScopeImpl(string categoryName, object state)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Dispose()
-            {
-            }
-        }
-
-        private class CustomLogger : ILogger
-        {
-            private readonly string _name;
-            private readonly ThrowExceptionAt _throwExceptionAt;
-            private readonly List<string> _store;
-
-            public CustomLogger(string name, ThrowExceptionAt throwExceptionAt, List<string> store)
-            {
-                _name = name;
-                _throwExceptionAt = throwExceptionAt;
-                _store = store;
-            }
-
-            public IDisposable BeginScopeImpl(object state)
+            public IDisposable BeginScope(string categoryName, object state)
             {
                 if (_throwExceptionAt == ThrowExceptionAt.BeginScope)
                 {
-                    throw new InvalidOperationException($"{_name}-Error occurred while creating scope.");
+                    throw new InvalidOperationException($"{categoryName}-Error occurred while creating scope.");
                 }
-                _store.Add($"{_name}-{state}");
+                _store.Add($"{categoryName}-{state}");
 
                 return null;
             }
 
-            public bool IsEnabled(LogLevel logLevel)
+            public bool IsEnabled(string categoryName, LogLevel logLevel)
             {
                 if (_throwExceptionAt == ThrowExceptionAt.IsEnabled)
                 {
-                    throw new InvalidOperationException($"{_name}-Error occurred while checking if logger is enabled.");
+                    throw new InvalidOperationException($"{categoryName}-Error occurred while checking if logger is enabled.");
                 }
 
                 return true;
             }
 
             public void Log<TState>(
+                string categoryName,
                 LogLevel logLevel,
                 EventId eventId,
                 TState state,
                 Exception exception,
                 Func<TState, Exception, string> formatter)
             {
-                if (!IsEnabled(logLevel))
+                if (!IsEnabled(categoryName, logLevel))
                 {
                     return;
                 }
 
                 if (_throwExceptionAt == ThrowExceptionAt.Log)
                 {
-                    throw new InvalidOperationException($"{_name}-Error occurred while logging data.");
+                    throw new InvalidOperationException($"{categoryName}-Error occurred while logging data.");
                 }
-                _store.Add($"{_name}-{state}");
+                _store.Add($"{categoryName}-{state}");
+            }
+
+            public void Dispose()
+            {
             }
         }
 

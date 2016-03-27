@@ -12,10 +12,6 @@ namespace Microsoft.Extensions.Logging.Testing
             return NullLogger.Instance;
         }
 
-        public void AddProvider(ILoggerProvider provider)
-        {
-        }
-
         public void Dispose()
         {
         }

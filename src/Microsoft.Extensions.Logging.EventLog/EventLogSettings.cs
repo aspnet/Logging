@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging.EventLog.Internal;
 namespace Microsoft.Extensions.Logging.EventLog
 {
     /// <summary>
-    /// Settings for <see cref="EventLogLogger"/>.
+    /// Settings for <see cref="EventLogSink"/>.
     /// </summary>
     public class EventLogSettings
     {

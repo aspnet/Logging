@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "Debug output logger provider implementation for Microsoft.Extensions.Logging. This logger logs messages to a debugger monitor by writing messages with System.Diagnostics.Debug.WriteLine().",
+  "description": "Debug output sink implementation for Microsoft.Extensions.Logging. This sink logs messages to a debugger monitor by writing messages with System.Diagnostics.Debug.WriteLine().",
   "tags": [
     "logging"
   ],
@@ -17,7 +17,7 @@
     "xmlDoc": true
   },
   "dependencies": {
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*"
+    "Microsoft.Extensions.Logging": "1.0.0-*"
   },
   "frameworks": {
     "netstandard1.1": {

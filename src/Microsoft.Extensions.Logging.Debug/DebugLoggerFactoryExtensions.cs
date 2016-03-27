@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging.Debug;
 namespace Microsoft.Extensions.Logging
 {
     /// <summary>
-    /// Extension methods for the <see cref="ILoggerFactory"/> class.
+    /// Extension methods for the <see cref="LoggerFactory"/> class.
     /// </summary>
     public static class DebugLoggerFactoryExtensions
     {
@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.Logging
         /// Adds a debug logger that is enabled for <see cref="LogLevel"/>.Information or higher.
         /// </summary>
         /// <param name="factory">The extension method argument.</param>
-        public static ILoggerFactory AddDebug(this ILoggerFactory factory)
+        public static LoggerFactory AddDebug(this LoggerFactory factory)
         {
             return AddDebug(factory, LogLevel.Information);
         }
@@ -25,9 +25,9 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="factory">The extension method argument.</param>
         /// <param name="filter">The function used to filter events based on the log level.</param>
-        public static ILoggerFactory AddDebug(this ILoggerFactory factory, Func<string, LogLevel, bool> filter)
+        public static LoggerFactory AddDebug(this LoggerFactory factory, Func<string, LogLevel, bool> filter)
         {
-            factory.AddProvider(new DebugLoggerProvider(filter));
+            factory.AddSink(new DebugSink(filter));
             return factory;
         }
 
@@ -36,7 +36,7 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="factory">The extension method argument.</param>
         /// <param name="minLevel">The minimum <see cref="LogLevel"/> to be logged</param>
-        public static ILoggerFactory AddDebug(this ILoggerFactory factory, LogLevel minLevel)
+        public static LoggerFactory AddDebug(this LoggerFactory factory, LogLevel minLevel)
         {
             return AddDebug(
                factory,

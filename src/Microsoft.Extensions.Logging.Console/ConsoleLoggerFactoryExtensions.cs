@@ -2,8 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.Logging
 {
@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds a console logger that is enabled for <see cref="LogLevel"/>.Information or higher.
         /// </summary>
-        public static ILoggerFactory AddConsole(this ILoggerFactory factory)
+        public static LoggerFactory AddConsole(this LoggerFactory factory)
         {
             return factory.AddConsole(includeScopes: false);
         }
@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="factory"></param>
         /// <param name="includeScopes">A value which indicates whether log scope information should be displayed
         /// in the output.</param>
-        public static ILoggerFactory AddConsole(this ILoggerFactory factory, bool includeScopes)
+        public static LoggerFactory AddConsole(this LoggerFactory factory, bool includeScopes)
         {
             factory.AddConsole((n, l) => l >= LogLevel.Information, includeScopes);
             return factory;
@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="factory">The <see cref="ILoggerFactory"/> to use.</param>
         /// <param name="minLevel">The minimum <see cref="LogLevel"/> to be logged</param>
-        public static ILoggerFactory AddConsole(this ILoggerFactory factory, LogLevel minLevel)
+        public static LoggerFactory AddConsole(this LoggerFactory factory, LogLevel minLevel)
         {
             factory.AddConsole(minLevel, includeScopes: false);
             return factory;
@@ -47,8 +47,8 @@ namespace Microsoft.Extensions.Logging
         /// <param name="minLevel">The minimum <see cref="LogLevel"/> to be logged</param>
         /// <param name="includeScopes">A value which indicates whether log scope information should be displayed
         /// in the output.</param>
-        public static ILoggerFactory AddConsole(
-            this ILoggerFactory factory,
+        public static LoggerFactory AddConsole(
+            this LoggerFactory factory,
             LogLevel minLevel,
             bool includeScopes)
         {
@@ -61,8 +61,8 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="factory"></param>
         /// <param name="filter"></param>
-        public static ILoggerFactory AddConsole(
-            this ILoggerFactory factory,
+        public static LoggerFactory AddConsole(
+            this LoggerFactory factory,
             Func<string, LogLevel, bool> filter)
         {
             factory.AddConsole(filter, includeScopes: false);
@@ -76,24 +76,24 @@ namespace Microsoft.Extensions.Logging
         /// <param name="filter"></param>
         /// <param name="includeScopes">A value which indicates whether log scope information should be displayed
         /// in the output.</param>
-        public static ILoggerFactory AddConsole(
-            this ILoggerFactory factory,
+        public static LoggerFactory AddConsole(
+            this LoggerFactory factory,
             Func<string, LogLevel, bool> filter,
             bool includeScopes)
         {
-            factory.AddProvider(new ConsoleLoggerProvider(filter, includeScopes));
+            factory.AddSink(new ConsoleSink(filter, includeScopes));
             return factory;
         }
 
-        public static ILoggerFactory AddConsole(
-            this ILoggerFactory factory,
+        public static LoggerFactory AddConsole(
+            this LoggerFactory factory,
             IConsoleLoggerSettings settings)
         {
-            factory.AddProvider(new ConsoleLoggerProvider(settings));
+            factory.AddSink(new ConsoleSink(settings));
             return factory;
         }
 
-        public static ILoggerFactory AddConsole(this ILoggerFactory factory, IConfiguration configuration)
+        public static LoggerFactory AddConsole(this LoggerFactory factory, IConfiguration configuration)
         {
             var settings = new ConfigurationConsoleLoggerSettings(configuration);
             return factory.AddConsole(settings);
