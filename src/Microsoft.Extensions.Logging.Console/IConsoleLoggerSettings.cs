@@ -9,8 +9,6 @@ namespace Microsoft.Extensions.Logging.Console
 
         IChangeToken ChangeToken { get; }
 
-        bool TryGetSwitch(string name, out LogLevel level);
-
         IConsoleLoggerSettings Reload();
     }
 }

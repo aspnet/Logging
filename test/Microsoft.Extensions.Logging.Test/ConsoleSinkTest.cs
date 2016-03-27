@@ -20,12 +20,12 @@ namespace Microsoft.Extensions.Logging.Test
         private const string _state = "This is a test, and {curly braces} are just fine!";
         private Func<object, Exception, string> _defaultFormatter = (state, exception) => state.ToString();
 
-        private Tuple<ConsoleSink, ConsoleWriter> SetUp(Func<string, LogLevel, bool> filter, bool includeScopes = false)
+        private Tuple<ConsoleSink, ConsoleWriter> SetUp(bool includeScopes = false)
         {
             // Arrange
             var writer = new ConsoleWriter();
             var console = new TestConsole(writer);
-            var sink = new ConsoleSink(filter, includeScopes);
+            var sink = new ConsoleSink(new ConsoleLoggerSettings { IncludeScopes = includeScopes });
             sink.Console = console;
             return new Tuple<ConsoleSink, ConsoleWriter>(sink, writer);
         }
@@ -40,7 +40,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void ThrowsException_WhenNoMessageAndExceptionAreProvided()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var writer = t.Item2;
 
@@ -52,7 +52,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void DoesNotLog_NewLine_WhenNoExceptionIsProvided()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var writer = t.Item2;
             var logMessage = "Route with name 'Default' was not found.";
@@ -77,7 +77,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void Writes_NewLine_WhenExceptionIsProvided(string message)
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var writer = t.Item2;
             var eventId = 10;
@@ -100,7 +100,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void ThrowsException_WhenNoMessageIsProvided()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var exception = new InvalidOperationException("Invalid value");
 
@@ -112,7 +112,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void ThrowsException_WhenNoFormatterIsProvided()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
 
             // Act & Assert
@@ -123,7 +123,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void LogsWhenNullFilterGiven()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var writer = t.Item2;
             var expectedMessage = _paddingString + _state + Environment.NewLine;
@@ -137,135 +137,10 @@ namespace Microsoft.Extensions.Logging.Test
         }
 
         [Fact]
-        public void CriticalFilter_LogsWhenAppropriate()
-        {
-            // Arrange
-            var t = SetUp((category, logLevel) => logLevel >= LogLevel.Critical);
-            var sink = t.Item1;
-            var writer = t.Item2;
-
-            // Act
-            sink.Log(_categoryName, LogLevel.Warning, 0, _state, null, _defaultFormatter);
-
-            // Assert
-            Assert.Equal(0, writer.Writes.Count);
-
-            // Act
-            sink.Log(_categoryName, LogLevel.Critical, 0, _state, null, _defaultFormatter);
-
-            // Assert
-            Assert.Equal(3, writer.Writes.Count);
-        }
-
-        [Fact]
-        public void ErrorFilter_LogsWhenAppropriate()
-        {
-            // Arrange
-            var t = SetUp((category, logLevel) => logLevel >= LogLevel.Error);
-            var sink = t.Item1;
-            var writer = t.Item2;
-
-            // Act
-            sink.Log(_categoryName, LogLevel.Warning, 0, _state, null, null);
-
-            // Assert
-            Assert.Equal(0, writer.Writes.Count);
-
-            // Act
-            sink.Log(_categoryName, LogLevel.Error, 0, _state, null, _defaultFormatter);
-
-            // Assert
-            Assert.Equal(3, writer.Writes.Count);
-        }
-
-        [Fact]
-        public void WarningFilter_LogsWhenAppropriate()
-        {
-            // Arrange
-            var t = SetUp((category, logLevel) => logLevel >= LogLevel.Warning);
-            var sink = t.Item1;
-            var writer = t.Item2;
-
-            // Act
-            sink.Log(_categoryName, LogLevel.Information, 0, _state, null, null);
-
-            // Assert
-            Assert.Equal(0, writer.Writes.Count);
-
-            // Act
-            sink.Log(_categoryName, LogLevel.Warning, 0, _state, null, _defaultFormatter);
-
-            // Assert
-            Assert.Equal(3, writer.Writes.Count);
-        }
-
-        [Fact]
-        public void InformationFilter_LogsWhenAppropriate()
-        {
-            // Arrange
-            var t = SetUp((category, logLevel) => logLevel >= LogLevel.Information);
-            var sink = t.Item1;
-            var writer = t.Item2;
-
-            // Act
-            sink.Log(_categoryName, LogLevel.Debug, 0, _state, null, null);
-
-            // Assert
-            Assert.Equal(0, writer.Writes.Count);
-
-            // Act
-            sink.Log(_categoryName, LogLevel.Information, 0, _state, null, _defaultFormatter);
-
-            // Assert
-            Assert.Equal(3, writer.Writes.Count);
-        }
-
-        [Fact]
-        public void DebugFilter_LogsWhenAppropriate()
-        {
-            // Arrange
-            var t = SetUp((category, logLevel) => logLevel >= LogLevel.Debug);
-            var sink = t.Item1;
-            var writer = t.Item2;
-
-            // Act
-            sink.Log(_categoryName, LogLevel.Trace, 0, _state, null, null);
-
-            // Assert
-            Assert.Equal(0, writer.Writes.Count);
-
-            // Act
-            sink.Log(_categoryName, LogLevel.Debug, 0, _state, null, _defaultFormatter);
-
-            // Assert
-            Assert.Equal(3, writer.Writes.Count);
-        }
-
-        [Fact]
-        public void TraceFilter_LogsWhenAppropriate()
-        {
-            // Arrange
-            var t = SetUp((category, logLevel) => logLevel >= LogLevel.Trace);
-            var sink = t.Item1;
-            var writer = t.Item2;
-
-            // Act
-            sink.Log(_categoryName, LogLevel.Critical, 0, _state, null, _defaultFormatter);
-            sink.Log(_categoryName, LogLevel.Error, 0, _state, null, _defaultFormatter);
-            sink.Log(_categoryName, LogLevel.Warning, 0, _state, null, _defaultFormatter);
-            sink.Log(_categoryName, LogLevel.Information, 0, _state, null, _defaultFormatter);
-            sink.Log(_categoryName, LogLevel.Debug, 0, _state, null, _defaultFormatter);
-            sink.Log(_categoryName, LogLevel.Trace, 0, _state, null, _defaultFormatter);
-
-            // Assert
-            Assert.Equal(18, writer.Writes.Count);
-        }
-
-        [Fact]
         public void WriteCritical_LogsCorrectColors()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var writer = t.Item2;
 
@@ -289,7 +164,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void WriteError_LogsCorrectColors()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var writer = t.Item2;
 
@@ -313,7 +188,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void WriteWarning_LogsCorrectColors()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var writer = t.Item2;
 
@@ -337,7 +212,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void WriteInformation_LogsCorrectColors()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var writer = t.Item2;
 
@@ -361,7 +236,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void WriteDebug_LogsCorrectColors()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var writer = t.Item2;
 
@@ -385,7 +260,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void WriteTrace_LogsCorrectColors()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var writer = t.Item2;
 
@@ -409,7 +284,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void WriteCore_LogsCorrectMessages()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var writer = t.Item2;
             var ex = new Exception();
@@ -436,7 +311,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void NoLogScope_DoesNotWriteAnyScopeContentToOutput()
         {
             // Arrange
-            var t = SetUp(filter: null, includeScopes: true);
+            var t = SetUp(includeScopes: true);
             var sink = t.Item1;
             var writer = t.Item2;
 
@@ -460,7 +335,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void WritingScopes_LogsWithCorrectColors()
         {
             // Arrange
-            var t = SetUp(filter: null, includeScopes: true);
+            var t = SetUp(includeScopes: true);
             var sink = t.Item1;
             var writer = t.Item2;
             var id = Guid.NewGuid();
@@ -492,7 +367,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void WritingScopes_LogsExpectedMessage()
         {
             // Arrange
-            var t = SetUp(filter: null, includeScopes: true);
+            var t = SetUp(includeScopes: true);
             var sink = t.Item1;
             var writer = t.Item2;
             var expectedMessage =
@@ -519,7 +394,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void WritingNestedScopes_LogsExpectedMessage()
         {
             // Arrange
-            var t = SetUp(filter: null, includeScopes: true);
+            var t = SetUp(includeScopes: true);
             var sink = t.Item1;
             var writer = t.Item2;
             var expectedMessage =
@@ -549,7 +424,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void WritingMultipleScopes_LogsExpectedMessage()
         {
             // Arrange
-            var t = SetUp(filter: null, includeScopes: true);
+            var t = SetUp(includeScopes: true);
             var sink = t.Item1;
             var writer = t.Item2;
             var expectedMessage1 =
@@ -592,7 +467,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void CallingBeginScopeOnLogger_AlwaysReturnsNewDisposableInstance()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var writer = t.Item2;
 
@@ -610,7 +485,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void CallingBeginScopeOnLogger_ReturnsNonNullableInstance()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp();
             var sink = t.Item1;
             var writer = t.Item2;
 
@@ -619,70 +494,6 @@ namespace Microsoft.Extensions.Logging.Test
 
             // Assert
             Assert.NotNull(disposable);
-        }
-
-        [Fact]
-        public void ConsoleLogger_ReloadSettings_CanChangeLogLevel()
-        {
-            // Arrange
-            var settings = new MockConsoleLoggerSettings()
-            {
-                Cancel = new CancellationTokenSource(),
-                Switches =
-                {
-                    ["Test"] = LogLevel.Information,
-                }
-            };
-
-            var loggerFactory = new LoggerFactory();
-            loggerFactory.AddConsole(settings);
-
-            var logger = loggerFactory.CreateLogger("Test");
-            Assert.False(logger.IsEnabled(LogLevel.Trace));
-
-            settings.Switches["Test"] = LogLevel.Trace;
-
-            var cancellationTokenSource = settings.Cancel;
-            settings.Cancel = new CancellationTokenSource();
-
-            // Act
-            cancellationTokenSource.Cancel();
-
-            // Assert
-            Assert.True(logger.IsEnabled(LogLevel.Trace));
-        }
-
-        [Fact]
-        public void ConsoleLogger_ReloadSettings_CanReloadMultipleTimes()
-        {
-            // Arrange
-            var settings = new MockConsoleLoggerSettings()
-            {
-                Cancel = new CancellationTokenSource(),
-                Switches =
-                {
-                    ["Test"] = LogLevel.Information,
-                }
-            };
-
-            var loggerFactory = new LoggerFactory();
-            loggerFactory.AddConsole(settings);
-
-            var logger = loggerFactory.CreateLogger("Test");
-            Assert.False(logger.IsEnabled(LogLevel.Trace));
-
-            // Act & Assert
-            for (var i = 0; i < 10; i++)
-            {
-                settings.Switches["Test"] = i % 2 == 0 ? LogLevel.Information : LogLevel.Trace;
-
-                var cancellationTokenSource = settings.Cancel;
-                settings.Cancel = new CancellationTokenSource();
-
-                cancellationTokenSource.Cancel();
-
-                Assert.Equal(i % 2 == 1, logger.IsEnabled(LogLevel.Trace));
-            }
         }
 
         private string GetMessage(string logLevelString, int eventId, Exception exception)
@@ -711,18 +522,11 @@ namespace Microsoft.Extensions.Logging.Test
 
             public IChangeToken ChangeToken => new CancellationChangeToken(Cancel.Token);
 
-            public IDictionary<string, LogLevel> Switches { get; } = new Dictionary<string, LogLevel>();
-
             public bool IncludeScopes { get; set; }
 
             public IConsoleLoggerSettings Reload()
             {
                 return this;
-            }
-
-            public bool TryGetSwitch(string name, out LogLevel level)
-            {
-                return Switches.TryGetValue(name, out level);
             }
         }
     }

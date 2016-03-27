@@ -22,7 +22,8 @@ namespace Microsoft.Extensions.Logging.Console
         private const int _indentation = 2;
 
         private IConsole _console;
-        private Func<string, LogLevel, bool> _filter;
+
+        private readonly IConsoleLoggerSettings _settings;
 
         static ConsoleSink()
         {
@@ -32,13 +33,7 @@ namespace Microsoft.Extensions.Logging.Console
 
         public ConsoleSink(IConsoleLoggerSettings settings)
         {
-            throw new NotImplementedException(); // TODO !!!
-        }
-
-        public ConsoleSink(Func<string, LogLevel, bool> filter, bool includeScopes)
-        {
-            Filter = filter ?? ((category, logLevel) => true);
-            IncludeScopes = includeScopes;
+            _settings = settings;
 
             if (PlatformServices.Default.Runtime.OperatingSystem.Equals("Windows", StringComparison.OrdinalIgnoreCase))
             {
@@ -63,22 +58,6 @@ namespace Microsoft.Extensions.Logging.Console
                 _console = value;
             }
         }
-
-        public Func<string, LogLevel, bool> Filter
-        {
-            get { return _filter; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                _filter = value;
-            }
-        }
-
-        public bool IncludeScopes { get; set; }
 
         public void Log<TState>(
             string categoryName,
@@ -140,7 +119,7 @@ namespace Microsoft.Extensions.Logging.Console
                     newLine: true);
 
                 // scope information
-                if (IncludeScopes)
+                if (_settings.IncludeScopes)
                 {
                     var scopeInformation = GetScopeInformation();
                     if (!string.IsNullOrEmpty(scopeInformation))
@@ -197,7 +176,7 @@ namespace Microsoft.Extensions.Logging.Console
 
         public bool IsEnabled(string categoryName, LogLevel logLevel)
         {
-            return Filter(categoryName, logLevel);
+            return true;
         }
 
         public IDisposable BeginScope(string categoryName, object state)

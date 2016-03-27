@@ -56,7 +56,7 @@ namespace Microsoft.Extensions.Logging.EventLog
         /// <inheritdoc />
         public bool IsEnabled(string categoryName, LogLevel logLevel)
         {
-            return _settings.Filter == null || _settings.Filter(categoryName, logLevel);
+            return true;
         }
 
         /// <inheritdoc />

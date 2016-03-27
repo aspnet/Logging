@@ -46,31 +46,5 @@ namespace Microsoft.Extensions.Logging.Console
             ChangeToken = null;
             return new ConfigurationConsoleLoggerSettings(_configuration);
         }
-
-        public bool TryGetSwitch(string name, out LogLevel level)
-        {
-            var switches = _configuration.GetSection("LogLevel");
-            if (switches == null)
-            {
-                level = LogLevel.None;
-                return false;
-            }
-
-            var value = switches[name];
-            if (string.IsNullOrEmpty(value))
-            {
-                level = LogLevel.None;
-                return false;
-            }
-            else if (Enum.TryParse<LogLevel>(value, out level))
-            {
-                return true;
-            }
-            else
-            {
-                var message = $"Configuration value '{value}' for category '{name}' is not supported.";
-                throw new InvalidOperationException(message);
-            }
-        }
     }
 }

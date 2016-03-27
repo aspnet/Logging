@@ -27,11 +27,6 @@ namespace Microsoft.Extensions.Logging.EventLog
         public string MachineName { get; set; }
 
         /// <summary>
-        /// The function used to filter events based on the log level.
-        /// </summary>
-        public Func<string, LogLevel, bool> Filter { get; set; }
-
-        /// <summary>
         /// For unit testing purposes only.
         /// </summary>
         public IEventLog EventLog { get; set; }

@@ -11,25 +11,6 @@ namespace Microsoft.Extensions.Logging.Debug
     /// </summary>
     public partial class DebugSink : ILogSink
     {
-        private readonly Func<string, LogLevel, bool> _filter;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DebugSink"/> class.
-        /// </summary>
-        public DebugSink()
-            : this(filter: null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DebugSink"/> class.
-        /// </summary>
-        /// <param name="filter">The function used to filter events based on the log level.</param>
-        public DebugSink(Func<string, LogLevel, bool> filter)
-        {
-            _filter = filter;
-        }
-
         public IDisposable BeginScope(string categoryName, object state)
         {
             return new NoopDisposable();
@@ -38,10 +19,7 @@ namespace Microsoft.Extensions.Logging.Debug
         /// <inheritdoc />
         public bool IsEnabled(string categoryName, LogLevel logLevel)
         {
-            // If the filter is null, everything is enabled
-            // unless the debugger is not attached
-            return Debugger.IsAttached &&
-                (_filter == null || _filter(categoryName, logLevel));
+            return Debugger.IsAttached;
         }
 
         /// <inheritdoc />

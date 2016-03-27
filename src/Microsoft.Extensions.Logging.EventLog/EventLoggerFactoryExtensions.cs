@@ -22,25 +22,7 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(factory));
             }
 
-            return AddEventLog(factory, LogLevel.Information);
-        }
-
-        /// <summary>
-        /// Adds an event logger that is enabled for <see cref="LogLevel"/>s of minLevel or higher.
-        /// </summary>
-        /// <param name="factory">The extension method argument.</param>
-        /// <param name="minLevel">The minimum <see cref="LogLevel"/> to be logged</param>
-        public static LoggerFactory AddEventLog(this LoggerFactory factory, LogLevel minLevel)
-        {
-            if (factory == null)
-            {
-                throw new ArgumentNullException(nameof(factory));
-            }
-
-            return AddEventLog(factory, new EventLogSettings()
-            {
-                Filter = (_, logLevel) => logLevel >= minLevel
-            });
+            return AddEventLog(factory, new EventLogSettings());
         }
 
         /// <summary>
