@@ -7,18 +7,11 @@ using DiagnosticsTraceSource = System.Diagnostics.TraceSource;
 
 namespace Microsoft.Extensions.Logging.TraceSource
 {
-    public class TraceSourceLogger : ILogger
+    public class TraceSourceLogger
     {
-        private readonly DiagnosticsTraceSource _traceSource;
-
-        public TraceSourceLogger(DiagnosticsTraceSource traceSource)
+        public void Log<TState>(DiagnosticsTraceSource traceSource, LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            _traceSource = traceSource;
-        }
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-        {
-            if (!IsEnabled(logLevel))
+            if (!IsEnabled(traceSource, logLevel))
             {
                 return;
             }
@@ -40,14 +33,14 @@ namespace Microsoft.Extensions.Logging.TraceSource
             }
             if (!string.IsNullOrEmpty(message))
             {
-                _traceSource.TraceEvent(GetEventType(logLevel), eventId.Id, message);
+                traceSource.TraceEvent(GetEventType(logLevel), eventId.Id, message);
             }
         }
 
-        public bool IsEnabled(LogLevel logLevel)
+        public bool IsEnabled(DiagnosticsTraceSource traceSource, LogLevel logLevel)
         {
             var traceEventType = GetEventType(logLevel);
-            return _traceSource.Switch.ShouldTrace(traceEventType);
+            return traceSource.Switch.ShouldTrace(traceEventType);
         }
 
         private static TraceEventType GetEventType(LogLevel logLevel)

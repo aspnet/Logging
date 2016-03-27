@@ -62,9 +62,28 @@ namespace Microsoft.Extensions.Logging.Console
             }
         }
 
-        public ILogger CreateLogger(string name)
+        public void Log<TState>(
+            string categoryName, 
+            LogLevel logLevel, 
+            EventId eventId, 
+            TState state, 
+            Exception exception, 
+            Func<TState, Exception, string> formatter)
         {
-            return _loggers.GetOrAdd(name, CreateLoggerImplementation);
+            var logger = _loggers.GetOrAdd(categoryName, CreateLoggerImplementation);
+            logger.Log(logLevel, eventId, state, exception, formatter);
+        }
+
+        public bool IsEnabled(string categoryName, LogLevel logLevel)
+        {
+            var logger = _loggers.GetOrAdd(categoryName, CreateLoggerImplementation);
+            return logger.IsEnabled(logLevel);
+        }
+
+        public IDisposable BeginScopeImpl(string categoryName, object state)
+        {
+            var logger = _loggers.GetOrAdd(categoryName, CreateLoggerImplementation);
+            return logger.BeginScopeImpl(state);
         }
 
         private ConsoleLogger CreateLoggerImplementation(string name)

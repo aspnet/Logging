@@ -8,7 +8,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Microsoft.Extensions.Logging.Console
 {
-    public class ConsoleLogger : ILogger
+    public class ConsoleLogger
     {
         // Writing to console is not an atomic operation in the current implementation and since multiple logger
         // instances are created with a different name. Also since Console is global, using a static lock is fine.

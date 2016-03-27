@@ -10,6 +10,7 @@ using Microsoft.Extensions.Primitives;
 using System.Threading;
 using Moq;
 using Xunit;
+using Microsoft.Extensions.Logging.Internal;
 
 namespace Microsoft.Extensions.Logging.Test
 {
@@ -34,23 +35,6 @@ namespace Microsoft.Extensions.Logging.Test
         {
             var loglevelStringWithPadding = "INFO: ";
             _paddingString = new string(' ', loglevelStringWithPadding.Length);
-        }
-
-        private Tuple<ILoggerFactory, ConsoleSink> SetUpFactory(Func<string, LogLevel, bool> filter)
-        {
-            var t = SetUp(null);
-            var logger = t.Item1;
-            var sink = t.Item2;
-
-            var provider = new Mock<ILoggerProvider>();
-            provider.Setup(f => f.CreateLogger(
-                It.IsAny<string>()))
-                .Returns(logger);
-
-            var factory = new LoggerFactory();
-            factory.AddProvider(provider.Object);
-
-            return new Tuple<ILoggerFactory, ConsoleSink>(factory, sink);
         }
 
         [Fact]
@@ -485,7 +469,7 @@ namespace Microsoft.Extensions.Logging.Test
             var scopeMessage = "RequestId: {RequestId}";
 
             // Act
-            using (logger.BeginScope(scopeMessage, id))
+            using (logger.BeginScopeImpl(new FormattedLogValues(scopeMessage, id)))
             {
                 logger.Log(LogLevel.Information, 0, _state, null, _defaultFormatter);
             }
@@ -519,7 +503,7 @@ namespace Microsoft.Extensions.Logging.Test
                 + Environment.NewLine;
 
             // Act
-            using (logger.BeginScope("RequestId: {RequestId}", 100))
+            using (logger.BeginScopeImpl(new FormattedLogValues("RequestId: {RequestId}", 100)))
             {
                 logger.Log(LogLevel.Information, 0, _state, null, _defaultFormatter);
             }
@@ -546,9 +530,9 @@ namespace Microsoft.Extensions.Logging.Test
                 + Environment.NewLine;
 
             // Act
-            using (logger.BeginScope("RequestId: {RequestId}", 100))
+            using (logger.BeginScopeImpl(new FormattedLogValues("RequestId: {RequestId}", 100)))
             {
-                using (logger.BeginScope("Request matched action: {ActionName}", "Index"))
+                using (logger.BeginScopeImpl(new FormattedLogValues("Request matched action: {ActionName}", "Index")))
                 {
                     logger.Log(LogLevel.Information, 0, _state, null, _defaultFormatter);
                 }
@@ -580,14 +564,14 @@ namespace Microsoft.Extensions.Logging.Test
                 + Environment.NewLine;
 
             // Act
-            using (logger.BeginScope("RequestId: {RequestId}", 100))
+            using (logger.BeginScopeImpl(new FormattedLogValues("RequestId: {RequestId}", 100)))
             {
-                using (logger.BeginScope("Request matched action: {ActionName}", "Index"))
+                using (logger.BeginScopeImpl(new FormattedLogValues("Request matched action: {ActionName}", "Index")))
                 {
                     logger.Log(LogLevel.Information, 0, _state, null, _defaultFormatter);
                 }
 
-                using (logger.BeginScope("Created product: {ProductName}", "Car"))
+                using (logger.BeginScopeImpl(new FormattedLogValues("Created product: {ProductName}", "Car")))
                 {
                     logger.Log(LogLevel.Information, 0, _state, null, _defaultFormatter);
                 }

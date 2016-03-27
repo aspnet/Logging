@@ -15,6 +15,7 @@ namespace Microsoft.Extensions.Logging.TraceSource
     {
         private readonly SourceSwitch _rootSourceSwitch;
         private readonly TraceListener _rootTraceListener;
+        private readonly TraceSourceLogger _traceSourceLogger;
 
         private readonly ConcurrentDictionary<string, DiagnosticsTraceSource> _sources = new ConcurrentDictionary<string, DiagnosticsTraceSource>(StringComparer.OrdinalIgnoreCase);
 
@@ -39,16 +40,31 @@ namespace Microsoft.Extensions.Logging.TraceSource
 
             _rootSourceSwitch = rootSourceSwitch;
             _rootTraceListener = rootTraceListener;
+
+            _traceSourceLogger = new TraceSourceLogger();
         }
 
-        /// <summary>
-        /// Creates a new <see cref="ILogger"/>  for the given component name.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public ILogger CreateLogger(string name)
+        public void Log<TState>(
+            string categoryName,
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception exception,
+            Func<TState, Exception, string> formatter)
         {
-            return new TraceSourceLogger(GetOrAddTraceSource(name));
+            var traceSource = GetOrAddTraceSource(categoryName);
+            _traceSourceLogger.Log(traceSource, logLevel, eventId, state, exception, formatter);
+        }
+
+        public bool IsEnabled(string categoryName, LogLevel logLevel)
+        {
+            var traceSource = GetOrAddTraceSource(categoryName);
+            return _traceSourceLogger.IsEnabled(traceSource, logLevel);
+        }
+
+        public IDisposable BeginScopeImpl(string categoryName, object state)
+        {
+            return _traceSourceLogger.BeginScopeImpl(state);
         }
 
         private DiagnosticsTraceSource GetOrAddTraceSource(string name)
