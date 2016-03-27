@@ -13,6 +13,8 @@ namespace Microsoft.Extensions.Logging
 
         public ILogSink[] Sinks => _sinks;
 
+        public ILogFilter Filter { get; set; }
+
         public void AddSink(ILogSink sink)
         {
             lock (_sync)

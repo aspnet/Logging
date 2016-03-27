@@ -31,7 +31,10 @@ namespace Microsoft.Extensions.Logging
             {
                 try
                 {
-                    sink.Log(_name, logLevel, eventId, state, exception, formatter);
+                    if (IsSinkEnabled(sink, logLevel))
+                    {
+                        sink.Log(_name, logLevel, eventId, state, exception, formatter);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -47,7 +50,7 @@ namespace Microsoft.Extensions.Logging
             if (exceptions != null && exceptions.Count > 0)
             {
                 throw new AggregateException(
-                    message: "An error occurred while writing to logger(s).", innerExceptions: exceptions);
+                    message: "An error occurred while writing to sink(s).", innerExceptions: exceptions);
             }
         }
 
@@ -63,7 +66,7 @@ namespace Microsoft.Extensions.Logging
             {
                 try
                 {
-                    if (sink.IsEnabled(_name, logLevel))
+                    if (IsSinkEnabled(sink, logLevel))
                     {
                         return true;
                     }
@@ -82,7 +85,7 @@ namespace Microsoft.Extensions.Logging
             if (exceptions != null && exceptions.Count > 0)
             {
                 throw new AggregateException(
-                    message: "An error occurred while writing to logger(s).",
+                    message: "An error occurred while writing to sink(s).",
                     innerExceptions: exceptions);
             }
 
@@ -126,10 +129,29 @@ namespace Microsoft.Extensions.Logging
             if (exceptions != null && exceptions.Count > 0)
             {
                 throw new AggregateException(
-                    message: "An error occurred while writing to logger(s).", innerExceptions: exceptions);
+                    message: "An error occurred while writing to sink(s).", innerExceptions: exceptions);
             }
 
             return scope;
+        }
+
+        private bool IsSinkEnabled(ILogSink sink, LogLevel logLevel)
+        {
+            bool isEnabled = true;
+
+            // global filter
+            if (_logSinkProvider.Filter != null)
+            {
+                isEnabled = _logSinkProvider.Filter.IsEnabled(sink, _name, logLevel);
+            }
+
+            // sink-specific filter
+            if (isEnabled)
+            {
+                isEnabled = sink.IsEnabled(_name, logLevel);
+            }
+
+            return isEnabled;
         }
 
         private class Scope : IDisposable

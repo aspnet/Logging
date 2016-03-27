@@ -49,6 +49,11 @@ namespace Microsoft.Extensions.Logging
             _logSinkProvider.AddSink(provider);
         }
 
+        public void SetFilter(ILogFilter filter)
+        {
+            _logSinkProvider.Filter = filter;
+        }
+
         public void Dispose()
         {
             _logSinkProvider?.Dispose();
