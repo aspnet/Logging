@@ -1,14 +1,11 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Microsoft.Extensions.Logging
 {
-    public class LoggerProviderProvider : ILogSinkProvider
+    public class LogSinkProvider : ILogSinkProvider
     {
         private ILogSink[] _sinks = new ILogSink[0];
         private readonly object _sync = new object();
@@ -16,11 +13,11 @@ namespace Microsoft.Extensions.Logging
 
         public ILogSink[] Sinks => _sinks;
 
-        public void AddSink(ILogSink provider)
+        public void AddSink(ILogSink sink)
         {
             lock (_sync)
             {
-                _sinks = _sinks.Concat(new[] { provider }).ToArray();
+                _sinks = _sinks.Concat(new[] { sink }).ToArray();
             }
         }
 
@@ -28,11 +25,11 @@ namespace Microsoft.Extensions.Logging
         {
             if (!_disposed)
             {
-                foreach (var provider in _sinks)
+                foreach (var sink in _sinks)
                 {
                     try
                     {
-                        provider.Dispose();
+                        sink.Dispose();
                     }
                     catch
                     {

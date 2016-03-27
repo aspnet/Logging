@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.Logging
 
         public LoggerFactory(ILogSinkProvider logSinkProvider)
         {
-            _logSinkProvider = logSinkProvider ?? new LoggerProviderProvider();
+            _logSinkProvider = logSinkProvider ?? new LogSinkProvider();
         }
 
         public ILogger CreateLogger(string categoryName)

@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.Logging
 {
     public interface ILogSinkProvider : IDisposable
     {
-        void AddSink(ILogSink provider);
+        void AddSink(ILogSink sink);
 
         ILogSink[] Sinks { get; }
     }
