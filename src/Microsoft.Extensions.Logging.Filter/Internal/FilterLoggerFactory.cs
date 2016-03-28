@@ -1,6 +1,8 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
+
 namespace Microsoft.Extensions.Logging.Filter.Internal
 {
     public class FilterLoggerFactory : ILoggerFactory
@@ -22,12 +24,14 @@ namespace Microsoft.Extensions.Logging.Filter.Internal
 
         public ILogger CreateLogger(string categoryName)
         {
-            return _innerLoggerFactory.CreateLogger(categoryName);
+            throw new NotImplementedException();
         }
 
         public void Dispose()
         {
-            _innerLoggerFactory.Dispose();
+            // Do not dispose the inner logger factory as this filter logger factory's only responsibility is to
+            // wrap the logger providers. Calling dispose on the inner logger factory can cause dispose to be called
+            // immediately after the providers are added.
         }
     }
 }

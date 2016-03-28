@@ -1,16 +1,23 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
+
 namespace Microsoft.Extensions.Logging.Test
 {
     public class TestLoggerProvider : ILoggerProvider
     {
-        private readonly bool _isEnabled;
+        private readonly Func<LogLevel, bool> _filter;
 
-        public TestLoggerProvider(TestSink testSink, bool isEnabled)
+        public TestLoggerProvider(TestSink testSink, bool isEnabled) :
+            this(testSink, _ => isEnabled)
+        {
+        }
+
+        public TestLoggerProvider(TestSink testSink, Func<LogLevel, bool> filter)
         {
             Sink = testSink;
-            _isEnabled = isEnabled;
+            _filter = filter;
         }
 
         public TestSink Sink { get; }
@@ -19,7 +26,7 @@ namespace Microsoft.Extensions.Logging.Test
 
         public ILogger CreateLogger(string categoryName)
         {
-            return new TestLogger(categoryName, Sink, _isEnabled);
+            return new TestLogger(categoryName, Sink, _filter);
         }
 
         public void Dispose()

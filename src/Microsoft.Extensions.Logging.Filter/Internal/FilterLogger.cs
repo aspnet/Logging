@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.Logging.Filter.Internal
             Exception exception,
             Func<TState, Exception, string> formatter)
         {
-            if (_filter(logLevel))
+            if (IsEnabled(logLevel))
             {
                 _innerLogger.Log(logLevel, eventId, state, exception, formatter);
             }
@@ -52,13 +52,18 @@ namespace Microsoft.Extensions.Logging.Filter.Internal
                 LogLevel level;
                 if (_settings.TryGetSwitch(prefix, out level))
                 {
-                    return l => l >= level;
+                    return logLevel => logLevel >= level;
                 }
             }
 
-            return l => true;
+            return _ => true;
         }
 
+        // Get the category name from most specific to least specific
+        // Example: For "Microsoft.AspNetCore.Routing", the keys in order are
+        // Microsoft.AspNetCore.Routing
+        // Microsoft.AspNetCore
+        // Microsoft
         private IEnumerable<string> GetKeyPrefixes(string name)
         {
             while (!string.IsNullOrEmpty(name))

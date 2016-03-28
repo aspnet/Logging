@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Linq;
 using Microsoft.Extensions.Logging.Test;
 using Xunit;
@@ -15,14 +16,15 @@ namespace Microsoft.Extensions.Logging
             // Arrange
             var loggerProvider1 = new TestLoggerProvider(new TestSink(), isEnabled: true);
             var loggerProvider2 = new TestLoggerProvider(new TestSink(), isEnabled: true);
-            var loggerFactory = new LoggerFactory()
+            var loggerFactoryFromHost = new LoggerFactory();
+            var filterLoggerFactory = loggerFactoryFromHost
                 .WithFilter(new FilterLoggerSettings()
                 {
                     { "Default", LogLevel.Warning }
                 });
-            loggerFactory.AddProvider(loggerProvider1);
-            loggerFactory.AddProvider(loggerProvider2);
-            var logger1 = loggerFactory.CreateLogger("Microsoft.Foo");
+            filterLoggerFactory.AddProvider(loggerProvider1);
+            filterLoggerFactory.AddProvider(loggerProvider2);
+            var logger1 = loggerFactoryFromHost.CreateLogger("Microsoft.Foo");
 
             // Act
             logger1.LogCritical("critical event");
@@ -45,18 +47,19 @@ namespace Microsoft.Extensions.Logging
             // Arrange
             var loggerProvider1 = new TestLoggerProvider(new TestSink(), isEnabled: true);
             var loggerProvider2 = new TestLoggerProvider(new TestSink(), isEnabled: true);
-            var loggerFactory = new LoggerFactory()
+            var loggerFactoryFromHost = new LoggerFactory();
+            var filterLoggerFactory = loggerFactoryFromHost
                 .WithFilter(new FilterLoggerSettings()
                 {
-                    { "Microsoft", LogLevel.Warning },
-                    { "System", LogLevel.Warning },
-                    { "SampleApp", LogLevel.Debug },
+                        { "Microsoft", LogLevel.Warning },
+                        { "System", LogLevel.Warning },
+                        { "SampleApp", LogLevel.Debug },
                 });
-            loggerFactory.AddProvider(loggerProvider1);
-            loggerFactory.AddProvider(loggerProvider2);
-            var microsoftAssemblyLogger = loggerFactory.CreateLogger("Microsoft.Foo");
-            var systemAssemblyLogger = loggerFactory.CreateLogger("System.Foo");
-            var myappAssemblyLogger = loggerFactory.CreateLogger("SampleApp.Program");
+            filterLoggerFactory.AddProvider(loggerProvider1);
+            filterLoggerFactory.AddProvider(loggerProvider2);
+            var microsoftAssemblyLogger = loggerFactoryFromHost.CreateLogger("Microsoft.Foo");
+            var systemAssemblyLogger = loggerFactoryFromHost.CreateLogger("System.Foo");
+            var myappAssemblyLogger = loggerFactoryFromHost.CreateLogger("SampleApp.Program");
 
             // Act
             microsoftAssemblyLogger.LogCritical("critical event");
@@ -98,18 +101,19 @@ namespace Microsoft.Extensions.Logging
             // Arrange
             var loggerProvider1 = new TestLoggerProvider(new TestSink(), isEnabled: true);
             var loggerProvider2 = new TestLoggerProvider(new TestSink(), isEnabled: true);
-            var loggerFactory = new LoggerFactory()
+            var loggerFactoryFromHost = new LoggerFactory();
+            var filterLoggerFactory = loggerFactoryFromHost
                 .WithFilter(new FilterLoggerSettings()
                 {
                     { "Microsoft", LogLevel.Warning },
                     { "System", LogLevel.Warning },
                     { "SampleApp", LogLevel.Debug },
                 });
-            loggerFactory.AddProvider(loggerProvider1);
-            loggerFactory.AddProvider(loggerProvider2);
-            var microsoftAssemblyLogger = loggerFactory.CreateLogger("Microsoft.foo");
-            var systemAssemblyLogger = loggerFactory.CreateLogger("System.foo");
-            var myappAssemblyLogger = loggerFactory.CreateLogger("SampleApp.Program");
+            filterLoggerFactory.AddProvider(loggerProvider1);
+            filterLoggerFactory.AddProvider(loggerProvider2);
+            var microsoftAssemblyLogger = loggerFactoryFromHost.CreateLogger("Microsoft.foo");
+            var systemAssemblyLogger = loggerFactoryFromHost.CreateLogger("System.foo");
+            var myappAssemblyLogger = loggerFactoryFromHost.CreateLogger("SampleApp.Program");
 
             // Act
             var disposable1 = systemAssemblyLogger.BeginScope("Scope1");
@@ -134,28 +138,98 @@ namespace Microsoft.Extensions.Logging
         }
 
         [Fact]
-        public void DisposeOnLoggerFactory_CallsDisposeOn_AllRegisteredLoggerProviders()
+        public void DisposeOnFilterLoggerFactory_DoesNotCallDisposeOn_AllRegisteredLoggerProviders()
         {
             // Arrange
             var loggerProvider1 = new TestLoggerProvider(new TestSink(), isEnabled: true);
             var loggerProvider2 = new TestLoggerProvider(new TestSink(), isEnabled: true);
-            var loggerFactory = new LoggerFactory()
+            var loggerFactoryFromHost = new LoggerFactory();
+            var filterLoggerFactory = loggerFactoryFromHost
                 .WithFilter(new FilterLoggerSettings()
                 {
                     { "Microsoft", LogLevel.Warning },
                     { "System", LogLevel.Warning },
                     { "SampleApp", LogLevel.Debug },
                 });
-            loggerFactory.AddProvider(loggerProvider1);
-            loggerFactory.AddProvider(loggerProvider2);
-            var logger1 = loggerFactory.CreateLogger("Microsoft.foo");
+            filterLoggerFactory.AddProvider(loggerProvider1);
+            filterLoggerFactory.AddProvider(loggerProvider2);
+            var logger1 = loggerFactoryFromHost.CreateLogger("Microsoft.foo");
 
             // Act
-            loggerFactory.Dispose();
+            filterLoggerFactory.Dispose();
+
+            // Assert
+            Assert.False(loggerProvider1.DisposeCalled);
+            Assert.False(loggerProvider2.DisposeCalled);
+        }
+
+        [Fact]
+        public void DisposeOnLoggerFactory_CallsDisposeOn_AllRegisteredLoggerProviders()
+        {
+            // Arrange
+            var loggerProvider1 = new TestLoggerProvider(new TestSink(), isEnabled: true);
+            var loggerProvider2 = new TestLoggerProvider(new TestSink(), isEnabled: true);
+
+            // Imagine this to be the default logger factory that is provided by the host and is
+            // present in DI.
+            var loggerFactoryFromHost = new LoggerFactory();
+
+            // Imagine this to be the user code which adds the wrapped logger providers.
+            var filterLoggerFactory = loggerFactoryFromHost
+                .WithFilter(new FilterLoggerSettings()
+                {
+                    { "Microsoft", LogLevel.Warning },
+                    { "System", LogLevel.Warning },
+                    { "SampleApp", LogLevel.Debug },
+                });
+            filterLoggerFactory.AddProvider(loggerProvider1);
+            filterLoggerFactory.AddProvider(loggerProvider2);
+            var logger1 = loggerFactoryFromHost.CreateLogger("Microsoft.foo");
+
+            // Act
+            loggerFactoryFromHost.Dispose();
 
             // Assert
             Assert.True(loggerProvider1.DisposeCalled);
             Assert.True(loggerProvider2.DisposeCalled);
+        }
+
+        [Fact]
+        public void CanFilterMessagesAtProviderLevel_AfterFilterLoggerFactory_HasFilteredMessages()
+        {
+            // Arrange
+            var loggerProvider1 = new TestLoggerProvider(new TestSink(), filter: level => level == LogLevel.Critical);
+            var loggerProvider2 = new TestLoggerProvider(new TestSink(), isEnabled: true);
+            var loggerFactoryFromHost = new LoggerFactory();
+            var filterLoggerFactory = loggerFactoryFromHost
+                .WithFilter(new FilterLoggerSettings()
+                {
+                    { "Default", LogLevel.Warning }
+                });
+            filterLoggerFactory.AddProvider(loggerProvider1);
+            filterLoggerFactory.AddProvider(loggerProvider2);
+            var logger = loggerFactoryFromHost.CreateLogger("Microsoft.Foo");
+
+            // Act
+            logger.LogCritical("critical event");
+            logger.LogWarning("warning event");
+            logger.LogTrace("trace event");
+
+            // Assert
+            // This provider filters the messages further to only log 'critical' messages
+            var sink1 = loggerProvider1.Sink;
+            var logEventWrites = sink1.Writes.Where(wc => wc.LoggerName.Equals("Microsoft.Foo")).ToList();
+            Assert.Equal(1, logEventWrites.Count);
+            Assert.Equal("critical event", logEventWrites[0].State?.ToString());
+            Assert.Equal(LogLevel.Critical, logEventWrites[0].LogLevel);
+
+            var sink2 = loggerProvider2.Sink;
+            logEventWrites = sink2.Writes.Where(wc => wc.LoggerName.Equals("Microsoft.Foo")).ToList();
+            Assert.Equal(2, logEventWrites.Count);
+            Assert.Equal("critical event", logEventWrites[0].State?.ToString());
+            Assert.Equal(LogLevel.Critical, logEventWrites[0].LogLevel);
+            Assert.Equal("warning event", logEventWrites[1].State?.ToString());
+            Assert.Equal(LogLevel.Warning, logEventWrites[1].LogLevel);
         }
     }
 }
