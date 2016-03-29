@@ -3,7 +3,6 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Extensions.Logging
 {
@@ -12,8 +11,6 @@ namespace Microsoft.Extensions.Logging
     /// </summary>
     public class FilterLoggerSettings : IFilterLoggerSettings, IEnumerable<KeyValuePair<string, LogLevel>>
     {
-        IChangeToken IFilterLoggerSettings.ChangeToken => null;
-
         public IDictionary<string, LogLevel> Switches { get; set; } = new Dictionary<string, LogLevel>();
 
         /// <summary>
@@ -26,14 +23,9 @@ namespace Microsoft.Extensions.Logging
             Switches.Add(categoryName, logLevel);
         }
 
-        IFilterLoggerSettings IFilterLoggerSettings.Reload()
+        public bool TryGetSwitch(string categoryName, out LogLevel level)
         {
-            return this;
-        }
-
-        public bool TryGetSwitch(string name, out LogLevel level)
-        {
-            return Switches.TryGetValue(name, out level);
+            return Switches.TryGetValue(categoryName, out level);
         }
 
         IEnumerator<KeyValuePair<string, LogLevel>> IEnumerable<KeyValuePair<string, LogLevel>>.GetEnumerator()
