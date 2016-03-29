@@ -645,7 +645,6 @@ namespace Microsoft.Extensions.Logging.Test
             // Arrange
             var settings = new MockConsoleLoggerSettings()
             {
-                Cancel = new CancellationTokenSource(),
                 Switches =
                 {
                     ["Test"] = LogLevel.Information,
@@ -660,11 +659,8 @@ namespace Microsoft.Extensions.Logging.Test
 
             settings.Switches["Test"] = LogLevel.Trace;
 
-            var cancellationTokenSource = settings.Cancel;
-            settings.Cancel = new CancellationTokenSource();
-
             // Act
-            cancellationTokenSource.Cancel();
+            settings.Monitor.RaiseChanged();
 
             // Assert
             Assert.True(logger.IsEnabled(LogLevel.Trace));
@@ -676,7 +672,6 @@ namespace Microsoft.Extensions.Logging.Test
             // Arrange
             var settings = new MockConsoleLoggerSettings()
             {
-                Cancel = new CancellationTokenSource(),
                 Switches =
                 {
                     ["Test"] = LogLevel.Information,
@@ -694,10 +689,7 @@ namespace Microsoft.Extensions.Logging.Test
             {
                 settings.Switches["Test"] = i % 2 == 0 ? LogLevel.Information : LogLevel.Trace;
 
-                var cancellationTokenSource = settings.Cancel;
-                settings.Cancel = new CancellationTokenSource();
-
-                cancellationTokenSource.Cancel();
+                settings.Monitor.RaiseChanged();
 
                 Assert.Equal(i % 2 == 1, logger.IsEnabled(LogLevel.Trace));
             }
@@ -725,18 +717,15 @@ namespace Microsoft.Extensions.Logging.Test
 
         private class MockConsoleLoggerSettings : IConsoleLoggerSettings
         {
-            public CancellationTokenSource Cancel { get; set; }
-
-            public IChangeToken ChangeToken => new CancellationChangeToken(Cancel.Token);
-
+            public MockConsoleLoggerSettings()
+            {
+                Monitor = new ChangeMonitor<IConsoleLoggerSettings>(this);
+            }
             public IDictionary<string, LogLevel> Switches { get; } = new Dictionary<string, LogLevel>();
 
             public bool IncludeScopes { get; set; }
 
-            public IConsoleLoggerSettings Reload()
-            {
-                return this;
-            }
+            public IChangeMonitor<IConsoleLoggerSettings> Monitor { get; }
 
             public bool TryGetSwitch(string name, out LogLevel level)
             {

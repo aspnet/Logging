@@ -9,16 +9,12 @@ namespace Microsoft.Extensions.Logging.Console
 {
     public class ConsoleLoggerSettings : IConsoleLoggerSettings
     {
-        public IChangeToken ChangeToken { get; set; }
 
         public bool IncludeScopes { get; set; }
 
-        public IDictionary<string, LogLevel> Switches { get; set; } = new Dictionary<string, LogLevel>();
+        public IChangeMonitor<IConsoleLoggerSettings> Monitor { get; set; }
 
-        public IConsoleLoggerSettings Reload()
-        {
-            return this;
-        }
+        public IDictionary<string, LogLevel> Switches { get; set; } = new Dictionary<string, LogLevel>();
 
         public bool TryGetSwitch(string name, out LogLevel level)
         {

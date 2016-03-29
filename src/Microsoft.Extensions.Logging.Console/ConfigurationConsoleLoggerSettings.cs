@@ -14,10 +14,11 @@ namespace Microsoft.Extensions.Logging.Console
         public ConfigurationConsoleLoggerSettings(IConfiguration configuration)
         {
             _configuration = configuration;
-            ChangeToken = configuration.GetReloadToken();
-        }
+            Monitor = new ChangeMonitor<IConsoleLoggerSettings>(this);
 
-        public IChangeToken ChangeToken { get; private set; }
+            // Just chain the notifaction from config
+            configuration.Monitor.RegisterOnChanged(_ => Monitor.RaiseChanged());
+        }
 
         public bool IncludeScopes
         {
@@ -41,11 +42,7 @@ namespace Microsoft.Extensions.Logging.Console
             }
         }
 
-        public IConsoleLoggerSettings Reload()
-        {
-            ChangeToken = null;
-            return new ConfigurationConsoleLoggerSettings(_configuration);
-        }
+        public IChangeMonitor<IConsoleLoggerSettings> Monitor { get; }
 
         public bool TryGetSwitch(string name, out LogLevel level)
         {

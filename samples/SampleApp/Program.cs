@@ -30,9 +30,12 @@ namespace SampleApp
             // How to configure the console logger to reload based on a configuration file.
             //
             //
-            var loggingConfiguration = new ConfigurationBuilder().AddJsonFile("logging.json").Build();
+            var loggingConfiguration = new ConfigurationBuilder().AddJsonFile(source => 
+            {
+                source.Path = "logging.json";
+                source.ReloadOnChange = true;
+            }).Build();
             factory.AddConsole(loggingConfiguration);
-            loggingConfiguration.ReloadOnChanged("logging.json");
 
             // How to configure the console logger to use settings provided in code.
             //
@@ -54,32 +57,29 @@ namespace SampleApp
             //factory.AddConsole(new RandomReloadingConsoleSettings());
         }
 
+
         private class RandomReloadingConsoleSettings : IConsoleLoggerSettings
         {
             private PhysicalFileProvider _files = new PhysicalFileProvider(PlatformServices.Default.Application.ApplicationBasePath);
 
             public RandomReloadingConsoleSettings()
             {
-                Reload();
-            }
-
-            public IChangeToken ChangeToken { get; private set; }
-
-            public bool IncludeScopes { get; }
-
-            private Dictionary<string, LogLevel> Switches { get; set; }
-
-            public IConsoleLoggerSettings Reload()
-            {
-                ChangeToken = _files.Watch("logging.json");
+                Monitor = new ChangeMonitor<IConsoleLoggerSettings>(this);
+                // TODO: we should push Monitor into FileSystem as well
+                //_files.Monitor.RegisterOnChanged(_ => Monitor.RaiseChanged());
+                //ChangeToken = _files.Watch("logging.json");
                 Switches = new Dictionary<string, LogLevel>()
                 {
                     ["Default"] = (LogLevel)(DateTimeOffset.Now.Second % 5 + 1),
                     ["Microsoft"] = (LogLevel)(DateTimeOffset.Now.Second % 5 + 1),
                 };
-
-                return this;
             }
+
+            public bool IncludeScopes { get; }
+
+            public IChangeMonitor<IConsoleLoggerSettings> Monitor { get; }
+
+            private Dictionary<string, LogLevel> Switches { get; set; }
 
             public bool TryGetSwitch(string name, out LogLevel level)
             {
