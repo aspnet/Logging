@@ -27,9 +27,6 @@
         "System.Resources.ResourceManager": "4.0.1-*",
         "System.Runtime.Extensions": "4.1.0-*",
         "System.Runtime.InteropServices": "4.1.0-*"
-      },
-      "runtimes": {
-        "any": {}
       }
     },
     "netcore50": {
@@ -46,14 +43,6 @@
         "System.Resources.ResourceManager": "4.0.0",
         "System.Runtime.Extensions": "4.0.10",
         "System.Runtime.InteropServices": "4.0.20"
-      },
-      "runtimes": {
-        "win10-arm": {},
-        "win10-arm-aot": {},
-        "win10-x86": {},
-        "win10-x86-aot": {},
-        "win10-x64": {},
-        "win10-x64-aot": {}
       }
     }
   }
