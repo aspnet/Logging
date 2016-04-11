@@ -139,7 +139,7 @@ namespace Microsoft.Extensions.Logging.Console
                 // scope information
                 if (IncludeScopes)
                 {
-                    var scopeInformation = GetScopeInformation();
+                    var scopeInformation = ConsoleLogScope.Current?.ScopePath;
                     if (!string.IsNullOrEmpty(scopeInformation))
                     {
                         WriteWithColor(
@@ -264,29 +264,6 @@ namespace Microsoft.Extensions.Logging.Console
             {
                 Console.Write(message, background, foreground);
             }
-        }
-
-        private string GetScopeInformation()
-        {
-            var current = ConsoleLogScope.Current;
-            var output = new StringBuilder();
-            string scopeLog = string.Empty;
-            while (current != null)
-            {
-                if (output.Length == 0)
-                {
-                    scopeLog = $"=> {current}";
-                }
-                else
-                {
-                    scopeLog = $"=> {current} ";
-                }
-
-                output.Insert(0, scopeLog);
-                current = current.Parent;
-            }
-
-            return output.ToString();
         }
 
         private struct ConsoleColors

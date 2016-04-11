@@ -16,6 +16,7 @@ namespace Microsoft.Extensions.Logging.Console
     {
         private readonly string _name;
         private readonly object _state;
+        private string _scopePath;
 
         internal ConsoleLogScope(string name, object state)
         {
@@ -66,6 +67,26 @@ namespace Microsoft.Extensions.Logging.Console
             Current.Parent = temp;
 
             return new DisposableScope();
+        }
+
+        public string ScopePath
+        {
+            get
+            {
+                if (_scopePath == null)
+                {
+                    if (Parent == null)
+                    {
+                        _scopePath = $"=> {ToString()}";
+                    }
+                    else
+                    {
+                        _scopePath = Parent.ScopePath + $" => {ToString()}";
+                    }
+                }
+
+                return _scopePath;
+            }
         }
 
         public override string ToString()
