@@ -9,19 +9,25 @@ namespace Microsoft.Extensions.Logging.Console.Internal
     {
         public void Write(string message, ConsoleColor? background, ConsoleColor? foreground)
         {
+            var changedColor = false;
             if (background.HasValue)
             {
                 System.Console.BackgroundColor = background.Value;
+                changedColor = true;
             }
 
             if (foreground.HasValue)
             {
                 System.Console.ForegroundColor = foreground.Value;
+                changedColor = true;
             }
 
             System.Console.Write(message);
 
-            System.Console.ResetColor();
+            if (changedColor)
+            {
+                System.Console.ResetColor();
+            }
         }
 
         public void WriteLine(string message, ConsoleColor? background, ConsoleColor? foreground)
