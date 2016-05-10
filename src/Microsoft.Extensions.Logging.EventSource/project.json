@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0-*",
+  "description": "A logger provider that sends data logged through ILogger interfaces to EventSource/EventListener infrastructure",
+  "packOptions": {
+    "tags": [
+      "EventSource",
+      "logging",
+      "ETW"
+    ],
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/aspnet/logging"
+    }
+  },
+  "buildOptions": {
+      "warningsAsErrors": true,
+      "keyFile": "../../tools/Key.snk",
+      "xmlDoc": true
+  },
+  "dependencies": {
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    "System.Diagnostics.Tracing": "4.1.0-*",
+    "System.Threading": "4.0.11-*",
+    "Newtonsoft.Json": "8.0.3"
+  },
+  "frameworks": {
+    "net46": {
+      "dependencies": {
+        "System.Runtime": "4.0.0"
+      },
+      "imports": [ "dotnet" ]
+    },
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.Platforms": {
+          "type": "build",
+          "version": "1.0.1-*"
+        }
+      },
+      "buildOptions": {
+        "define": [ "NO_EVENTSOURCE_COMPLEX_TYPE_SUPPORT" ]
+      },
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ]
+    }
+  }
+}
