@@ -30,20 +30,11 @@
       },
       "imports": [ "dotnet" ]
     },
-    "netcoreapp1.0": {
-      "dependencies": {
-        "Microsoft.NETCore.Platforms": {
-          "type": "build",
-          "version": "1.0.1-*"
-        }
-      },
+    "netstandard1.5": {
       "buildOptions": {
         "define": [ "NO_EVENTSOURCE_COMPLEX_TYPE_SUPPORT" ]
       },
-      "imports": [
-        "dnxcore50",
-        "portable-net451+win8"
-      ]
+      "imports": [ "portable-net451+win8" ] 
     }
   }
 }
