@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics.Tracing;
 using System.Threading;
 using Newtonsoft.Json;
 using System.IO;
@@ -42,10 +42,12 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             if (!IsEnabled(logLevel))
+            {
                 return;
+            }
 
             // See if they want the formatted message
-            if (LoggingEventSource.Instance.IsEnabled(System.Diagnostics.Tracing.EventLevel.Critical, LoggingEventSource.Keywords.FormattedMessage))
+            if (LoggingEventSource.Instance.IsEnabled(EventLevel.Critical, LoggingEventSource.Keywords.FormattedMessage))
             {
                 string message = formatter(state, exception);
                 LoggingEventSource.Instance.FormattedMessage(
@@ -58,7 +60,7 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
 
 #if !NO_EVENTSOURCE_COMPLEX_TYPE_SUPPORT
             // See if they want the message as its component parts.  
-            if (LoggingEventSource.Instance.IsEnabled(System.Diagnostics.Tracing.EventLevel.Critical, LoggingEventSource.Keywords.Message))
+            if (LoggingEventSource.Instance.IsEnabled(EventLevel.Critical, LoggingEventSource.Keywords.Message))
             {
                 ExceptionInfo exceptionInfo = GetExceptionInfo(exception);
                 IEnumerable<KeyValuePair<string, string>> arguments = GetProperties(state);
@@ -73,7 +75,7 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
             }
 #endif
             // See if they want the json message
-            if (LoggingEventSource.Instance.IsEnabled(System.Diagnostics.Tracing.EventLevel.Critical, LoggingEventSource.Keywords.JsonMessage))
+            if (LoggingEventSource.Instance.IsEnabled(EventLevel.Critical, LoggingEventSource.Keywords.JsonMessage))
             {
                 string exceptionJson = "{}";
                 if (exception != null)
@@ -101,12 +103,14 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
         public IDisposable BeginScope<TState>(TState state)
         {
             if (!IsEnabled(LogLevel.Critical))
+            {
                 return NoopDisposable.Instance;
+            }
 
             var id = Interlocked.Increment(ref s_activityIds);
 
             // If JsonMessage is on, use JSON format
-            if (LoggingEventSource.Instance.IsEnabled(System.Diagnostics.Tracing.EventLevel.Critical, LoggingEventSource.Keywords.JsonMessage))
+            if (LoggingEventSource.Instance.IsEnabled(EventLevel.Critical, LoggingEventSource.Keywords.JsonMessage))
             {
                 IEnumerable<KeyValuePair<string, string>> arguments = GetProperties(state);
                 LoggingEventSource.Instance.ActivityJsonStart(id, _factoryID, CategoryName, ToJson(arguments));
@@ -146,9 +150,13 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
             public void Dispose()
             {
                 if (_isJsonStop)
+                {
                     LoggingEventSource.Instance.ActivityJsonStop(_activityID, _factoryID, _categoryName);
+                }
                 else
+                {
                     LoggingEventSource.Instance.ActivityStop(_activityID, _factoryID, _categoryName);
+                }
             }
         }
 

@@ -228,7 +228,9 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
         {
             _filterSpec = filterSpec;
             for (var cur = _loggingProviders; cur != null; cur = cur.Next)
+            {
                 cur.SetFilterSpec(filterSpec);
+            }
         }
     }
 }

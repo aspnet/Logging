@@ -55,14 +55,18 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
 
             // Update the levels of all the loggers to match what the filter specification asks for.   
             for (var logger = _loggers; logger != null; logger = logger.Next)
+            {
                 ParseLevelSpecs(filterSpec, _defaultLevel, logger.CategoryName, out logger.Level);
+            }
 
             if (filterSpec != null && _factoryID == 0)
             {
                 // Compute an ID for the Factory.  It is its position in the list (starting at 1, we reserve 0 to mean unstarted). 
                 _factoryID = 1;
                 for (var cur = Next; cur != null; cur = cur.Next)
+                {
                     _factoryID++;
+                }
 
                 // Add myself to the factory.  Now my CreateLogger methods will be called.  
                 _loggerFactory.AddProvider(this);
@@ -76,20 +80,30 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
             if (LoggingEventSource.Instance.IsEnabled(EventLevel.Informational, allMessageKeywords))
             {
                 if (LoggingEventSource.Instance.IsEnabled(EventLevel.Verbose, allMessageKeywords))
+                {
                     return LogLevel.Debug;
+                }
                 else
+                {
                     return LogLevel.Information;
+                }
             }
             else
             {
                 if (LoggingEventSource.Instance.IsEnabled(EventLevel.Warning, allMessageKeywords))
+                {
                     return LogLevel.Warning;
+                }
                 else
                 {
                     if (LoggingEventSource.Instance.IsEnabled(EventLevel.Error, allMessageKeywords))
+                    {
                         return LogLevel.Error;
+                    }
                     else
+                    {
                         return LogLevel.Critical;
+                    }
                 }
             }
         }
@@ -127,23 +141,34 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
                 if (namePos < loggerName.Length)
                 {
                     if (filterSpec.Length <= specPos)
+                    {
                         break;
+                    }
+
                     char specChar = filterSpec[specPos++];
                     char nameChar = loggerName[namePos++];
                     if (specChar == nameChar)
+                    {
                         continue;
+                    }
 
                     // We allow wildcards a the end.  
                     if (specChar == '*' && ParseLevel(defaultLevel, filterSpec, specPos, ref level))
+                    {
                         return;
+                    }
                 }
                 else if (ParseLevel(defaultLevel, filterSpec, specPos, ref level))
+                {
                     return;
+                }
 
                 // Skip to the next spec in the ; separated list.  
                 specPos = filterSpec.IndexOf(';', specPos) + 1;
                 if (specPos <= 0) // No ; done. 
+                {
                     break;
+                }
                 namePos = 0;    // Reset where we are searching in the name.  
             }
         }
@@ -158,7 +183,9 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
         {
             int endPos = spec.IndexOf(';', specPos);
             if (endPos < 0)
+            {
                 endPos = spec.Length;
+            }
 
             if (specPos == endPos)
             {
@@ -167,7 +194,9 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
                 return true;
             }
             if (spec[specPos++] != ':')
+            {
                 return false;
+            }
 
             string levelStr = spec.Substring(specPos, endPos - specPos);
             int level;
@@ -193,9 +222,13 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
                     break;
                 default:
                     if (!int.TryParse(levelStr, out level))
+                    {
                         return false;
+                    }
                     if (!(LogLevel.Trace <= (LogLevel)level && (LogLevel)level <= LogLevel.None))
+                    {
                         return false;
+                    }
                     ret = (LogLevel)level;
                     break;
             }
