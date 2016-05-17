@@ -20,7 +20,7 @@
     ]
   },
   "dependencies": {
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc2-final",
     "xunit.assert": "2.1.0-*"
   },
   "frameworks": {
