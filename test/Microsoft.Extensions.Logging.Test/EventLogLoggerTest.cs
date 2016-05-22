@@ -60,27 +60,30 @@ namespace Microsoft.Extensions.Logging
 
             // Assert
             var windowsEventLog = Assert.IsType<WindowsEventLog>(eventLogLogger.EventLog);
-            Assert.Equal("Application", windowsEventLog.DiagnosticsEventLog.Log);
-            Assert.Equal("Application", windowsEventLog.DiagnosticsEventLog.Source);
-            Assert.Equal(".", windowsEventLog.DiagnosticsEventLog.MachineName);
+            Assert.Equal(EventLogSettings.DefaultLogName, windowsEventLog.DiagnosticsEventLog.Log);
+            Assert.Equal(EventLogSettings.DefaultSourceName, windowsEventLog.DiagnosticsEventLog.Source);
+            Assert.Equal(EventLogSettings.DefaultMachineName, windowsEventLog.DiagnosticsEventLog.MachineName);
         }
 
         [Fact]
         public void Constructor_CreatesWindowsEventLog_WithSuppliedEventLogSettings()
         {
             // Arrange
-            var sourceName = "foo";
-            var logName = "bar";
-            var machineName = "blah";
+            var settings = new EventLogSettings
+            {
+                LogName = "bar",
+                SourceName = "foo",
+                MachineName = "blah"
+            };
 
             // Act
-            var eventLogLogger = new EventLogLogger("Test", logName: logName, sourceName: sourceName, machineName: machineName, filter: null, includeScopes: false);
+            var eventLogLogger = new EventLogLogger("Test", filter: null, includeScopes: false, eventLogSettings: settings);
 
             // Assert
             var windowsEventLog = Assert.IsType<WindowsEventLog>(eventLogLogger.EventLog);
-            Assert.Equal(logName, windowsEventLog.DiagnosticsEventLog.Log);
-            Assert.Equal(sourceName, windowsEventLog.DiagnosticsEventLog.Source);
-            Assert.Equal(machineName, windowsEventLog.DiagnosticsEventLog.MachineName);
+            Assert.Equal(settings.LogName, windowsEventLog.DiagnosticsEventLog.Log);
+            Assert.Equal(settings.SourceName, windowsEventLog.DiagnosticsEventLog.Source);
+            Assert.Equal(settings.MachineName, windowsEventLog.DiagnosticsEventLog.MachineName);
         }
 
         [Theory]

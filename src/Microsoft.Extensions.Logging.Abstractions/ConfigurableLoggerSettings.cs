@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.Logging.Abstractions
             ChangeToken = configuration.GetReloadToken();
         }
 
-        public virtual IChangeToken ChangeToken { get; set; }
+        public IChangeToken ChangeToken { get; private set; }
 
         public bool IncludeScopes
         {
@@ -41,13 +41,13 @@ namespace Microsoft.Extensions.Logging.Abstractions
             }
         }
 
-        public virtual IConfigurableLoggerSettings Reload()
+        public IConfigurableLoggerSettings Reload()
         {
             ChangeToken = null;
             return new ConfigurableLoggerSettings(_configuration);
         }
 
-        public virtual bool TryGetSwitch(string name, out LogLevel level)
+        public bool TryGetSwitch(string name, out LogLevel level)
         {
             var switches = _configuration.GetSection("LogLevel");
             if (switches == null)

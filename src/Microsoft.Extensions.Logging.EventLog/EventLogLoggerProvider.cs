@@ -11,16 +11,12 @@ namespace Microsoft.Extensions.Logging.EventLog
     /// </summary>
     public class EventLogLoggerProvider : ConfigurableLoggerProvider<EventLogLogger>
     {
-        private readonly string _logName;
-        private readonly string _sourceName;
-        private readonly string _machineName;
+        private readonly EventLogSettings _eventLogSettings;
 
         public EventLogLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
             : base(filter, includeScopes)
         {
-            _logName = "Application";
-            _sourceName = "Application";
-            _machineName = ".";
+            _eventLogSettings = new EventLogSettings();
         }
 
         /// <summary>
@@ -30,9 +26,7 @@ namespace Microsoft.Extensions.Logging.EventLog
         public EventLogLoggerProvider(IConfigurableLoggerSettings settings)
             : base(settings)
         {
-            _logName = "Application";
-            _sourceName = "Application";
-            _machineName = ".";
+            _eventLogSettings = new EventLogSettings();
         }
 
         /// <summary>
@@ -43,20 +37,19 @@ namespace Microsoft.Extensions.Logging.EventLog
         public EventLogLoggerProvider(IConfigurableLoggerSettings loggerSettings, EventLogSettings eventLogSettings)
             : base(loggerSettings)
         {
-            _logName = eventLogSettings.LogName ?? "Application";
-            _sourceName = eventLogSettings.SourceName ?? "Application";
-            _machineName = eventLogSettings.MachineName ?? ".";
+            if (eventLogSettings == null)
+            {
+                throw new ArgumentNullException(nameof(eventLogSettings));
+            }
         }
 
         /// <inheritdoc />
         protected override EventLogLogger CreateLoggerImplementation(string name, Func<string, LogLevel, bool> filter, bool includeScopes)
         {
             return new EventLogLogger(name,
-                logName: _logName,
-                sourceName: _sourceName,
-                machineName: _machineName,
                 filter: filter,
-                includeScopes: includeScopes);
+                includeScopes: includeScopes,
+                eventLogSettings: _eventLogSettings);
         }
     }
 }

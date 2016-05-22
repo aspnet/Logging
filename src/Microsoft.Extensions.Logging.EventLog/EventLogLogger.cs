@@ -29,11 +29,9 @@ namespace Microsoft.Extensions.Logging.EventLog
 
         public EventLogLogger(string name, Func<string, LogLevel, bool> filter, bool includeScopes)
             : this(name,
-                  logName: null,
-                  sourceName: null,
-                  machineName: null,
                   filter: filter,
-                  includeScopes: includeScopes)
+                  includeScopes: includeScopes,
+                  eventLogSettings: new EventLogSettings())
         {
         }
 
@@ -41,14 +39,12 @@ namespace Microsoft.Extensions.Logging.EventLog
         /// Initializes a new instance of the <see cref="EventLogLogger"/> class.
         /// </summary>
         /// <param name="name">The name of the logger.</param>
-        /// <param name="logName"></param>
-        /// <param name="sourceName"></param>
-        /// <param name="machineName"></param>
         /// <param name="filter"></param>
         /// <param name="includeScopes"></param>
-        public EventLogLogger(string name, string logName, string sourceName, string machineName, Func<string, LogLevel, bool> filter, bool includeScopes)
+        /// <param name="eventLogSettings"></param>
+        public EventLogLogger(string name, Func<string, LogLevel, bool> filter, bool includeScopes, EventLogSettings eventLogSettings)
             : this(name, filter, includeScopes,
-                  eventLog: new WindowsEventLog(logName ?? "Application", machineName ?? ".", sourceName ?? "Application"))
+                  eventLog: new WindowsEventLog(eventLogSettings.LogName, eventLogSettings.MachineName, eventLogSettings.SourceName))
         {
         }
 
