@@ -6,7 +6,6 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Logging.Test.Console;
-using Microsoft.Extensions.Primitives;
 using System.Threading;
 using Moq;
 using Xunit;
@@ -643,7 +642,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void ConsoleLogger_ReloadSettings_CanChangeLogLevel()
         {
             // Arrange
-            var settings = new MockConsoleLoggerSettings()
+            var settings = new MockConfigurableLoggerSettings()
             {
                 Cancel = new CancellationTokenSource(),
                 Switches =
@@ -674,7 +673,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void ConsoleLogger_ReloadSettings_CanReloadMultipleTimes()
         {
             // Arrange
-            var settings = new MockConsoleLoggerSettings()
+            var settings = new MockConfigurableLoggerSettings()
             {
                 Cancel = new CancellationTokenSource(),
                 Switches =
@@ -721,27 +720,6 @@ namespace Microsoft.Extensions.Logging.Test
         private string GetMessage(List<ConsoleContext> contexts)
         {
             return string.Join("", contexts.Select(c => c.Message));
-        }
-
-        private class MockConsoleLoggerSettings : IConsoleLoggerSettings
-        {
-            public CancellationTokenSource Cancel { get; set; }
-
-            public IChangeToken ChangeToken => new CancellationChangeToken(Cancel.Token);
-
-            public IDictionary<string, LogLevel> Switches { get; } = new Dictionary<string, LogLevel>();
-
-            public bool IncludeScopes { get; set; }
-
-            public IConsoleLoggerSettings Reload()
-            {
-                return this;
-            }
-
-            public bool TryGetSwitch(string name, out LogLevel level)
-            {
-                return Switches.TryGetValue(name, out level);
-            }
         }
     }
 }

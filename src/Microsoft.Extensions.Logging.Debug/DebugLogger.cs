@@ -3,23 +3,21 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Extensions.Logging.Debug
 {
     /// <summary>
     /// A logger that writes messages in the debug output window only when a debugger is attached.
     /// </summary>
-    public partial class DebugLogger : ILogger
+    public partial class DebugLogger : IConfigurableLogger
     {
-        private readonly Func<string, LogLevel, bool> _filter;
-        private readonly string _name;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DebugLogger"/> class.
         /// </summary>
         /// <param name="name">The name of the logger.</param>
         public DebugLogger(string name)
-            : this(name, filter: null)
+            : this(name, filter: null, includeScopes: false)
         {
         }
 
@@ -28,12 +26,19 @@ namespace Microsoft.Extensions.Logging.Debug
         /// </summary>
         /// <param name="name">The name of the logger.</param>
         /// <param name="filter">The function used to filter events based on the log level.</param>
-        public DebugLogger(string name, Func<string, LogLevel, bool> filter)
+        /// <param name="includeScopes">A value which indicates whether log scope information should be displayed.</param>
+        public DebugLogger(string name, Func<string, LogLevel, bool> filter, bool includeScopes)
         {
-            _name = string.IsNullOrEmpty(name) ? nameof(DebugLogger) : name;
-            _filter = filter;
+            Name = string.IsNullOrEmpty(name) ? nameof(DebugLogger) : name;
+            Filter = filter;
+            IncludeScopes = includeScopes;
         }
 
+        public string Name { get; }
+
+        public Func<string, LogLevel, bool> Filter { get; set; }
+
+        public bool IncludeScopes { get; set; }
 
         /// <inheritdoc />
         public IDisposable BeginScope<TState>(TState state)
@@ -47,7 +52,7 @@ namespace Microsoft.Extensions.Logging.Debug
             // If the filter is null, everything is enabled
             // unless the debugger is not attached
             return Debugger.IsAttached &&
-                (_filter == null || _filter(_name, logLevel));
+                (Filter == null || Filter(Name, logLevel));
         }
 
         /// <inheritdoc />
@@ -58,7 +63,7 @@ namespace Microsoft.Extensions.Logging.Debug
                 return;
             }
 
-            if(formatter == null)
+            if (formatter == null)
             {
                 throw new ArgumentNullException(nameof(formatter));
             }
@@ -77,7 +82,7 @@ namespace Microsoft.Extensions.Logging.Debug
                 message += Environment.NewLine + Environment.NewLine + exception.ToString();
             }
 
-            DebugWriteLine(message, _name);
+            DebugWriteLine(message, Name);
         }
 
         private class NoopDisposable : IDisposable

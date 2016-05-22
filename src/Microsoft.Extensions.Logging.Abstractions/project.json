@@ -18,6 +18,9 @@
     ],
     "xmlDoc": true
   },
+  "dependencies": {
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-*"
+  },
   "frameworks": {
     "netstandard1.1": {
       "dependencies": {

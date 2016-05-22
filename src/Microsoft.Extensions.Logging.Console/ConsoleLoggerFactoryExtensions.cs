@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console;
 
 namespace Microsoft.Extensions.Logging
@@ -87,7 +88,7 @@ namespace Microsoft.Extensions.Logging
 
         public static ILoggerFactory AddConsole(
             this ILoggerFactory factory,
-            IConsoleLoggerSettings settings)
+            IConfigurableLoggerSettings settings)
         {
             factory.AddProvider(new ConsoleLoggerProvider(settings));
             return factory;
@@ -95,7 +96,7 @@ namespace Microsoft.Extensions.Logging
 
         public static ILoggerFactory AddConsole(this ILoggerFactory factory, IConfiguration configuration)
         {
-            var settings = new ConfigurationConsoleLoggerSettings(configuration);
+            var settings = new ConfigurableLoggerSettings(configuration);
             return factory.AddConsole(settings);
         }
     }
