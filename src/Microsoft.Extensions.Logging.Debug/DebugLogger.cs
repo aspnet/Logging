@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.Logging.Debug
     /// <summary>
     /// A logger that writes messages in the debug output window only when a debugger is attached.
     /// </summary>
-    public partial class DebugLogger : IConfigurableLogger
+    public class DebugLogger : IConfigurableLogger
     {
         private Func<string, LogLevel, bool> _filter;
         private IDebug _debug;
