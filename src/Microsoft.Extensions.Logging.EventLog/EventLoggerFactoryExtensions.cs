@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.EventLog;
 
 namespace Microsoft.Extensions.Logging
@@ -23,6 +24,47 @@ namespace Microsoft.Extensions.Logging
             }
 
             return AddEventLog(factory, LogLevel.Information);
+        }
+
+        /// <summary>
+        /// Adds an event logger that is enabled for <see cref="LogLevel"/>.Information or higher.
+        /// </summary>
+        /// <param name="factory"></param>
+        /// <param name="includeScopes">A value which indicates whether log scope information should be displayed
+        /// in the output.</param>
+        public static ILoggerFactory AddEventLog(this ILoggerFactory factory, bool includeScopes)
+        {
+            factory.AddEventLog((n, l) => l >= LogLevel.Information, includeScopes);
+            return factory;
+        }
+
+        /// <summary>
+        /// Adds an event logger that is enabled as defined by the filter function.
+        /// </summary>
+        /// <param name="factory"></param>
+        /// <param name="filter"></param>
+        public static ILoggerFactory AddEventLog(
+            this ILoggerFactory factory,
+            Func<string, LogLevel, bool> filter)
+        {
+            factory.AddEventLog(filter, includeScopes: false);
+            return factory;
+        }
+
+        /// <summary>
+        /// Adds an event logger that is enabled as defined by the filter function.
+        /// </summary>
+        /// <param name="factory"></param>
+        /// <param name="filter"></param>
+        /// <param name="includeScopes">A value which indicates whether log scope information should be displayed
+        /// in the output.</param>
+        public static ILoggerFactory AddEventLog(
+            this ILoggerFactory factory,
+            Func<string, LogLevel, bool> filter,
+            bool includeScopes)
+        {
+            factory.AddProvider(new EventLogLoggerProvider(filter, includeScopes));
+            return factory;
         }
 
         /// <summary>
@@ -64,6 +106,12 @@ namespace Microsoft.Extensions.Logging
 
             factory.AddProvider(new EventLogLoggerProvider(settings));
             return factory;
+        }
+
+        public static ILoggerFactory AddEventLog(this ILoggerFactory factory, IConfiguration configuration)
+        {
+            var settings = new EventLogSettings(configuration);
+            return factory.AddEventLog(settings);
         }
     }
 }

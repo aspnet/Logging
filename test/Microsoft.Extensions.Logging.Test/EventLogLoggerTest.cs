@@ -62,22 +62,18 @@ namespace Microsoft.Extensions.Logging
         public void Constructor_CreatesWindowsEventLog_WithSuppliedEventLogSettings()
         {
             // Arrange
-            var settings = new EventLogSettings()
-            {
-                SourceName = "foo",
-                LogName = "bar",
-                MachineName = "blah",
-                EventLog = null
-            };
+            var sourceName = "foo";
+            var logName = "bar";
+            var machineName = "blah";
 
             // Act
-            var eventLogLogger = new EventLogLogger("Test", settings);
+            var eventLogLogger = new EventLogLogger("Test", logName: logName, sourceName: sourceName, machineName: machineName, filter: null, includeScopes: false);
 
             // Assert
             var windowsEventLog = Assert.IsType<WindowsEventLog>(eventLogLogger.EventLog);
-            Assert.Equal(settings.LogName, windowsEventLog.DiagnosticsEventLog.Log);
-            Assert.Equal(settings.SourceName, windowsEventLog.DiagnosticsEventLog.Source);
-            Assert.Equal(settings.MachineName, windowsEventLog.DiagnosticsEventLog.MachineName);
+            Assert.Equal(logName, windowsEventLog.DiagnosticsEventLog.Log);
+            Assert.Equal(sourceName, windowsEventLog.DiagnosticsEventLog.Source);
+            Assert.Equal(machineName, windowsEventLog.DiagnosticsEventLog.MachineName);
         }
 
         [Theory]
@@ -92,7 +88,7 @@ namespace Microsoft.Extensions.Logging
             var message = new string('a', messageSize);
             var expectedMessage = loggerName + Environment.NewLine + message;
             var testEventLog = new TestEventLog(maxMessageSize);
-            var logger = new EventLogLogger(loggerName, new EventLogSettings() { EventLog = testEventLog });
+            var logger = new EventLogLogger(loggerName, filter: null, includeScopes: false, eventLog: testEventLog);
 
             // Act
             logger.LogInformation(message);
@@ -160,7 +156,7 @@ namespace Microsoft.Extensions.Logging
             var maxMessageSize = 10;
             var message = new string('a', messageSize);
             var testEventLog = new TestEventLog(maxMessageSize);
-            var logger = new EventLogLogger(loggerName, new EventLogSettings() { EventLog = testEventLog });
+            var logger = new EventLogLogger(loggerName, filter: null, includeScopes: false, eventLog: testEventLog);
 
             // Act
             logger.LogInformation(message);

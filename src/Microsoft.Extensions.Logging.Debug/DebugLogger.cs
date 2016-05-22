@@ -12,6 +12,8 @@ namespace Microsoft.Extensions.Logging.Debug
     /// </summary>
     public partial class DebugLogger : IConfigurableLogger
     {
+        private Func<string, LogLevel, bool> _filter;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DebugLogger"/> class.
         /// </summary>
@@ -30,13 +32,25 @@ namespace Microsoft.Extensions.Logging.Debug
         public DebugLogger(string name, Func<string, LogLevel, bool> filter, bool includeScopes)
         {
             Name = string.IsNullOrEmpty(name) ? nameof(DebugLogger) : name;
-            Filter = filter;
+            _filter = filter;
             IncludeScopes = includeScopes;
         }
 
         public string Name { get; }
 
-        public Func<string, LogLevel, bool> Filter { get; set; }
+        public Func<string, LogLevel, bool> Filter
+        {
+            get { return _filter; }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
+                _filter = value;
+            }
+        }
 
         public bool IncludeScopes { get; set; }
 

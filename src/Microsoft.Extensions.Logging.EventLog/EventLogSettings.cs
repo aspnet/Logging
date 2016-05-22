@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.EventLog.Internal;
 
 namespace Microsoft.Extensions.Logging.EventLog
@@ -9,8 +11,30 @@ namespace Microsoft.Extensions.Logging.EventLog
     /// <summary>
     /// Settings for <see cref="EventLogLogger"/>.
     /// </summary>
-    public class EventLogSettings
+    public class EventLogSettings : ConfigurableLoggerSettings
     {
+        public EventLogSettings()
+            : this(new ConfigurationBuilder().Build())
+        {
+        }
+
+        public EventLogSettings(IConfiguration configuration)
+            : base(configuration)
+        {
+            var eventLogSection = configuration.GetSection("EventLog");
+            if (eventLogSection != null)
+            {
+                LogName = eventLogSection["LogName"];
+                SourceName = eventLogSection["SourceName"];
+                MachineName = eventLogSection["MachineName"];
+            }
+        }
+
+        /// <summary>
+        /// Name of the event log logger. If <c>null</c> or not specified, "EventLogLogger" is the default.
+        /// </summary>
+        public string Name { get; set; }
+
         /// <summary>
         /// Name of the event log. If <c>null</c> or not specified, "Application" is the default.
         /// </summary>

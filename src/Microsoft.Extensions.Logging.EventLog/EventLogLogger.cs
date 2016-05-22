@@ -2,8 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.EventLog.Internal;
 
 namespace Microsoft.Extensions.Logging.EventLog
@@ -11,20 +11,24 @@ namespace Microsoft.Extensions.Logging.EventLog
     /// <summary>
     /// A logger that writes messages to Windows Event Log.
     /// </summary>
-    public class EventLogLogger : ILogger
+    public class EventLogLogger : IConfigurableLogger
     {
-        private readonly string _name;
-        private readonly EventLogSettings _settings;
         private const string ContinuationString = "...";
         private readonly int _beginOrEndMessageSegmentSize;
         private readonly int _intermediateMessageSegmentSize;
+        private Func<string, LogLevel, bool> _filter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventLogLogger"/> class.
         /// </summary>
         /// <param name="name">The name of the logger.</param>
         public EventLogLogger(string name)
-            : this(name, settings: new EventLogSettings())
+            : this(name,
+                  logName: "Application",
+                  sourceName: "Application",
+                  machineName: ".",
+                  filter: (category, logLevel) => true,
+                  includeScopes: false)
         {
         }
 
@@ -32,21 +36,33 @@ namespace Microsoft.Extensions.Logging.EventLog
         /// Initializes a new instance of the <see cref="EventLogLogger"/> class.
         /// </summary>
         /// <param name="name">The name of the logger.</param>
-        /// <param name="settings">The <see cref="EventLogSettings"/>.</param>
-        public EventLogLogger(string name, EventLogSettings settings)
+        /// <param name="logName"></param>
+        /// <param name="sourceName"></param>
+        /// <param name="machineName"></param>
+        /// <param name="filter"></param>
+        /// <param name="includeScopes"></param>
+        public EventLogLogger(string name, string logName, string sourceName, string machineName, Func<string, LogLevel, bool> filter, bool includeScopes)
+            : this(name, filter, includeScopes, eventLog: new WindowsEventLog(logName, machineName, sourceName))
         {
-            _name = string.IsNullOrEmpty(name) ? nameof(EventLogLogger) : name;
-            _settings = settings;
+        }
 
-            var logName = string.IsNullOrEmpty(settings.LogName) ? "Application" : settings.LogName;
-            var sourceName = string.IsNullOrEmpty(settings.SourceName) ? "Application" : settings.SourceName;
-            var machineName = string.IsNullOrEmpty(settings.MachineName) ? "." : settings.MachineName;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventLogLogger"/> class.
+        /// </summary>
+        /// <param name="name">The name of the logger.</param>
+        /// <param name="filter"></param>
+        /// <param name="includeScopes"></param>
+        /// <param name="eventLog"></param>
+        public EventLogLogger(string name, Func<string, LogLevel, bool> filter, bool includeScopes, IEventLog eventLog)
+        {
+            Name = string.IsNullOrEmpty(name) ? nameof(EventLogLogger) : name;
+            _filter = filter;
+            IncludeScopes = includeScopes;
 
             // Due to the following reasons, we cannot have these checks either here or in IsEnabled method:
             // 1. Log name & source name existence check only works on local computer.
             // 2. Source name existence check requires Administrative privileges.
-
-            EventLog = settings.EventLog ?? new WindowsEventLog(logName, machineName, sourceName);
+            EventLog = eventLog;
 
             // Examples:
             // 1. An error occu...
@@ -57,6 +73,24 @@ namespace Microsoft.Extensions.Logging.EventLog
             // ...rred while writ...
             _intermediateMessageSegmentSize = EventLog.MaxMessageSize - 2 * ContinuationString.Length;
         }
+
+        public string Name { get; set; }
+
+        public Func<string, LogLevel, bool> Filter
+        {
+            get { return _filter; }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
+                _filter = value;
+            }
+        }
+
+        public bool IncludeScopes { get; set; }
 
         public IEventLog EventLog { get; }
 
@@ -69,7 +103,7 @@ namespace Microsoft.Extensions.Logging.EventLog
         /// <inheritdoc />
         public bool IsEnabled(LogLevel logLevel)
         {
-            return _settings.Filter == null || _settings.Filter(_name, logLevel);
+            return Filter == null || Filter(Name, logLevel);
         }
 
         /// <inheritdoc />
@@ -97,7 +131,7 @@ namespace Microsoft.Extensions.Logging.EventLog
                 return;
             }
 
-            message = _name + Environment.NewLine + message;
+            message = Name + Environment.NewLine + message;
 
             if (exception != null)
             {
