@@ -6,7 +6,7 @@ using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 
-namespace Microsoft.Extensions.Logging.Test
+namespace Microsoft.Extensions.Logging
 {
     class MockConfigurableLoggerSettings : IConfigurableLoggerSettings
     {

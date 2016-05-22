@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging.Debug.Internal;
 
 namespace Microsoft.Extensions.Logging.Debug
 {
@@ -13,6 +14,7 @@ namespace Microsoft.Extensions.Logging.Debug
     public partial class DebugLogger : IConfigurableLogger
     {
         private Func<string, LogLevel, bool> _filter;
+        private IDebug _debug;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DebugLogger"/> class.
@@ -32,8 +34,9 @@ namespace Microsoft.Extensions.Logging.Debug
         public DebugLogger(string name, Func<string, LogLevel, bool> filter, bool includeScopes)
         {
             Name = string.IsNullOrEmpty(name) ? nameof(DebugLogger) : name;
-            _filter = filter;
+            Filter = filter ?? ((category, logLevel) => true);
             IncludeScopes = includeScopes;
+            _debug = new DiagnosticsDebug();
         }
 
         public string Name { get; }
@@ -54,6 +57,23 @@ namespace Microsoft.Extensions.Logging.Debug
 
         public bool IncludeScopes { get; set; }
 
+        public IDebug Debug
+        {
+            get
+            {
+                return _debug;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
+                _debug = value;
+            }
+        }
+
         /// <inheritdoc />
         public IDisposable BeginScope<TState>(TState state)
         {
@@ -65,7 +85,7 @@ namespace Microsoft.Extensions.Logging.Debug
         {
             // If the filter is null, everything is enabled
             // unless the debugger is not attached
-            return Debugger.IsAttached &&
+            return Debug.IsAttached &&
                 (Filter == null || Filter(Name, logLevel));
         }
 
@@ -89,14 +109,14 @@ namespace Microsoft.Extensions.Logging.Debug
                 return;
             }
 
-            message = $"{ logLevel }: {message}";
+            message = $"{logLevel}: {message}";
 
             if (exception != null)
             {
                 message += Environment.NewLine + Environment.NewLine + exception.ToString();
             }
 
-            DebugWriteLine(message, Name);
+            Debug.WriteLine(message, Name);
         }
 
         private class NoopDisposable : IDisposable
