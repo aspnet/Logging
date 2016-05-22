@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.Logging
     {
         private const string _loggerName = "test";
         private const string _state = "This is a test, and {curly braces} are just fine!";
-        private Func<object, Exception, string> _defaultFormatter = (state, exception) => state.ToString();
+        private readonly Func<object, Exception, string> _defaultFormatter = (state, exception) => state.ToString();
 
         [Fact]
         public void CallingBeginScopeOnLogger_ReturnsNonNullableInstance()
@@ -195,9 +195,6 @@ namespace Microsoft.Extensions.Logging
                     ["Test"] = LogLevel.Information,
                 }
             };
-
-            var loggerFactory = new LoggerFactory();
-            loggerFactory.AddDebug(settings);
 
             var provider = new DebugLoggerProvider(settings);
             var logger = (DebugLogger)provider.CreateLogger("Test");

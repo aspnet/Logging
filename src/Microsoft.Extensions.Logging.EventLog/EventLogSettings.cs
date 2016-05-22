@@ -21,13 +21,6 @@ namespace Microsoft.Extensions.Logging.EventLog
         public EventLogSettings(IConfiguration configuration)
             : base(configuration)
         {
-            var eventLogSection = configuration.GetSection("EventLog");
-            if (eventLogSection != null)
-            {
-                LogName = eventLogSection["LogName"];
-                SourceName = eventLogSection["SourceName"];
-                MachineName = eventLogSection["MachineName"];
-            }
         }
 
         /// <summary>

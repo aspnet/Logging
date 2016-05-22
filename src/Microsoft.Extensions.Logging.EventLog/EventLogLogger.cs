@@ -23,12 +23,17 @@ namespace Microsoft.Extensions.Logging.EventLog
         /// </summary>
         /// <param name="name">The name of the logger.</param>
         public EventLogLogger(string name)
+            : this(name, filter: (category, logLevel) => true, includeScopes: false)
+        {
+        }
+
+        public EventLogLogger(string name, Func<string, LogLevel, bool> filter, bool includeScopes)
             : this(name,
-                  logName: "Application",
-                  sourceName: "Application",
-                  machineName: ".",
-                  filter: (category, logLevel) => true,
-                  includeScopes: false)
+                  logName: null,
+                  sourceName: null,
+                  machineName: null,
+                  filter: filter,
+                  includeScopes: includeScopes)
         {
         }
 
@@ -42,7 +47,8 @@ namespace Microsoft.Extensions.Logging.EventLog
         /// <param name="filter"></param>
         /// <param name="includeScopes"></param>
         public EventLogLogger(string name, string logName, string sourceName, string machineName, Func<string, LogLevel, bool> filter, bool includeScopes)
-            : this(name, filter, includeScopes, eventLog: new WindowsEventLog(logName, machineName, sourceName))
+            : this(name, filter, includeScopes,
+                  eventLog: new WindowsEventLog(logName ?? "Application", machineName ?? ".", sourceName ?? "Application"))
         {
         }
 
@@ -56,7 +62,7 @@ namespace Microsoft.Extensions.Logging.EventLog
         public EventLogLogger(string name, Func<string, LogLevel, bool> filter, bool includeScopes, IEventLog eventLog)
         {
             Name = string.IsNullOrEmpty(name) ? nameof(EventLogLogger) : name;
-            _filter = filter;
+            Filter = filter ?? ((category, logLevel) => true);
             IncludeScopes = includeScopes;
 
             // Due to the following reasons, we cannot have these checks either here or in IsEnabled method:
@@ -92,7 +98,7 @@ namespace Microsoft.Extensions.Logging.EventLog
 
         public bool IncludeScopes { get; set; }
 
-        public IEventLog EventLog { get; }
+        public IEventLog EventLog { get; set; }
 
         /// <inheritdoc />
         public IDisposable BeginScope<TState>(TState state)

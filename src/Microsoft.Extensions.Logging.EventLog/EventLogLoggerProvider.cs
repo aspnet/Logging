@@ -11,11 +11,16 @@ namespace Microsoft.Extensions.Logging.EventLog
     /// </summary>
     public class EventLogLoggerProvider : ConfigurableLoggerProvider<EventLogLogger>
     {
-        private readonly EventLogSettings _settings;
+        private readonly string _logName;
+        private readonly string _sourceName;
+        private readonly string _machineName;
 
         public EventLogLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
             : base(filter, includeScopes)
         {
+            _logName = "Application";
+            _sourceName = "Application";
+            _machineName = ".";
         }
 
         /// <summary>
@@ -25,16 +30,18 @@ namespace Microsoft.Extensions.Logging.EventLog
         public EventLogLoggerProvider(EventLogSettings settings)
             : base(settings)
         {
-            _settings = settings;
+            _logName = settings.LogName ?? "Application";
+            _sourceName = settings.SourceName ?? "Application";
+            _machineName = settings.MachineName ?? ".";
         }
 
         /// <inheritdoc />
         protected override EventLogLogger CreateLoggerImplementation(string name, Func<string, LogLevel, bool> filter, bool includeScopes)
         {
             return new EventLogLogger(name,
-                logName: _settings?.LogName ?? "Application",
-                sourceName: _settings?.SourceName ?? "Application",
-                machineName: _settings?.MachineName ?? ".",
+                logName: _logName,
+                sourceName: _sourceName,
+                machineName: _machineName,
                 filter: filter,
                 includeScopes: includeScopes);
         }
