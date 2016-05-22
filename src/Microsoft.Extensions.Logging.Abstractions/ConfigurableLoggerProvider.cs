@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 
 namespace Microsoft.Extensions.Logging.Abstractions
 {
@@ -11,9 +13,7 @@ namespace Microsoft.Extensions.Logging.Abstractions
         where TLogger : IConfigurableLogger
     {
         private readonly ConcurrentDictionary<string, TLogger> _loggers = new ConcurrentDictionary<string, TLogger>();
-
         private readonly Func<string, LogLevel, bool> _filter;
-        private readonly bool _includeScopes;
         private IConfigurableLoggerSettings _settings;
 
         public ConfigurableLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
@@ -24,7 +24,15 @@ namespace Microsoft.Extensions.Logging.Abstractions
             }
 
             _filter = filter;
-            _includeScopes = includeScopes;
+            _settings = new ConfigurableLoggerSettings(new ConfigurationBuilder()
+                .Add(new MemoryConfigurationSource
+                {
+                    InitialData = new Dictionary<string, string>
+                    {
+                        ["IncludeScopes"] = "false"
+                    }
+                })
+                .Build());
         }
 
         public ConfigurableLoggerProvider(IConfigurableLoggerSettings settings)
