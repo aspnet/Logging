@@ -26,13 +26,26 @@ namespace Microsoft.Extensions.Logging.EventLog
         /// <summary>
         /// Initializes a new instance of the <see cref="EventLogLoggerProvider"/> class.
         /// </summary>
-        /// <param name="settings">The <see cref="EventLogSettings"/>.</param>
-        public EventLogLoggerProvider(EventLogSettings settings)
+        /// <param name="settings">The <see cref="IConfigurableLoggerSettings"/>.</param>
+        public EventLogLoggerProvider(IConfigurableLoggerSettings settings)
             : base(settings)
         {
-            _logName = settings.LogName ?? "Application";
-            _sourceName = settings.SourceName ?? "Application";
-            _machineName = settings.MachineName ?? ".";
+            _logName = "Application";
+            _sourceName = "Application";
+            _machineName = ".";
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventLogLoggerProvider"/> class.
+        /// </summary>
+        /// <param name="loggerSettings">The <see cref="IConfigurableLoggerSettings"/>.</param>
+        /// <param name="eventLogSettings">The <see cref="EventLogSettings"/>.</param>
+        public EventLogLoggerProvider(IConfigurableLoggerSettings loggerSettings, EventLogSettings eventLogSettings)
+            : base(loggerSettings)
+        {
+            _logName = eventLogSettings.LogName ?? "Application";
+            _sourceName = eventLogSettings.SourceName ?? "Application";
+            _machineName = eventLogSettings.MachineName ?? ".";
         }
 
         /// <inheritdoc />

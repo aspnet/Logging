@@ -327,7 +327,7 @@ namespace Microsoft.Extensions.Logging
         public void EventLogger_ReloadSettings_CanChangeLogLevel()
         {
             // Arrange
-            var settings = new MockEventLogSettings()
+            var settings = new MockConfigurableLoggerSettings()
             {
                 Cancel = new CancellationTokenSource(),
                 Switches =
@@ -358,7 +358,7 @@ namespace Microsoft.Extensions.Logging
         public void EventLogLogger_ReloadSettings_CanReloadMultipleTimes()
         {
             // Arrange
-            var settings = new MockEventLogSettings()
+            var settings = new MockConfigurableLoggerSettings()
             {
                 Cancel = new CancellationTokenSource(),
                 Switches =

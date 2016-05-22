@@ -11,23 +11,8 @@ namespace Microsoft.Extensions.Logging.EventLog
     /// <summary>
     /// Settings for <see cref="EventLogLogger"/>.
     /// </summary>
-    public class EventLogSettings : ConfigurableLoggerSettings
+    public class EventLogSettings
     {
-        public EventLogSettings()
-            : this(new ConfigurationBuilder().Build())
-        {
-        }
-
-        public EventLogSettings(IConfiguration configuration)
-            : base(configuration)
-        {
-        }
-
-        /// <summary>
-        /// Name of the event log logger. If <c>null</c> or not specified, "EventLogLogger" is the default.
-        /// </summary>
-        public string Name { get; set; }
-
         /// <summary>
         /// Name of the event log. If <c>null</c> or not specified, "Application" is the default.
         /// </summary>
@@ -42,11 +27,6 @@ namespace Microsoft.Extensions.Logging.EventLog
         /// Name of the machine having the event log. If <c>null</c> or not specified, local machine is the default.
         /// </summary>
         public string MachineName { get; set; }
-
-        /// <summary>
-        /// The function used to filter events based on the log level.
-        /// </summary>
-        public Func<string, LogLevel, bool> Filter { get; set; }
 
         /// <summary>
         /// For unit testing purposes only.
