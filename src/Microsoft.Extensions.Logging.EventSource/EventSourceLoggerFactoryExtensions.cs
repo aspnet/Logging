@@ -22,11 +22,8 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(factory));
             }
 
-            LoggingEventSource.Instance.CreateLoggerProvider(factory);
-
-            // Do not call factory.AddProvider() here. EventSourceLoggerProvider will do that automatically 
-            // when something starts using Microsoft-Extensions-Logging EventSource. This way there is no overhead
-            // from using the EventSourceLogger when no one is interested in the data it exposes.
+            var loggerProvider = LoggingEventSource.Instance.CreateLoggerProvider(factory);
+            factory.AddProvider(loggerProvider);
 
             return factory;
         }

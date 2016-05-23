@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
             SetFilterSpec(null); // Turn off any logging
         }
 
-        // Sets the filtering for a particular 
+        // Sets the filtering for a particular logger provider
         public void SetFilterSpec(string filterSpec)
         {
             _filterSpec = filterSpec;
@@ -65,7 +65,7 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
                 ParseLevelSpecs(filterSpec, _defaultLevel, logger.CategoryName, out logger.Level);
             }
 
-            if (filterSpec != null && _factoryID == 0)
+            if (_factoryID == 0)
             {
                 // Compute an ID for the Factory.  It is its position in the list (starting at 1, we reserve 0 to mean unstarted). 
                 _factoryID = 1;
@@ -73,9 +73,6 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
                 {
                     _factoryID++;
                 }
-
-                // Add myself to the factory.  Now my CreateLogger methods will be called.  
-                _loggerFactory.AddProvider(this);
             }
         }
 
