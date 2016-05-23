@@ -15,11 +15,11 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
         // Zero is illegal (it means we are uninitialized), and have to be added to the factory. 
         private int _factoryID;
 
-        private ILoggerFactory _loggerFactory;
+        private readonly ILoggerFactory _loggerFactory;
         private LogLevel _defaultLevel;
         private string _filterSpec;
         private EventSourceLogger _loggers; // Linked list of loggers that I have created
-        private LoggingEventSource _eventSource;
+        private readonly LoggingEventSource _eventSource;
 
         public EventSourceLoggerProvider(ILoggerFactory loggerFactory, LoggingEventSource eventSource, EventSourceLoggerProvider next = null)
         {

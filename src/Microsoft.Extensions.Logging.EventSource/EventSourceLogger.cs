@@ -19,14 +19,17 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
     /// </remarks>
     internal class EventSourceLogger : ILogger
     {
-        private LoggingEventSource _eventSource;
-        private int _factoryID;
+        private readonly LoggingEventSource _eventSource;
+        private readonly int _factoryID;
         private static int s_activityIds;
 
         public EventSourceLogger(string categoryName, int factoryID, LoggingEventSource eventSource, EventSourceLogger next)
         {
             CategoryName = categoryName;
-            Level = LoggingEventSource.LoggingDisabled;     // Default is to turn off logging
+
+            // Default is to turn off logging
+            Level = LoggingEventSource.LoggingDisabled;
+
             _factoryID = factoryID;
             _eventSource = eventSource;
             Next = next;
@@ -34,7 +37,8 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
 
         public readonly string CategoryName;
         public LogLevel Level;
-        public readonly EventSourceLogger Next;     // Loggers created by a single provider form a linked list
+        // Loggers created by a single provider form a linked list
+        public readonly EventSourceLogger Next;
 
         public bool IsEnabled(LogLevel logLevel)
         {
@@ -136,11 +140,11 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
         /// </summary>
         private class ActivityScope : IDisposable
         {
-            private string _categoryName;
-            private int _activityID;
-            private int _factoryID;
-            private bool _isJsonStop;
-            private LoggingEventSource _eventSource;
+            private readonly string _categoryName;
+            private readonly int _activityID;
+            private readonly int _factoryID;
+            private readonly bool _isJsonStop;
+            private readonly LoggingEventSource _eventSource;
 
             public ActivityScope(LoggingEventSource eventSource, string categoryName, int activityID, int factoryID, bool isJsonStop)
             {
@@ -206,15 +210,20 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
             if (asKeyValues != null)
             {
                 foreach (var keyValue in asKeyValues)
-                    arguments.Add(new KeyValuePair<string, string>(keyValue.Key, keyValue.Value.ToString()));
+                {
+                    if (keyValue.Key != null)
+                    {
+                        arguments.Add(new KeyValuePair<string, string>(keyValue.Key, keyValue.Value?.ToString()));
+                    }
+                }
             }
             return arguments;
         }
 
         private string ToJson(IEnumerable<KeyValuePair<string, string>> keyValues)
         {
-            StringWriter sw = new StringWriter();
-            JsonTextWriter writer = new JsonTextWriter(sw);
+            var sw = new StringWriter();
+            var writer = new JsonTextWriter(sw);
             writer.DateFormatString = "O"; // ISO 8601
 
             writer.WriteStartObject();
