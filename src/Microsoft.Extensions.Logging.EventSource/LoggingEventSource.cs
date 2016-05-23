@@ -110,7 +110,7 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
         {
             lock (this)
             {
-                var newLoggerProvider = new EventSourceLoggerProvider(factory, _loggingProviders);
+                var newLoggerProvider = new EventSourceLoggerProvider(factory, this, _loggingProviders);
                 _loggingProviders = newLoggerProvider;
 
                 // If the EventSource has already been turned on.  set the filters.  

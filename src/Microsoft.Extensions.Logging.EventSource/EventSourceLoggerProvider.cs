@@ -19,14 +19,20 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
         private LogLevel _defaultLevel;
         private string _filterSpec;
         private EventSourceLogger _loggers; // Linked list of loggers that I have created
+        private LoggingEventSource _eventSource;
 
-        public EventSourceLoggerProvider(ILoggerFactory loggerFactory, EventSourceLoggerProvider next = null)
+        public EventSourceLoggerProvider(ILoggerFactory loggerFactory, LoggingEventSource eventSource, EventSourceLoggerProvider next = null)
         {
             if (loggerFactory == null)
             {
                 throw new ArgumentNullException(nameof(loggerFactory));
             }
+            if (eventSource == null)
+            {
+                throw new ArgumentNullException(nameof(eventSource));
+            }
             _loggerFactory = loggerFactory;
+            _eventSource = eventSource;
             Next = next;
         }
 
@@ -37,7 +43,7 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
         /// </summary>
         public ILogger CreateLogger(string categoryName)
         {
-            var newLogger = _loggers = new EventSourceLogger(categoryName, _factoryID, _loggers);
+            var newLogger = _loggers = new EventSourceLogger(categoryName, _factoryID, _eventSource, _loggers);
             ParseLevelSpecs(_filterSpec, _defaultLevel, newLogger.CategoryName, out newLogger.Level);
             return newLogger;
         }
@@ -77,9 +83,9 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
         {
             var allMessageKeywords = LoggingEventSource.Keywords.Message | LoggingEventSource.Keywords.FormattedMessage | LoggingEventSource.Keywords.JsonMessage;
 
-            if (LoggingEventSource.Instance.IsEnabled(EventLevel.Informational, allMessageKeywords))
+            if (_eventSource.IsEnabled(EventLevel.Informational, allMessageKeywords))
             {
-                if (LoggingEventSource.Instance.IsEnabled(EventLevel.Verbose, allMessageKeywords))
+                if (_eventSource.IsEnabled(EventLevel.Verbose, allMessageKeywords))
                 {
                     return LogLevel.Debug;
                 }
@@ -90,13 +96,13 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
             }
             else
             {
-                if (LoggingEventSource.Instance.IsEnabled(EventLevel.Warning, allMessageKeywords))
+                if (_eventSource.IsEnabled(EventLevel.Warning, allMessageKeywords))
                 {
                     return LogLevel.Warning;
                 }
                 else
                 {
-                    if (LoggingEventSource.Instance.IsEnabled(EventLevel.Error, allMessageKeywords))
+                    if (_eventSource.IsEnabled(EventLevel.Error, allMessageKeywords))
                     {
                         return LogLevel.Error;
                     }

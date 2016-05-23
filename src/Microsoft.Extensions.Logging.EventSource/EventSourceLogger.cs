@@ -19,14 +19,16 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
     /// </remarks>
     internal class EventSourceLogger : ILogger
     {
+        private LoggingEventSource _eventSource;
         private int _factoryID;
         private static int s_activityIds;
 
-        public EventSourceLogger(string categoryName, int factoryID, EventSourceLogger next)
+        public EventSourceLogger(string categoryName, int factoryID, LoggingEventSource eventSource, EventSourceLogger next)
         {
             CategoryName = categoryName;
             Level = LoggingEventSource.LoggingDisabled;     // Default is to turn off logging
             _factoryID = factoryID;
+            _eventSource = eventSource;
             Next = next;
         }
 
@@ -47,10 +49,10 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
             }
 
             // See if they want the formatted message
-            if (LoggingEventSource.Instance.IsEnabled(EventLevel.Critical, LoggingEventSource.Keywords.FormattedMessage))
+            if (_eventSource.IsEnabled(EventLevel.Critical, LoggingEventSource.Keywords.FormattedMessage))
             {
                 string message = formatter(state, exception);
-                LoggingEventSource.Instance.FormattedMessage(
+                _eventSource.FormattedMessage(
                     logLevel,
                     _factoryID,
                     CategoryName,
@@ -60,12 +62,12 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
 
 #if !NO_EVENTSOURCE_COMPLEX_TYPE_SUPPORT
             // See if they want the message as its component parts.  
-            if (LoggingEventSource.Instance.IsEnabled(EventLevel.Critical, LoggingEventSource.Keywords.Message))
+            if (_eventSource.IsEnabled(EventLevel.Critical, LoggingEventSource.Keywords.Message))
             {
                 ExceptionInfo exceptionInfo = GetExceptionInfo(exception);
                 IEnumerable<KeyValuePair<string, string>> arguments = GetProperties(state);
 
-                LoggingEventSource.Instance.Message(
+                _eventSource.Message(
                     logLevel,
                     _factoryID,
                     CategoryName,
@@ -75,7 +77,7 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
             }
 #endif
             // See if they want the json message
-            if (LoggingEventSource.Instance.IsEnabled(EventLevel.Critical, LoggingEventSource.Keywords.JsonMessage))
+            if (_eventSource.IsEnabled(EventLevel.Critical, LoggingEventSource.Keywords.JsonMessage))
             {
                 string exceptionJson = "{}";
                 if (exception != null)
@@ -90,7 +92,7 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
                     exceptionJson = ToJson(exceptionInfoData);
                 }
                 IEnumerable<KeyValuePair<string, string>> arguments = GetProperties(state);
-                LoggingEventSource.Instance.MessageJson(
+                _eventSource.MessageJson(
                     logLevel,
                     _factoryID,
                     CategoryName,
@@ -110,21 +112,21 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
             var id = Interlocked.Increment(ref s_activityIds);
 
             // If JsonMessage is on, use JSON format
-            if (LoggingEventSource.Instance.IsEnabled(EventLevel.Critical, LoggingEventSource.Keywords.JsonMessage))
+            if (_eventSource.IsEnabled(EventLevel.Critical, LoggingEventSource.Keywords.JsonMessage))
             {
                 IEnumerable<KeyValuePair<string, string>> arguments = GetProperties(state);
-                LoggingEventSource.Instance.ActivityJsonStart(id, _factoryID, CategoryName, ToJson(arguments));
-                return new ActivityScope(CategoryName, id, _factoryID, true);
+                _eventSource.ActivityJsonStart(id, _factoryID, CategoryName, ToJson(arguments));
+                return new ActivityScope(_eventSource, CategoryName, id, _factoryID, true);
             }
             else
             {
 #if !NO_EVENTSOURCE_COMPLEX_TYPE_SUPPORT
                 IEnumerable<KeyValuePair<string, string>> arguments = GetProperties(state);
-                LoggingEventSource.Instance.ActivityStart(id, _factoryID, CategoryName, arguments);
+                _eventSource.ActivityStart(id, _factoryID, CategoryName, arguments);
 #else
-                LoggingEventSource.Instance.ActivityStart(id, _factoryID, CategoryName);
+                _eventSource.ActivityStart(id, _factoryID, CategoryName);
 #endif
-                return new ActivityScope(CategoryName, id, _factoryID, false);
+                return new ActivityScope(_eventSource, CategoryName, id, _factoryID, false);
             }
         }
 
@@ -138,24 +140,26 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
             private int _activityID;
             private int _factoryID;
             private bool _isJsonStop;
+            private LoggingEventSource _eventSource;
 
-            public ActivityScope(string categoryName, int activityID, int factoryID, bool isJsonStop)
+            public ActivityScope(LoggingEventSource eventSource, string categoryName, int activityID, int factoryID, bool isJsonStop)
             {
                 _categoryName = categoryName;
                 _activityID = activityID;
                 _factoryID = factoryID;
                 _isJsonStop = isJsonStop;
+                _eventSource = eventSource;
             }
 
             public void Dispose()
             {
                 if (_isJsonStop)
                 {
-                    LoggingEventSource.Instance.ActivityJsonStop(_activityID, _factoryID, _categoryName);
+                    _eventSource.ActivityJsonStop(_activityID, _factoryID, _categoryName);
                 }
                 else
                 {
-                    LoggingEventSource.Instance.ActivityStop(_activityID, _factoryID, _categoryName);
+                    _eventSource.ActivityStop(_activityID, _factoryID, _categoryName);
                 }
             }
         }
