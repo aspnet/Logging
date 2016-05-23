@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "A logger provider that sends data logged through ILogger interfaces to EventSource/EventListener infrastructure",
+  "description": "EventSource/EventListener logger provider implementation for Microsoft.Extensions.Logging.",
   "packOptions": {
     "tags": [
       "EventSource",
@@ -13,9 +13,9 @@
     }
   },
   "buildOptions": {
-      "warningsAsErrors": true,
-      "keyFile": "../../tools/Key.snk",
-      "xmlDoc": true
+    "warningsAsErrors": true,
+    "keyFile": "../../tools/Key.snk",
+    "xmlDoc": true
   },
   "dependencies": {
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
@@ -34,7 +34,7 @@
       "buildOptions": {
         "define": [ "NO_EVENTSOURCE_COMPLEX_TYPE_SUPPORT" ]
       },
-      "imports": [ "portable-net451+win8" ] 
+      "imports": [ "portable-net451+win8" ]
     }
   }
 }

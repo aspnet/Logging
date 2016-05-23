@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
     /// </summary>
 #if !NO_EVENTSOURCE_COMPLEX_TYPE_SUPPORT
     [EventData(Name ="ExceptionInfo")]
-    #endif    
+#endif    
     internal class ExceptionInfo
     {
         public string TypeName { get; set; }

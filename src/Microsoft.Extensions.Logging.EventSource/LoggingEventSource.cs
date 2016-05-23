@@ -1,10 +1,8 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
-using System.Text;
 
 namespace Microsoft.Extensions.Logging.EventSourceLogger
 {
@@ -72,7 +70,7 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
     /// }
     /// </summary>
     [EventSource(Name = "Microsoft-Extensions-Logging")]
-    public class LoggingEventSource : System.Diagnostics.Tracing.EventSource
+    public class LoggingEventSource : EventSource
     {
         /// <summary>
         /// This is public from an EventSource consumer point of view, but since these defintions 
@@ -105,8 +103,8 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
 
         internal static readonly LogLevel LoggingDisabled = LogLevel.None + 1;
 
-        private string _filterSpec = null;
-        private EventSourceLoggerProvider _loggingProviders = null;
+        private string _filterSpec;
+        private EventSourceLoggerProvider _loggingProviders;
 
         internal EventSourceLoggerProvider CreateLoggerProvider(ILoggerFactory factory)
         {

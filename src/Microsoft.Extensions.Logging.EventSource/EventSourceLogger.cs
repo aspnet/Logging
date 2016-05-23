@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using System.IO;
 using System.Threading;
 using Newtonsoft.Json;
-using System.IO;
 
 namespace Microsoft.Extensions.Logging.EventSourceLogger
 {
