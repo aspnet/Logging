@@ -32,7 +32,7 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Loggin
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Logging.EventSource", "src\Microsoft.Extensions.Logging.EventSource\Microsoft.Extensions.Logging.EventSource.xproj", "{84073E58-1802-4525-A9E5-1E6A70DAF0B2}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Logging.EventSourceTest", "test\Microsoft.Extensions.Logging.EventSource.Test\Microsoft.Extensions.Logging.EventSourceTest.xproj", "{F3B898C3-D441-4207-A92B-420D6E73CA5D}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Extensions.Logging.EventSource.Test", "test\Microsoft.Extensions.Logging.EventSource.Test\Microsoft.Extensions.Logging.EventSource.Test.xproj", "{F3B898C3-D441-4207-A92B-420D6E73CA5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
