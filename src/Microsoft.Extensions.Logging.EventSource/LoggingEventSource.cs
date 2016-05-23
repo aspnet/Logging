@@ -105,10 +105,11 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
 
         private string _filterSpec;
         private EventSourceLoggerProvider _loggingProviders;
+        private object _lockObj = new object();
 
         internal EventSourceLoggerProvider CreateLoggerProvider(ILoggerFactory factory)
         {
-            lock (this)
+            lock (_lockObj)
             {
                 var newLoggerProvider = new EventSourceLoggerProvider(factory, this, _loggingProviders);
                 _loggingProviders = newLoggerProvider;
@@ -200,7 +201,7 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
         /// </summary>
         protected override void OnEventCommand(EventCommandEventArgs command)
         {
-            lock (this)
+            lock (_lockObj)
             {
                 if ((command.Command == EventCommand.Update || command.Command == EventCommand.Enable))
                 {
