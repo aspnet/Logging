@@ -23,13 +23,16 @@ namespace Microsoft.Extensions.Logging.Test
         [Fact]
         public void Logs_AsExpected_WithDefaults()
         {
-            TestEventListener.Settings.Keywords = EventKeywords.None;
-            TestEventListener.Settings.FilterSpec = null;
-            TestEventListener.Settings.Level = default(EventLevel);
             using (var testListener = new TestEventListener())
             {
                 var factory = new LoggerFactory();
                 factory.AddEventSourceLogger();
+
+                var listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = EventKeywords.None;
+                listenerSettings.FilterSpec = null;
+                listenerSettings.Level = default(EventLevel);
+                testListener.EnableEvents(listenerSettings);
 
                 LogStuff(factory);
 
@@ -70,13 +73,16 @@ namespace Microsoft.Extensions.Logging.Test
         [Fact]
         public void Logs_Nothing_IfNotEnabled()
         {
-            TestEventListener.Settings.Keywords = EventKeywords.None;
-            TestEventListener.Settings.FilterSpec = null;
-            TestEventListener.Settings.Level = default(EventLevel);
             using (var testListener = new TestEventListener())
             {
                 var factory = new LoggerFactory();
                 // No call to factory.AddEventSourceLogger();
+
+                var listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = EventKeywords.None;
+                listenerSettings.FilterSpec = null;
+                listenerSettings.Level = default(EventLevel);
+                testListener.EnableEvents(listenerSettings);
 
                 LogStuff(factory);
 
@@ -87,27 +93,30 @@ namespace Microsoft.Extensions.Logging.Test
         [Fact]
         public void Logs_OnlyFormattedMessage_IfKeywordSet()
         {
-            TestEventListener.Settings.Keywords = LoggingEventSource.Keywords.FormattedMessage;
-            TestEventListener.Settings.FilterSpec = null;
-            TestEventListener.Settings.Level = EventLevel.Verbose;
             using (var testListener = new TestEventListener())
             {
                 var factory = new LoggerFactory();
                 factory.AddEventSourceLogger();
+
+                var listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = LoggingEventSource.Keywords.FormattedMessage;
+                listenerSettings.FilterSpec = null;
+                listenerSettings.Level = EventLevel.Verbose;
+                testListener.EnableEvents(listenerSettings);
 
                 LogStuff(factory);
 
                 VerifyEvents(testListener,
                     "E1FM",
                     // Second event is omitted because default LogLevel == Debug 
-                    "E3FM", 
+                    "E3FM",
                     "OuterScopeStart",
-                    "E4FM", 
-                    "E5FM", 
+                    "E4FM",
+                    "E5FM",
                     "InnerScopeStart",
-                    "E6FM", 
+                    "E6FM",
                     "InnerScopeStop",
-                    "E7FM", 
+                    "E7FM",
                     "OuterScopeStop",
                     "E8FM");
             }
@@ -116,13 +125,16 @@ namespace Microsoft.Extensions.Logging.Test
         [Fact]
         public void Logs_OnlyJson_IfKeywordSet()
         {
-            TestEventListener.Settings.Keywords = LoggingEventSource.Keywords.JsonMessage;
-            TestEventListener.Settings.FilterSpec = null;
-            TestEventListener.Settings.Level = EventLevel.Verbose;
             using (var testListener = new TestEventListener())
             {
                 var factory = new LoggerFactory();
                 factory.AddEventSourceLogger();
+
+                var listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
+                listenerSettings.FilterSpec = null;
+                listenerSettings.Level = EventLevel.Verbose;
+                testListener.EnableEvents(listenerSettings);
 
                 LogStuff(factory);
 
@@ -145,13 +157,16 @@ namespace Microsoft.Extensions.Logging.Test
         [Fact]
         public void Logs_OnlyMessage_IfKeywordSet()
         {
-            TestEventListener.Settings.Keywords = LoggingEventSource.Keywords.Message;
-            TestEventListener.Settings.FilterSpec = null;
-            TestEventListener.Settings.Level = EventLevel.Verbose;
             using (var testListener = new TestEventListener())
             {
                 var factory = new LoggerFactory();
                 factory.AddEventSourceLogger();
+
+                var listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = LoggingEventSource.Keywords.Message;
+                listenerSettings.FilterSpec = null;
+                listenerSettings.Level = EventLevel.Verbose;
+                testListener.EnableEvents(listenerSettings);
 
                 LogStuff(factory);
 
@@ -176,7 +191,7 @@ namespace Microsoft.Extensions.Logging.Test
 #endif
                     "OuterScopeStop"
 #if !NO_EVENTSOURCE_COMPLEX_TYPE_SUPPORT
-                    ,"E8MSG"
+                    , "E8MSG"
 #endif
                     );
             }
@@ -185,13 +200,16 @@ namespace Microsoft.Extensions.Logging.Test
         [Fact]
         public void Logs_AllEvents_IfTraceSet()
         {
-            TestEventListener.Settings.Keywords = LoggingEventSource.Keywords.JsonMessage;
-            TestEventListener.Settings.FilterSpec = "Logger1:Trace;Logger2:Trace;Logger3:Trace";
-            TestEventListener.Settings.Level = EventLevel.Verbose;
             using (var testListener = new TestEventListener())
             {
                 var factory = new LoggerFactory();
                 factory.AddEventSourceLogger();
+
+                var listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
+                listenerSettings.FilterSpec = "Logger1:Trace;Logger2:Trace;Logger3:Trace";
+                listenerSettings.Level = EventLevel.Verbose;
+                testListener.EnableEvents(listenerSettings);
 
                 LogStuff(factory);
 
@@ -214,13 +232,16 @@ namespace Microsoft.Extensions.Logging.Test
         [Fact]
         public void Logs_AsExpected_AtErrorLevel()
         {
-            TestEventListener.Settings.Keywords = LoggingEventSource.Keywords.JsonMessage;
-            TestEventListener.Settings.FilterSpec = null;
-            TestEventListener.Settings.Level = EventLevel.Error;
             using (var testListener = new TestEventListener())
             {
                 var factory = new LoggerFactory();
                 factory.AddEventSourceLogger();
+
+                var listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
+                listenerSettings.FilterSpec = null;
+                listenerSettings.Level = EventLevel.Error;
+                testListener.EnableEvents(listenerSettings);
 
                 LogStuff(factory);
 
@@ -237,13 +258,16 @@ namespace Microsoft.Extensions.Logging.Test
         [Fact]
         public void Logs_AsExpected_AtWarningLevel()
         {
-            TestEventListener.Settings.Keywords = LoggingEventSource.Keywords.JsonMessage;
-            TestEventListener.Settings.FilterSpec = null;
-            TestEventListener.Settings.Level = EventLevel.Warning;
             using (var testListener = new TestEventListener())
             {
                 var factory = new LoggerFactory();
                 factory.AddEventSourceLogger();
+
+                var listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
+                listenerSettings.FilterSpec = null;
+                listenerSettings.Level = EventLevel.Warning;
+                testListener.EnableEvents(listenerSettings);
 
                 LogStuff(factory);
 
@@ -262,13 +286,16 @@ namespace Microsoft.Extensions.Logging.Test
         [Fact]
         public void Logs_AsExpected_WithSingleLoggerSpec()
         {
-            TestEventListener.Settings.Keywords = LoggingEventSource.Keywords.JsonMessage;
-            TestEventListener.Settings.FilterSpec = "Logger2";
-            TestEventListener.Settings.Level = EventLevel.Verbose;
             using (var testListener = new TestEventListener())
             {
                 var factory = new LoggerFactory();
                 factory.AddEventSourceLogger();
+
+                var listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
+                listenerSettings.FilterSpec = "Logger2";
+                listenerSettings.Level = EventLevel.Verbose;
+                testListener.EnableEvents(listenerSettings);
 
                 LogStuff(factory);
 
@@ -282,13 +309,16 @@ namespace Microsoft.Extensions.Logging.Test
         [Fact]
         public void Logs_AsExpected_WithSingleLoggerSpecWithVerbosity()
         {
-            TestEventListener.Settings.Keywords = LoggingEventSource.Keywords.JsonMessage;
-            TestEventListener.Settings.FilterSpec = "Logger2:Error";
-            TestEventListener.Settings.Level = EventLevel.Error;
             using (var testListener = new TestEventListener())
             {
                 var factory = new LoggerFactory();
                 factory.AddEventSourceLogger();
+
+                var listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
+                listenerSettings.FilterSpec = "Logger2:Error";
+                listenerSettings.Level = EventLevel.Error;
+                testListener.EnableEvents(listenerSettings);
 
                 LogStuff(factory);
 
@@ -300,13 +330,16 @@ namespace Microsoft.Extensions.Logging.Test
         [Fact]
         public void Logs_AsExpected_WithComplexLoggerSpec()
         {
-            TestEventListener.Settings.Keywords = LoggingEventSource.Keywords.JsonMessage;
-            TestEventListener.Settings.FilterSpec = "Logger1:Warning;Logger2:Error";
-            TestEventListener.Settings.Level = EventLevel.Verbose;
             using (var testListener = new TestEventListener())
             {
                 var factory = new LoggerFactory();
                 factory.AddEventSourceLogger();
+
+                var listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
+                listenerSettings.FilterSpec = "Logger1:Warning;Logger2:Error";
+                listenerSettings.Level = EventLevel.Verbose;
+                testListener.EnableEvents(listenerSettings);
 
                 LogStuff(factory);
 
@@ -365,7 +398,7 @@ namespace Microsoft.Extensions.Logging.Test
                 Assert.True(eventJson.Contains(@"""EventId"":""" + eventId.Value.ToString()), $"Event id does not match. Expected id {eventId.Value}, event data is '{eventJson}'");
             }
 
-            for (int i=0; i<fragments.Length; i++)
+            for (int i = 0; i < fragments.Length; i++)
             {
                 Assert.True(eventJson.Contains(fragments[i]), $"Event data '{eventJson}' does not contain expected fragment {fragments[i]}");
             }
@@ -373,15 +406,12 @@ namespace Microsoft.Extensions.Logging.Test
 
         private class TestEventListener : EventListener
         {
-            // This is a workaround for a bug in EventListener where OnEventSourceCreated will be called before the listener
-            // is fully constructed. Unfortunately this bug has shipped and is now an "expected behavior".
             public class ListenerSettings
             {
                 public EventKeywords Keywords;
                 public EventLevel Level;
                 public string FilterSpec;
             }
-            public static ListenerSettings Settings = new ListenerSettings();
 
             private EventSource _loggingEventSource;
 
@@ -394,10 +424,21 @@ namespace Microsoft.Extensions.Logging.Test
 
             public void DumpEvents()
             {
-                foreach(string eventData in Events)
+                foreach (string eventData in Events)
                 {
                     Console.WriteLine(eventData);
                 }
+            }
+
+            public void EnableEvents(ListenerSettings settings)
+            {
+                var args = new Dictionary<string, string>();
+                if (!string.IsNullOrEmpty(settings.FilterSpec))
+                {
+                    args["FilterSpecs"] = settings.FilterSpec;
+                }
+
+                EnableEvents(_loggingEventSource, settings.Level, settings.Keywords, args);
             }
 
             protected override void OnEventSourceCreated(EventSource eventSource)
@@ -405,19 +446,15 @@ namespace Microsoft.Extensions.Logging.Test
                 if (eventSource.Name == "Microsoft-Extensions-Logging")
                 {
                     _loggingEventSource = eventSource;
-                    var args = new Dictionary<string, string>();
-                    if (!string.IsNullOrEmpty(Settings.FilterSpec))
-                    {
-                        args["FilterSpecs"] = Settings.FilterSpec;
-                    }
-
-                    EnableEvents(eventSource, Settings.Level, Settings.Keywords, args);
                 }
             }
 
             public override void Dispose()
             {
-                DisableEvents(_loggingEventSource);
+                if (_loggingEventSource != null)
+                {
+                    DisableEvents(_loggingEventSource);
+                }
                 base.Dispose();
             }
 
@@ -518,8 +555,8 @@ namespace Microsoft.Extensions.Logging.Test
             { "E3JS", (e) => VerifySingleEvent(e, "Logger3", EventTypes.MessageJson, 3, LogLevel.Information,
                         @"""ArgumentsJson"":{""string1Param"":""foo"",""string2Param"":""bar"",""string3Param"":""baz""") },
             { "E3MSG", (e) => VerifySingleEvent(e, "Logger3", EventTypes.Message, 3, LogLevel.Information,
-                @"{""Key"":""string1Param"",""Value"":""foo""}", 
-                @"{""Key"":""string2Param"",""Value"":""bar""}", 
+                @"{""Key"":""string1Param"",""Value"":""foo""}",
+                @"{""Key"":""string2Param"",""Value"":""bar""}",
                 @"{""Key"":""string3Param"",""Value"":""baz""}") },
 
             { "E4FM", (e) => VerifySingleEvent(e, "Logger1", EventTypes.FormattedMessage, 4, LogLevel.Error,
