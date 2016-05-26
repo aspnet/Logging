@@ -7,7 +7,6 @@
     "Microsoft.Extensions.Logging.EventSource": "1.0.0-*",
     "xunit": "2.1.0",
     "dotnet-test-xunit": "1.0.0-*",
-    "System.Diagnostics.Tracing": "4.1.0-*",
     "Newtonsoft.Json": "8.0.3"
   },
   "testRunner": "xunit",
@@ -20,18 +19,22 @@
         }        
       },
       "imports": [
-        "dnxcore50",
+        "dotnet",
         "portable-net451+win8"
-      ],
+      ]
+    },
+    "net451": {
+      "dependencies": {
+        "xunit.runner.console": "2.1.0"
+      },
+      "frameworkAssemblies": {
+        "System.Runtime": {
+          "type": "build"
+        }
+      },
       "buildOptions": {
         "define": [ "NO_EVENTSOURCE_COMPLEX_TYPE_SUPPORT" ]
       }
-    },
-    "net46": {
-      "dependencies": {
-        "System.Runtime": "4.0.0",
-        "xunit.runner.console": "2.1.0"
-      }      
     }
   }
 }

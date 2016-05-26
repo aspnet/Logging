@@ -181,14 +181,10 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
         /// 'serializes' a given exception into an ExceptionInfo (that EventSource knows how to serialize)
         /// </summary>
         /// <param name="exception"></param>
-        /// <returns></returns>
+        /// <returns>ExceptionInfo object represending a .NET Exception</returns>
+        /// <remarks>ETW does not support a concept of a null value. So we use an un-initialized object if there is no exception in the event data.</remarks>
         private ExceptionInfo GetExceptionInfo(Exception exception)
         {
-            if (exception == null)
-            {
-                return null;
-            }
-
             var exceptionInfo = new ExceptionInfo();
             if (exception != null)
             {
