@@ -31,10 +31,8 @@
         "System.Runtime": {
           "type": "build"
         }
-      },
-      "dependencies": {
-        "System.Diagnostics.Tracing": "4.0.10-*"
       }
+      
     },
     "netstandard1.3": {
       "imports": [ "portable-dnxcore50+net45+win8+wp8+wpa81" ],
