@@ -107,11 +107,11 @@ namespace Microsoft.Extensions.Logging.EventSourceLogger
         private EventSourceLoggerProvider _loggingProviders;
         private object _lockObj = new object();
 
-        internal EventSourceLoggerProvider CreateLoggerProvider(ILoggerFactory factory)
+        internal EventSourceLoggerProvider CreateLoggerProvider()
         {
             lock (_lockObj)
             {
-                var newLoggerProvider = new EventSourceLoggerProvider(factory, this, _loggingProviders);
+                var newLoggerProvider = new EventSourceLoggerProvider(this, _loggingProviders);
                 _loggingProviders = newLoggerProvider;
 
                 // If the EventSource has already been turned on.  set the filters.  

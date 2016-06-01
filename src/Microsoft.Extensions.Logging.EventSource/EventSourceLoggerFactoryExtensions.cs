@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(factory));
             }
 
-            var loggerProvider = LoggingEventSource.Instance.CreateLoggerProvider(factory);
+            var loggerProvider = LoggingEventSource.Instance.CreateLoggerProvider();
             factory.AddProvider(loggerProvider);
 
             return factory;
