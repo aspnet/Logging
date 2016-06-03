@@ -43,6 +43,23 @@ namespace Microsoft.Extensions.Logging
             }
         }
 
+        public void RemoveProvider(ILoggerProvider provider)
+        {
+            lock (_sync)
+            {
+                RemoveProviderInternal(provider);
+                foreach (var logger in _loggers)
+                {
+                    logger.Value.RemoveProvider(provider);
+                }
+            }
+        }
+
+        private void RemoveProviderInternal(ILoggerProvider provider)
+        {
+            _providers = _providers.Where(x => x != provider).ToArray();
+        }
+
         internal ILoggerProvider[] GetProviders()
         {
             return _providers;

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Extensions.Logging
 {
@@ -13,6 +14,7 @@ namespace Microsoft.Extensions.Logging
         private readonly LoggerFactory _loggerFactory;
         private readonly string _name;
         private ILogger[] _loggers;
+        private Dictionary<ILoggerProvider, ILogger> _providerLoggerMap;
 
         public Logger(LoggerFactory loggerFactory, string name)
         {
@@ -20,12 +22,17 @@ namespace Microsoft.Extensions.Logging
             _name = name;
 
             var providers = loggerFactory.GetProviders();
+
             if (providers.Length > 0)
             {
+                _providerLoggerMap = new Dictionary<ILoggerProvider, ILogger>(providers.Length);
                 _loggers = new ILogger[providers.Length];
-                for (var index = 0; index < providers.Length; index++)
+                for (var index = 0; index != providers.Length; index++)
                 {
-                    _loggers[index] = providers[index].CreateLogger(name);
+                    var provider = providers[index];
+                    var logger = provider.CreateLogger(name);
+                    _loggers[index] = logger;
+                    _providerLoggerMap[provider] = logger;
                 }
             }
         }
@@ -145,7 +152,9 @@ namespace Microsoft.Extensions.Logging
 
         internal void AddProvider(ILoggerProvider provider)
         {
+            if (_providerLoggerMap == null) _providerLoggerMap = new Dictionary<ILoggerProvider, ILogger>(1);
             var logger = provider.CreateLogger(_name);
+            _providerLoggerMap[provider] = logger;
             int logIndex;
             if (_loggers == null)
             {
@@ -158,6 +167,19 @@ namespace Microsoft.Extensions.Logging
                 Array.Resize(ref _loggers, logIndex + 1);
             }
             _loggers[logIndex] = logger;
+        }
+        internal void RemoveProvider(ILoggerProvider provider)
+        {
+            if (_providerLoggerMap != null)
+            {
+                var logger = _providerLoggerMap[provider];
+                RemoveLogger(logger);
+            }
+        }
+
+        private void RemoveLogger(ILogger logger)
+        {
+            _loggers = _loggers.Where(x => x != logger).ToArray();
         }
 
         private class Scope : IDisposable
