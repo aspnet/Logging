@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0-*",
+  "description": "EventSource/EventListener logger provider implementation for Microsoft.Extensions.Logging.",
+  "packOptions": {
+    "tags": [
+      "EventSource",
+      "logging",
+      "ETW"
+    ],
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/aspnet/logging"
+    }
+  },
+  "buildOptions": {
+    "warningsAsErrors": true,
+    "keyFile": "../../tools/Key.snk",
+    "xmlDoc": true
+  },
+  "dependencies": {
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    
+    "Newtonsoft.Json": "8.0.3"
+  },
+  "frameworks": {
+    "net451": {
+      "buildOptions": {
+        "define": [ "NO_EVENTSOURCE_COMPLEX_TYPE_SUPPORT" ]
+      },
+      "frameworkAssemblies": {
+        "System.Runtime": {
+          "type": "build"
+        }
+      }
+      
+    },
+    "netstandard1.3": {
+      "imports": [ "portable-dnxcore50+net45+win8+wp8+wpa81" ],
+      "dependencies": {
+        "System.Threading": "4.0.11-*",
+        "System.Diagnostics.Tracing": "4.1.0-*"
+      }
+    }
+  }
+}
