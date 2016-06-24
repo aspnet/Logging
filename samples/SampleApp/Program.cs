@@ -7,7 +7,7 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Extensions.Primitives;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -67,7 +67,7 @@ namespace SampleApp
             //factory.AddConsole(new RandomReloadingConsoleSettings());
         }
 
-        private class RandomReloadingConsoleSettings : IConsoleLoggerSettings
+        private class RandomReloadingConsoleSettings : IConfigurableLoggerSettings
         {
             private PhysicalFileProvider _files = new PhysicalFileProvider(PlatformServices.Default.Application.ApplicationBasePath);
 
@@ -82,7 +82,7 @@ namespace SampleApp
 
             private Dictionary<string, LogLevel> Switches { get; set; }
 
-            public IConsoleLoggerSettings Reload()
+            public IConfigurableLoggerSettings Reload()
             {
                 ChangeToken = _files.Watch("logging.json");
                 Switches = new Dictionary<string, LogLevel>()

@@ -4,11 +4,12 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console.Internal;
 
 namespace Microsoft.Extensions.Logging.Console
 {
-    public class ConsoleLogger : ILogger
+    public class ConsoleLogger : IConfigurableLogger
     {
         // Writing to console is not an atomic operation in the current implementation and since multiple logger
         // instances are created with a different name. Also since Console is global, using a static lock is fine.

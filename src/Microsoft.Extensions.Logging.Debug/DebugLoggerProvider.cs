@@ -2,33 +2,33 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Extensions.Logging.Debug
 {
     /// <summary>
     /// The provider for the <see cref="DebugLogger"/>.
     /// </summary>
-    public class DebugLoggerProvider : ILoggerProvider
+    public class DebugLoggerProvider : ConfigurableLoggerProvider<DebugLogger>
     {
-        private readonly Func<string, LogLevel, bool> _filter;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DebugLoggerProvider"/> class.
         /// </summary>
         /// <param name="filter">The function used to filter events based on the log level.</param>
-        public DebugLoggerProvider(Func<string, LogLevel, bool> filter)
+        /// <param name="includeScopes">A value which indicates whether log scope information should be displayed.</param>
+        public DebugLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
+            : base(filter, includeScopes)
         {
-            _filter = filter;
         }
 
-        /// <inheritdoc /> 
-        public ILogger CreateLogger(string name)
+        public DebugLoggerProvider(IConfigurableLoggerSettings settings)
+            : base(settings)
         {
-            return new DebugLogger(name, _filter);
         }
 
-        public void Dispose()
-        {            
+        protected override DebugLogger CreateLoggerImplementation(string name, Func<string, LogLevel, bool> filter, bool includeScopes)
+        {
+            return new DebugLogger(name, filter, includeScopes);
         }
     }
 }

@@ -5,15 +5,22 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using Microsoft.AspNetCore.Testing.xunit;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.EventLog;
 using Microsoft.Extensions.Logging.EventLog.Internal;
+using Microsoft.Extensions.Primitives;
 using Xunit;
 
 namespace Microsoft.Extensions.Logging
 {
     public class EventLogLoggerTest
     {
+        private const string _loggerName = "Test";
+        private const string _state = "This is a test, and {curly braces} are just fine!";
+        private readonly Func<object, Exception, string> _defaultFormatter = (state, exception) => state.ToString();
+
         [Fact]
         public void CallingBeginScopeOnLogger_ReturnsNonNullableInstance()
         {
@@ -53,25 +60,24 @@ namespace Microsoft.Extensions.Logging
 
             // Assert
             var windowsEventLog = Assert.IsType<WindowsEventLog>(eventLogLogger.EventLog);
-            Assert.Equal("Application", windowsEventLog.DiagnosticsEventLog.Log);
-            Assert.Equal("Application", windowsEventLog.DiagnosticsEventLog.Source);
-            Assert.Equal(".", windowsEventLog.DiagnosticsEventLog.MachineName);
+            Assert.Equal(EventLogSettings.DefaultLogName, windowsEventLog.DiagnosticsEventLog.Log);
+            Assert.Equal(EventLogSettings.DefaultSourceName, windowsEventLog.DiagnosticsEventLog.Source);
+            Assert.Equal(EventLogSettings.DefaultMachineName, windowsEventLog.DiagnosticsEventLog.MachineName);
         }
 
         [Fact]
         public void Constructor_CreatesWindowsEventLog_WithSuppliedEventLogSettings()
         {
             // Arrange
-            var settings = new EventLogSettings()
+            var settings = new EventLogSettings
             {
-                SourceName = "foo",
                 LogName = "bar",
-                MachineName = "blah",
-                EventLog = null
+                SourceName = "foo",
+                MachineName = "blah"
             };
 
             // Act
-            var eventLogLogger = new EventLogLogger("Test", settings);
+            var eventLogLogger = new EventLogLogger("Test", filter: null, includeScopes: false, eventLogSettings: settings);
 
             // Assert
             var windowsEventLog = Assert.IsType<WindowsEventLog>(eventLogLogger.EventLog);
@@ -92,7 +98,7 @@ namespace Microsoft.Extensions.Logging
             var message = new string('a', messageSize);
             var expectedMessage = loggerName + Environment.NewLine + message;
             var testEventLog = new TestEventLog(maxMessageSize);
-            var logger = new EventLogLogger(loggerName, new EventLogSettings() { EventLog = testEventLog });
+            var logger = new EventLogLogger(loggerName, filter: null, includeScopes: false, eventLog: testEventLog);
 
             // Act
             logger.LogInformation(message);
@@ -160,7 +166,7 @@ namespace Microsoft.Extensions.Logging
             var maxMessageSize = 10;
             var message = new string('a', messageSize);
             var testEventLog = new TestEventLog(maxMessageSize);
-            var logger = new EventLogLogger(loggerName, new EventLogSettings() { EventLog = testEventLog });
+            var logger = new EventLogLogger(loggerName, filter: null, includeScopes: false, eventLog: testEventLog);
 
             // Act
             logger.LogInformation(message);
@@ -168,6 +174,220 @@ namespace Microsoft.Extensions.Logging
             // Assert
             Assert.Equal(expectedMessages.Length, testEventLog.Messages.Count);
             Assert.Equal(expectedMessages, testEventLog.Messages);
+        }
+
+        [Fact]
+        public void LogsWhenNullFilterGiven()
+        {
+            // Arrange
+            var maxMessageSize = _state.Length + _loggerName.Length + Environment.NewLine.Length;
+            var logger = new EventLogLogger(_loggerName, filter: null, includeScopes: false);
+            var sink = new TestEventLog(maxMessageSize);
+            logger.EventLog = sink;
+
+            var expectedMessage = _loggerName + Environment.NewLine + _state;
+
+            // Act
+            logger.Log(LogLevel.Information, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(1, sink.Messages.Count);
+            Assert.Equal(expectedMessage, sink.Messages[0]);
+        }
+
+        [Fact]
+        public void CriticalFilter_LogsWhenAppropriate()
+        {
+            // Arrange
+            var maxMessageSize = _state.Length + _loggerName.Length + Environment.NewLine.Length;
+            var logger = new EventLogLogger(_loggerName, filter: (category, logLevel) => logLevel >= LogLevel.Critical, includeScopes: false);
+            var sink = new TestEventLog(maxMessageSize);
+            logger.EventLog = sink;
+
+            // Act
+            logger.Log(LogLevel.Warning, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(0, sink.Messages.Count);
+
+            // Act
+            logger.Log(LogLevel.Critical, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(1, sink.Messages.Count);
+        }
+
+        [Fact]
+        public void ErrorFilter_LogsWhenAppropriate()
+        {
+            // Arrange
+            var maxMessageSize = _state.Length + _loggerName.Length + Environment.NewLine.Length;
+            var logger = new EventLogLogger(_loggerName, filter: (category, logLevel) => logLevel >= LogLevel.Error, includeScopes: false);
+            var sink = new TestEventLog(maxMessageSize);
+            logger.EventLog = sink;
+
+            // Act
+            logger.Log(LogLevel.Warning, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(0, sink.Messages.Count);
+
+            // Act
+            logger.Log(LogLevel.Error, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(1, sink.Messages.Count);
+        }
+
+        [Fact]
+        public void WarningFilter_LogsWhenAppropriate()
+        {
+            // Arrange
+            var maxMessageSize = _state.Length + _loggerName.Length + Environment.NewLine.Length;
+            var logger = new EventLogLogger(_loggerName, filter: (category, logLevel) => logLevel >= LogLevel.Warning, includeScopes: false);
+            var sink = new TestEventLog(maxMessageSize);
+            logger.EventLog = sink;
+
+            // Act
+            logger.Log(LogLevel.Information, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(0, sink.Messages.Count);
+
+            // Act
+            logger.Log(LogLevel.Warning, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(1, sink.Messages.Count);
+        }
+
+        [Fact]
+        public void InformationFilter_LogsWhenAppropriate()
+        {
+            // Arrange
+            var maxMessageSize = _state.Length + _loggerName.Length + Environment.NewLine.Length;
+            var logger = new EventLogLogger(_loggerName, filter: (category, logLevel) => logLevel >= LogLevel.Information, includeScopes: false);
+            var sink = new TestEventLog(maxMessageSize);
+            logger.EventLog = sink;
+
+            // Act
+            logger.Log(LogLevel.Debug, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(0, sink.Messages.Count);
+
+            // Act
+            logger.Log(LogLevel.Information, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(1, sink.Messages.Count);
+        }
+
+        [Fact]
+        public void DebugFilter_LogsWhenAppropriate()
+        {
+            // Arrange
+            var maxMessageSize = _state.Length + _loggerName.Length + Environment.NewLine.Length;
+            var logger = new EventLogLogger(_loggerName, filter: (category, logLevel) => logLevel >= LogLevel.Debug, includeScopes: false);
+            var sink = new TestEventLog(maxMessageSize);
+            logger.EventLog = sink;
+
+            // Act
+            logger.Log(LogLevel.Trace, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(0, sink.Messages.Count);
+
+            // Act
+            logger.Log(LogLevel.Debug, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(1, sink.Messages.Count);
+        }
+
+        [Fact]
+        public void TraceFilter_LogsWhenAppropriate()
+        {
+            // Arrange
+            var maxMessageSize = _state.Length + _loggerName.Length + Environment.NewLine.Length;
+            var logger = new EventLogLogger(_loggerName, filter: (category, logLevel) => logLevel >= LogLevel.Trace, includeScopes: false);
+            var sink = new TestEventLog(maxMessageSize);
+            logger.EventLog = sink;
+
+            // Act
+            logger.Log(LogLevel.Critical, 0, _state, null, _defaultFormatter);
+            logger.Log(LogLevel.Error, 0, _state, null, _defaultFormatter);
+            logger.Log(LogLevel.Warning, 0, _state, null, _defaultFormatter);
+            logger.Log(LogLevel.Information, 0, _state, null, _defaultFormatter);
+            logger.Log(LogLevel.Debug, 0, _state, null, _defaultFormatter);
+            logger.Log(LogLevel.Trace, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(6, sink.Messages.Count);
+        }
+
+        [Fact]
+        public void EventLogger_ReloadSettings_CanChangeLogLevel()
+        {
+            // Arrange
+            var settings = new MockConfigurableLoggerSettings()
+            {
+                Cancel = new CancellationTokenSource(),
+                Switches =
+                {
+                    ["Test"] = LogLevel.Information,
+                }
+            };
+
+            var provider = new EventLogLoggerProvider(settings);
+            var logger = (EventLogLogger)provider.CreateLogger("Test");
+            logger.EventLog = new TestEventLog(100);
+
+            Assert.False(logger.IsEnabled(LogLevel.Trace));
+
+            settings.Switches["Test"] = LogLevel.Trace;
+
+            var cancellationTokenSource = settings.Cancel;
+            settings.Cancel = new CancellationTokenSource();
+
+            // Act
+            cancellationTokenSource.Cancel();
+
+            // Assert
+            Assert.True(logger.IsEnabled(LogLevel.Trace));
+        }
+
+        [Fact]
+        public void EventLogLogger_ReloadSettings_CanReloadMultipleTimes()
+        {
+            // Arrange
+            var settings = new MockConfigurableLoggerSettings()
+            {
+                Cancel = new CancellationTokenSource(),
+                Switches =
+                {
+                    ["Test"] = LogLevel.Information,
+                }
+            };
+
+            var provider = new EventLogLoggerProvider(settings);
+            var logger = (EventLogLogger)provider.CreateLogger("Test");
+            logger.EventLog = new TestEventLog(100);
+
+            Assert.False(logger.IsEnabled(LogLevel.Trace));
+
+            // Act & Assert
+            for (var i = 0; i < 10; i++)
+            {
+                settings.Switches["Test"] = i % 2 == 0 ? LogLevel.Information : LogLevel.Trace;
+
+                var cancellationTokenSource = settings.Cancel;
+                settings.Cancel = new CancellationTokenSource();
+
+                cancellationTokenSource.Cancel();
+
+                Assert.Equal(i % 2 == 1, logger.IsEnabled(LogLevel.Trace));
+            }
         }
 
         private class TestEventLog : IEventLog

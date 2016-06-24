@@ -5,13 +5,13 @@ using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 
-namespace Microsoft.Extensions.Logging.Console
+namespace Microsoft.Extensions.Logging.Abstractions
 {
-    public class ConfigurationConsoleLoggerSettings : IConsoleLoggerSettings
+    public class ConfigurableLoggerSettings : IConfigurableLoggerSettings
     {
         private readonly IConfiguration _configuration;
 
-        public ConfigurationConsoleLoggerSettings(IConfiguration configuration)
+        public ConfigurableLoggerSettings(IConfiguration configuration)
         {
             _configuration = configuration;
             ChangeToken = configuration.GetReloadToken();
@@ -41,10 +41,10 @@ namespace Microsoft.Extensions.Logging.Console
             }
         }
 
-        public IConsoleLoggerSettings Reload()
+        public IConfigurableLoggerSettings Reload()
         {
             ChangeToken = null;
-            return new ConfigurationConsoleLoggerSettings(_configuration);
+            return new ConfigurableLoggerSettings(_configuration);
         }
 
         public bool TryGetSwitch(string name, out LogLevel level)
