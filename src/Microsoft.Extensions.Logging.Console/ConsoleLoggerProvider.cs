@@ -52,7 +52,7 @@ namespace Microsoft.Extensions.Logging.Console
             foreach (var logger in _loggers.Values)
             {
                 logger.Filter = GetFilter(logger.Name, _settings);
-                logger.IncludeScopes = _settings.IncludeScopes;
+                logger.IncludeScopes = _settings?.IncludeScopes ?? false;
             }
 
             // The token will change each time it reloads, so we need to register again.
@@ -69,7 +69,7 @@ namespace Microsoft.Extensions.Logging.Console
 
         private ConsoleLogger CreateLoggerImplementation(string name)
         {
-            return new ConsoleLogger(name, GetFilter(name, _settings), _settings.IncludeScopes);
+            return new ConsoleLogger(name, GetFilter(name, _settings), _settings?.IncludeScopes ?? false);
         }
 
         private Func<string, LogLevel, bool> GetFilter(string name, IConsoleLoggerSettings settings)
