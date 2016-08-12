@@ -21,14 +21,10 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Internal
         public string HomeFolder { get; } = Environment.GetEnvironmentVariable("HOME");
 
         /// <inheritdoc />
-        public bool IsRunningInAzureWebApp
-        {
-            get
-            {
-                return 
-                    !string.IsNullOrEmpty(HomeFolder) &&
-                    !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME"));
-            }
-        }
+        public string SiteName { get; } = Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
+
+        /// <inheritdoc />
+        public bool IsRunningInAzureWebApp => !string.IsNullOrEmpty(HomeFolder) &&
+                                              !string.IsNullOrEmpty(SiteName);
     }
 }

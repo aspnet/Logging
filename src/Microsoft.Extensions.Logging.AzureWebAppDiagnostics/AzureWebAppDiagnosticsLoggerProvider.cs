@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Internal;
+using Serilog;
 
 namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics
 {
@@ -13,31 +14,36 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics
     {
         private readonly IWebAppLogConfigurationReader _configurationReader;
 
-        private readonly ILoggerProvider _innerLoggerProvider;
-        private readonly bool _runningInWebApp;
+        private readonly LoggerFactory _loggerFactory;
 
         /// <summary>
         /// Creates a new instance of the <see cref="AzureWebAppDiagnosticsLoggerProvider"/> class.
         /// </summary>
-        public AzureWebAppDiagnosticsLoggerProvider(WebAppContext context, int fileSizeLimitMb)
+        public AzureWebAppDiagnosticsLoggerProvider(WebAppContext context, AzureWebAppDiagnosticsSettings settings)
         {
             _configurationReader  = new WebAppLogConfigurationReader(context);
 
             var config = _configurationReader.Current;
-            _runningInWebApp = config.IsRunningInWebApp;
+            var runningInWebApp = config.IsRunningInWebApp;
 
-            if (!_runningInWebApp)
+            if (runningInWebApp)
             {
-                _innerLoggerProvider = NullLoggerProvider.Instance;
-            }
-            else
-            {
-                _innerLoggerProvider = new FileLoggerProvider(_configurationReader, fileSizeLimitMb);
+                _loggerFactory = new LoggerFactory();
+                var fileLoggerProvider = new FileLoggerProvider(
+                    settings.FileSizeLimit,
+                    settings.RetainedFileCountLimit,
+                    settings.OutputTemplate);
 
+                _loggerFactory.AddSerilog(fileLoggerProvider.ConfigureLogger(_configurationReader));
                 if (!string.IsNullOrEmpty(config.BlobContainerUrl))
                 {
-                    // TODO: Add the blob logger by creating a composite inner logger which calls
-                    // both loggers
+                    var blobLoggerProvider = new AzureBlobLoggerProvider(
+                        settings.OutputTemplate,
+                        context.SiteName,
+                        settings.BlobName,
+                        settings.BlobBatchSize,
+                        settings.BlobCommitPeriod);
+                    _loggerFactory.AddSerilog(blobLoggerProvider.ConfigureLogger(_configurationReader));
                 }
             }
         }
@@ -45,13 +51,13 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics
         /// <inheritdoc />
         public ILogger CreateLogger(string categoryName)
         {
-            return _innerLoggerProvider.CreateLogger(categoryName);
+            return _loggerFactory?.CreateLogger(categoryName) ?? NullLogger.Instance;
         }
 
         /// <inheritdoc />
         public void Dispose()
         {
-            _innerLoggerProvider.Dispose();
+            _loggerFactory.Dispose();
             _configurationReader.Dispose();
         }
     }
