@@ -11,33 +11,36 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics
     public class AzureWebAppDiagnosticsSettings
     {
         /// <summary>
-        /// A strictly positive value representing the maximum log size in bytes. Once the log is full, no more message will be appended
+        /// Gets or sets a strictly positive value representing the maximum log size in bytes. Once the log is full, no more message will be appended.
         /// </summary>
         public int FileSizeLimit { get; set; } = 10 * 1024 * 1024;
 
         /// <summary>
-        /// A strictly positive value representing the maximum retained file count
+        /// Gets or sets a strictly positive value representing the maximum retained file count.
         /// </summary>
         public int RetainedFileCountLimit { get; set; } = 2;
 
         /// <summary>
-        /// A message template describing the output messages
+        /// Gets or sets a message template describing the output messages.
         /// </summary>
         public string OutputTemplate { get; set; } = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] {Message}{NewLine}{Exception}";
 
         /// <summary>
-        /// The maximum number of events to include in a single blob append batch.
+        /// Gets or sets a maximum number of events to include in a single blob append batch.
         /// </summary>
         public int BlobBatchSize { get; set; } = 32;
 
         /// <summary>
-        /// The time to wait between checking for blob log batches
+        /// Gets or sets a time to wait between checking for blob log batches.
         /// </summary>
         public TimeSpan BlobCommitPeriod { get; set; } = TimeSpan.FromSeconds(5);
 
         /// <summary>
-        /// The last section of log blob name.
+        /// Gets or sets the last section of log blob name.
         /// </summary>
         public string BlobName { get; set; } = "applicationLog.txt";
+
+        /// Gets of sets the maximum size of the background log message queue.
+        public int BackgroundQueueSize { get; set; }
     }
 }

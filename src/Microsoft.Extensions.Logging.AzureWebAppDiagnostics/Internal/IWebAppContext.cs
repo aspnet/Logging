@@ -19,6 +19,11 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Internal
         string SiteName { get; }
 
         /// <summary>
+        /// Gets the id of site if running in Azure WebApp
+        /// </summary>
+        string SiteInstanceId { get; }
+
+        /// <summary>
         /// Gets a value indicating whether or new we're in an Azure WebApp
         /// </summary>
         bool IsRunningInAzureWebApp { get; }

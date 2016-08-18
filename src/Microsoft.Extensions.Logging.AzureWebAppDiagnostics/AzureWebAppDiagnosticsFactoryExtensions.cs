@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="factory">The extension method argument</param>
         public static ILoggerFactory AddAzureWebAppDiagnostics(this ILoggerFactory factory)
         {
-            return AddAzureWebAppDiagnostics(factory, null);
+            return AddAzureWebAppDiagnostics(factory, new AzureWebAppDiagnosticsSettings());
         }
 
         /// <summary>

@@ -11,12 +11,13 @@ using Serilog.Sinks.RollingFile;
 namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Internal
 {
     /// <summary>
-    /// The <see cref="SerilogLoggerProvider"/> implemenation that creates instances of <see cref="Serilog.Core.Logger"/> connected to <see cref="RollingFileSink"/>.
+    /// The logger provider that creates instances of <see cref="Serilog.Core.Logger"/>.
     /// </summary>
-    public class FileLoggerProvider: SerilogLoggerProvider
+    public class FileLoggerProvider
     {
         private readonly int _fileSizeLimit;
         private readonly int _retainedFileCountLimit;
+        private readonly int _backgroundQueueSize;
         private readonly string _outputTemplate;
 
         private const string FileNamePattern = "diagnostics-{Date}.txt";
@@ -25,17 +26,32 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Internal
         /// Creates a new instance of the <see cref="FileLoggerProvider"/> class.
         /// </summary>
         /// <param name="fileSizeLimit">A strictly positive value representing the maximum log size in megabytes. Once the log is full, no more message will be appended</param>
-        /// <param name="retainedFileCountLimit"></param>
-        /// <param name="outputTemplate"></param>
-        public FileLoggerProvider(int fileSizeLimit, int retainedFileCountLimit, string outputTemplate)
+        /// <param name="retainedFileCountLimit">A strictly positive value representing the maximum retained file count</param>
+        /// <param name="backgroundQueueSize">The maximum size of the background queue</param>
+        /// <param name="outputTemplate">A message template describing the output messages</param>
+        public FileLoggerProvider(int fileSizeLimit, int retainedFileCountLimit, int backgroundQueueSize, string outputTemplate)
         {
+            if (outputTemplate == null)
+            {
+                throw new ArgumentNullException(nameof(outputTemplate));
+            }
+            if (fileSizeLimit <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(fileSizeLimit), $"{nameof(fileSizeLimit)} should be positive.");
+            }
+            if (retainedFileCountLimit <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(retainedFileCountLimit), $"{nameof(retainedFileCountLimit)} should be positive.");
+            }
+
             _fileSizeLimit = fileSizeLimit;
             _retainedFileCountLimit = retainedFileCountLimit;
+            _backgroundQueueSize = backgroundQueueSize;
             _outputTemplate = outputTemplate;
         }
 
         /// <inheritdoc />
-        public override Logger ConfigureLogger(IWebAppLogConfigurationReader reader)
+        public Logger ConfigureLogger(IWebAppLogConfigurationReader reader)
         {
             var webAppConfiguration = reader.Current;
             if (string.IsNullOrEmpty(webAppConfiguration.FileLoggingFolder))
@@ -53,9 +69,9 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Internal
 
             var messageFormatter = new MessageTemplateTextFormatter(_outputTemplate, null);
             var rollingFileSink = new RollingFileSink(logsFilePattern, messageFormatter, _fileSizeLimit, _retainedFileCountLimit);
-            var backgroundSink = new BackgroundSink(rollingFileSink, BackgroundSink.DefaultLogMessagesQueueSize);
+            var backgroundSink = new BackgroundSink(rollingFileSink, _backgroundQueueSize);
 
-            LoggerConfiguration loggerConfiguration = new LoggerConfiguration();
+            var loggerConfiguration = new LoggerConfiguration();
             loggerConfiguration.WriteTo.Sink(backgroundSink);
             loggerConfiguration.MinimumLevel.ControlledBy(new WebConfigurationReaderLevelSwitch(reader,
                 configuration =>

@@ -135,7 +135,7 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Test
             testSink.Setup(m => m.Emit(It.IsAny<LogEvent>()));
 
             var provider = new TestWebAppSerilogLoggerProvider(testSink.Object);
-            var levelsToCheck = new LogLevel[]
+            var levelsToCheck = new []
             {
                 LogLevel.None,
                 LogLevel.Critical,
@@ -151,7 +151,7 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Test
             loggerFactory.AddSerilog(seriloglogger);
             var logger = loggerFactory.CreateLogger("TestLogger");
 
-            for (int i = 0; i < levelsToCheck.Length; i++)
+            for (var i = 0; i < levelsToCheck.Length; i++)
             {
                 var enabledLevel = levelsToCheck[i];
 
@@ -161,7 +161,7 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Test
                 configReader.Raise(m => m.OnConfigurationChanged += (sender, e) => { }, null, currentConfig);
 
                 // Don't try to log "None" (start at 1)
-                for (int j = 1; j < levelsToCheck.Length; j++)
+                for (var j = 1; j < levelsToCheck.Length; j++)
                 {
                     logger.Log(levelsToCheck[j], 1, new object(), null, (state, ex) => string.Empty);
                 }
@@ -177,7 +177,7 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Test
         }
 
 
-        private class TestWebAppSerilogLoggerProvider : SerilogLoggerProvider
+        private class TestWebAppSerilogLoggerProvider
         {
             private readonly ILogEventSink _sink;
 
@@ -186,7 +186,7 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Test
                 _sink = sink;
             }
 
-            public override Logger ConfigureLogger(IWebAppLogConfigurationReader reader)
+            public Logger ConfigureLogger(IWebAppLogConfigurationReader reader)
             {
                 var loggerConfiguration = new LoggerConfiguration();
                 loggerConfiguration.WriteTo.Sink(_sink);

@@ -43,13 +43,30 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Internal
             int batchSizeLimit,
             TimeSpan period) : base(batchSizeLimit, period)
         {
+            if (appName == null)
+            {
+                throw new ArgumentNullException(nameof(appName));
+            }
+            if (fileName == null)
+            {
+                throw new ArgumentNullException(nameof(fileName));
+            }
+            if (formatter == null)
+            {
+                throw new ArgumentNullException(nameof(formatter));
+            }
+            if (batchSizeLimit <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(batchSizeLimit), $"{nameof(batchSizeLimit)} should be a positive number.");
+            }
+            if (period <= TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(period), $"{nameof(period)} should be longer than zero.");
+            }
+
             _appName = appName;
             _fileName = fileName;
             _formatter = formatter;
-            if (batchSizeLimit < 1)
-            {
-                throw new ArgumentException(nameof(batchSizeLimit));
-            }
             _container = container;
         }
 
