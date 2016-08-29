@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting;
@@ -20,23 +19,21 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Internal
     /// </summary>
     public class AzureBlobSink : PeriodicBatchingSink
     {
-        private const string BlobPathSeparator = "/";
-
         private readonly string _appName;
         private readonly string _fileName;
         private readonly ITextFormatter _formatter;
-        private readonly CloudBlobContainer _container;
+        private readonly Func<string, ICloudAppendBlob> _blobReferenceFactory;
 
         /// <summary>
         /// Creates a new instance of <see cref="AzureBlobSink"/>
         /// </summary>
-        /// <param name="container">The container to store logs to.</param>
+        /// <param name="blobReferenceFactory">The container to store logs to.</param>
         /// <param name="appName">The application name to use in blob path generation.</param>
         /// <param name="fileName">The last segment of blob name.</param>
         /// <param name="formatter">The <see cref="ITextFormatter"/> for log messages.</param>
         /// <param name="batchSizeLimit">The maximum number of events to include in a single batch.</param>
         /// <param name="period">The time to wait between checking for event batches.</param>
-        public AzureBlobSink(CloudBlobContainer container,
+        public AzureBlobSink(Func<string, ICloudAppendBlob> blobReferenceFactory,
             string appName,
             string fileName,
             ITextFormatter formatter,
@@ -67,7 +64,7 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Internal
             _appName = appName;
             _fileName = fileName;
             _formatter = formatter;
-            _container = container;
+            _blobReferenceFactory = blobReferenceFactory;
         }
 
         /// <inheritdoc />
@@ -76,37 +73,28 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Internal
             var eventGroups = events.GroupBy(GetBlobKey);
             foreach (var eventGroup in eventGroups)
             {
-                var blobName = string.Concat(
-                    _appName, BlobPathSeparator,
-                    eventGroup.Key.Item1, BlobPathSeparator,
-                    eventGroup.Key.Item2, BlobPathSeparator,
-                    eventGroup.Key.Item3, BlobPathSeparator,
-                    eventGroup.Key.Item4, BlobPathSeparator,
-                    _fileName
-                );
+                var key = eventGroup.Key;
+                var blobName = $"{_appName}/{key.Item1}/{key.Item2:00}/{key.Item3:00}/{key.Item4:00}/{_fileName}";
 
-                var blob = _container.GetAppendBlobReference(blobName);
+                var blob = _blobReferenceFactory(blobName);
 
-                CloudBlobStream stream;
+                Stream stream;
                 try
                 {
-                    stream = await blob.OpenWriteAsync(createNew: false);
+                    stream = await blob.OpenWriteAsync();
                 }
                 // Blob does not exist
                 catch (StorageException ex) when (ex.RequestInformation.HttpStatusCode == 404)
                 {
-                    await blob.CreateOrReplaceAsync(AccessCondition.GenerateIfNotExistsCondition(), null, null);
-                    stream = await blob.OpenWriteAsync(createNew: false);
+                    await blob.CreateAsync();
+                    stream = await blob.OpenWriteAsync();
                 }
 
-                using (stream)
+                using (var writer = new StreamWriter(stream))
                 {
-                    using (var writer = new StreamWriter(stream))
+                    foreach (var logEvent in eventGroup)
                     {
-                        foreach (var logEvent in eventGroup)
-                        {
-                            _formatter.Format(logEvent, writer);
-                        }
+                        _formatter.Format(logEvent, writer);
                     }
                 }
             }

@@ -74,7 +74,14 @@ namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Internal
             var messageFormatter = new MessageTemplateTextFormatter(_outputTemplate, null);
             var container = new CloudBlobContainer(new Uri(reader.Current.BlobContainerUrl));
             var fileName = _instanceId + "-" + _fileName;
-            var azureBlobSink = new AzureBlobSink(container, _appName, fileName, messageFormatter, _batchSize, _period);
+            var azureBlobSink = new AzureBlobSink(
+                name => new BlobAppendReferenceWrapper(container.GetAppendBlobReference(name)),
+                _appName,
+                fileName,
+                messageFormatter,
+                _batchSize,
+                _period);
+
             var backgroundSink = new BackgroundSink(azureBlobSink, _backgroundQueueSize);
             var loggerConfiguration = new LoggerConfiguration();
 
