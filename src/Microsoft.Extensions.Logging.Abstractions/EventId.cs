@@ -5,29 +5,24 @@ namespace Microsoft.Extensions.Logging
 {
     public struct EventId
     {
-        private int _id;
-        private string _name;
-
         public EventId(int id, string name = null)
         {
-            _id = id;
-            _name = name;
+            Id = id;
+            Name = name;
         }
 
-        public int Id
+        public int Id { get; }
+
+        public string Name { get; }
+
+        public static EventId operator +(EventId left, EventId right)
         {
-            get
-            {
-                return _id;
-            }
+            return new EventId(left.Id + right.Id);
         }
 
-        public string Name
+        public static EventId operator -(EventId left, EventId right)
         {
-            get
-            {
-                return _name;
-            }
+            return new EventId(left.Id - right.Id);
         }
 
         public static implicit operator EventId(int i)
@@ -37,14 +32,7 @@ namespace Microsoft.Extensions.Logging
 
         public override string ToString()
         {
-            if (_name != null)
-            {
-                return _name;
-            }
-            else
-            {
-                return _id.ToString();
-            }
+            return Name ?? Id.ToString();
         }
     }
 }
