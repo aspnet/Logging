@@ -4,7 +4,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Globalization;
 using System.Text;
 
@@ -140,12 +139,20 @@ namespace Microsoft.Extensions.Logging.Internal
                     var enumerable = value as IEnumerable;
                     if (enumerable != null)
                     {
-                        values[i] = string.Join(", ", enumerable.Cast<object>().Select(o => o ?? NullValue));
+                        values[i] = string.Join(", ", CastIteratorToString(enumerable));
                     }
                 }
             }
 
             return string.Format(CultureInfo.InvariantCulture, _format, values ?? EmptyArray);
+        }
+
+        private static IEnumerable<string> CastIteratorToString(IEnumerable source)
+        {
+            foreach (var obj in source)
+            {
+                yield return obj?.ToString() ?? NullValue;
+            }
         }
 
         public KeyValuePair<string, object> GetValue(object[] values, int index)
