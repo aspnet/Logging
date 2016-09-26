@@ -6,6 +6,7 @@
         "packages": {
             "Microsoft.Extensions.Logging": { },
             "Microsoft.Extensions.Logging.Abstractions": { },
+            "Microsoft.Extensions.Logging.AzureWebAppDiagnostics": { },
             "Microsoft.Extensions.Logging.Console": { },
             "Microsoft.Extensions.Logging.Debug": { },
             "Microsoft.Extensions.Logging.EventLog": { },
