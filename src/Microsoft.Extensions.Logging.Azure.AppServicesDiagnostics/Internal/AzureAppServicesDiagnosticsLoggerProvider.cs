@@ -10,16 +10,16 @@ namespace Microsoft.Extensions.Logging.Azure.AppServicesDiagnostics.Internal
     /// <summary>
     /// Logger provider for Azure WebApp.
     /// </summary>
-    public class AzureWebAppDiagnosticsLoggerProvider : ILoggerProvider
+    public class AzureAppServicesDiagnosticsLoggerProvider : ILoggerProvider
     {
         private readonly IWebAppLogConfigurationReader _configurationReader;
 
         private readonly LoggerFactory _loggerFactory;
 
         /// <summary>
-        /// Creates a new instance of the <see cref="AzureWebAppDiagnosticsLoggerProvider"/> class.
+        /// Creates a new instance of the <see cref="AzureAppServicesDiagnosticsLoggerProvider"/> class.
         /// </summary>
-        public AzureWebAppDiagnosticsLoggerProvider(WebAppContext context, AzureWebAppDiagnosticsSettings settings)
+        public AzureAppServicesDiagnosticsLoggerProvider(WebAppContext context, AzureAppServicesDiagnosticsSettings settings)
         {
             if (settings == null)
             {
