@@ -1,13 +1,11 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Logging.Abstractions.Internal;
-using Microsoft.Extensions.Logging.AzureWebAppDiagnostics.Internal;
 using Serilog;
 
-namespace Microsoft.Extensions.Logging.AzureWebAppDiagnostics
+namespace Microsoft.Extensions.Logging.Azure.AppServicesDiagnostics.Internal
 {
     /// <summary>
     /// Logger provider for Azure WebApp.
