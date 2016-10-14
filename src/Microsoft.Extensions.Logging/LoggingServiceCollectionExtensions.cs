@@ -16,15 +16,24 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds logging services to the specified <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
+        /// <param name="loggerFactory">An optional existing logger factory.</param>
         /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
-        public static IServiceCollection AddLogging(this IServiceCollection services)
+        public static IServiceCollection AddLogging(this IServiceCollection services, ILoggerFactory loggerFactory = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.TryAdd(ServiceDescriptor.Singleton<ILoggerFactory, LoggerFactory>());
+            if (loggerFactory != null)
+            {
+                services.AddSingleton(loggerFactory);
+            }
+            else
+            {
+                services.TryAdd(ServiceDescriptor.Singleton<ILoggerFactory, LoggerFactory>());
+            }
+
             services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
 
             return services;
