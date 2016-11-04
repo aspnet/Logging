@@ -7,9 +7,9 @@
     "Microsoft.AspNetCore.Testing": "1.0.0-rtm-21431",
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "Microsoft.Extensions.Logging": "1.0.0",
-    "Microsoft.Extensions.Logging.Console": "1.0.0",
+    "Microsoft.Extensions.Logging.Console": "1.0.1",
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
-    "Microsoft.Extensions.Logging.Filter": "1.0.0",
+    "Microsoft.Extensions.Logging.Filter": "1.0.1",
     "Microsoft.Extensions.Logging.TraceSource": "1.0.0",
     "xunit": "2.1.0"
   },
