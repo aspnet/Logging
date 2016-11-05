@@ -21,7 +21,7 @@
   "dependencies": {
     "System.Runtime.InteropServices.RuntimeInformation": "4.0.0",
     "Microsoft.Extensions.Configuration.Abstractions": "1.0.1",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0"
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.1"
   },
   "frameworks": {
     "net451": {
