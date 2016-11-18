@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0-*",
+  "version": "1.1.0",
   "description": "Logging infrastructure default implementation for Microsoft.Extensions.Logging.",
   "packOptions": {
     "repository": {
@@ -11,9 +11,9 @@
     ]
   },
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0-*",
-    "Microsoft.Extensions.Logging.Abstractions": "1.1.0-*",
-    "NETStandard.Library": "1.6.1-*"
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "warningsAsErrors": true,

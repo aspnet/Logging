@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0-*",
+  "version": "1.1.0",
   "packOptions": {
     "repository": {
       "type": "git",
@@ -19,9 +19,9 @@
     "xmlDoc": true
   },
   "dependencies": {
-    "Microsoft.Extensions.Configuration.Abstractions": "1.1.0-*",
-    "Microsoft.Extensions.Logging.Abstractions": "1.1.0-*",
-    "NETStandard.Library": "1.6.1-*"
+    "Microsoft.Extensions.Configuration.Abstractions": "1.1.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
+    "NETStandard.Library": "1.6.1"
   },
   "frameworks": {
     "net451": {

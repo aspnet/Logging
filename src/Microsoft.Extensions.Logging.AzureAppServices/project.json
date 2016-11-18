@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.0.0",
   "description": "Logger implementation to support Azure App Services 'Diagnostics logs' and 'Log stream' features.",
   "packOptions": {
     "tags": [
@@ -12,11 +12,11 @@
     "xmlDoc": true
   },
   "dependencies": {
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0-*",
-    "Microsoft.Extensions.Configuration.Json": "1.1.0-*",
-    "Microsoft.Extensions.Logging": "1.1.0-*",
-    "Microsoft.Extensions.Logging.Abstractions": "1.1.0-*",
-    "NETStandard.Library": "1.6.1-*",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0",
+    "Microsoft.Extensions.Configuration.Json": "1.1.0",
+    "Microsoft.Extensions.Logging": "1.1.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
+    "NETStandard.Library": "1.6.1",
     "Serilog.Extensions.Logging": "1.0.0",
     "Serilog.Sinks.PeriodicBatching": "2.0.0",
     "Serilog.Sinks.RollingFile": "3.1.0",
@@ -32,7 +32,7 @@
     },
     "netstandard1.3": {
       "dependencies": {
-        "System.Threading.Thread": "4.3.0-*"
+        "System.Threading.Thread": "4.3.0"
       },
       "imports": [
         "portable-net40+sl5+win8+wp8+wpa81",
