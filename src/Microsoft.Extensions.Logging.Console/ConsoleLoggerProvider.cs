@@ -81,6 +81,8 @@ namespace Microsoft.Extensions.Logging.Console
 
             if (settings != null)
             {
+                // As name is fixed for a particular logger, once the relevent setting has been found,
+                // the filter function only checks level (it does not need to check name).
                 foreach (var prefix in GetKeyPrefixes(name))
                 {
                     LogLevel level;
@@ -96,6 +98,8 @@ namespace Microsoft.Extensions.Logging.Console
 
         private IEnumerable<string> GetKeyPrefixes(string name)
         {
+            // Check all parents parts, and then check the special value 'Default'
+            // NOTE: ConsoleLoggerSettings handles the category names as case sensitive.
             while (!string.IsNullOrEmpty(name))
             {
                 yield return name;

@@ -85,6 +85,35 @@ namespace Microsoft.Extensions.Logging
             return factory;
         }
 
+        /// <summary>
+        /// Add a <see cref="ConsoleLoggerProvider"/> configured with the provided <see cref="IConsoleLoggerSettings"/>. 
+        /// </summary>
+        /// <param name="factory"></param>
+        /// <param name="settings">The console logging settings to use.</param>
+        /// <remarks>
+        /// <para>
+        /// When <see cref="IConsoleLoggerSettings"/> are defined, then only the categories 
+        /// they return a result from <c>TryGetSwitch</c>, either for themselves or for a parent, 
+        /// are logged.
+        /// </para>
+        /// <para>
+        /// If a category is not configured then the value of the special category 'Default' (case sensitive) 
+        /// is used, or 'Default' is not specified then they are not logged at all. 
+        /// </para>
+        /// </remarks>
+        /// <example>
+        /// Configures logging with a default level of <c>Warning</c>, and specific levels
+        /// for particular namespaces (inherited by all child loggers) and classes.
+        /// <code>
+        /// var consoleSettings = new ConsoleLoggerSettings();
+        /// consoleSettings.Switches = new Dictionary&lt;string, LogLevel&gt;() {
+        ///     { "Default", LogLevel.Warning },
+        ///     { "CompanyA.Namespace1.ClassB", LogLevel.Debug },
+        ///     { "CompanyB", LogLevel.Information },
+        /// };
+        /// factory.AddConsole(consoleSettings);
+        /// </code>
+        /// </example>
         public static ILoggerFactory AddConsole(
             this ILoggerFactory factory,
             IConsoleLoggerSettings settings)
@@ -93,6 +122,23 @@ namespace Microsoft.Extensions.Logging
             return factory;
         }
 
+        /// <summary>
+        /// Add a <see cref="ConsoleLoggerProvider"/> configured with <see cref="ConfigurationConsoleLoggerSettings"/> 
+        /// taken from the provided <see cref="IConfiguration"/>, e.g. from a settings file. 
+        /// </summary>
+        /// <param name="factory"></param>
+        /// <param name="configuration">The configuration to use to get the console logging settings from.</param>
+        /// <remarks>
+        /// <para>
+        /// When <see cref="IConsoleLoggerSettings"/> are defined, then only the categories 
+        /// they return a result from <c>TryGetSwitch</c>, either for themselves or for a parent, 
+        /// are logged.
+        /// </para>
+        /// <para>
+        /// If a category is not configured then the value of the special category 'Default' (case sensitive) 
+        /// is used, or 'Default' is not specified then they are not logged at all. 
+        /// </para>
+        /// </remarks>
         public static ILoggerFactory AddConsole(this ILoggerFactory factory, IConfiguration configuration)
         {
             var settings = new ConfigurationConsoleLoggerSettings(configuration);
