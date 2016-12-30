@@ -2,20 +2,27 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Console.Internal;
 
 namespace Microsoft.Extensions.Logging.Console
 {
     public class ConsoleLogger : ILogger
     {
-        // Writing to console is not an atomic operation in the current implementation and since multiple logger
-        // instances are created with a different name. Also since Console is global, using a static lock is fine.
-        private static readonly object _lock = new object();
         private static readonly string _loglevelPadding = ": ";
         private static readonly string _messagePadding;
         private static readonly string _newLineWithMessagePadding;
+
+        // Async Semaphore so the Console is inactive when not actively logging
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(0);
+        private readonly ConcurrentQueue<LogMessageEntry> _messageQueue = new ConcurrentQueue<LogMessageEntry>();
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly Task _outputTask;
 
         // ConsoleColor does not have a value to specify the 'Default' color
         private readonly ConsoleColor? DefaultConsoleColor = null;
@@ -52,6 +59,11 @@ namespace Microsoft.Extensions.Logging.Console
             {
                 Console = new AnsiLogConsole(new AnsiSystemConsole());
             }
+
+            // Start Console message queue processor
+            _outputTask = ProcessLogQueue(_cts.Token);
+
+            RegisterForExit();
         }
 
         public IConsole Console
@@ -155,24 +167,20 @@ namespace Microsoft.Extensions.Logging.Console
 
             if (logBuilder.Length > 0)
             {
-                var logMessage = logBuilder.ToString();
-                lock (_lock)
+                var hasLevel = !string.IsNullOrEmpty(logLevelString);
+                // Queue log message
+                _messageQueue.Enqueue(new LogMessageEntry()
                 {
-                    if (!string.IsNullOrEmpty(logLevelString))
-                    {
-                        // log level string
-                        Console.Write(
-                            logLevelString,
-                            logLevelColors.Background,
-                            logLevelColors.Foreground);
-                    }
+                    Message = logBuilder.ToString(),
+                    LevelString = hasLevel ? logLevelString : null,
+                    LevelBackground = hasLevel ? logLevelColors.Background : null,
+                    LevelForeground = hasLevel ? logLevelColors.Foreground : null
+                });
 
-                    // use default colors from here on
-                    Console.Write(logMessage, DefaultConsoleColor, DefaultConsoleColor);
-
-                    // In case of AnsiLogConsole, the messages are not yet written to the console,
-                    // this would flush them instead.
-                    Console.Flush();
+                if (_semaphore.CurrentCount == 0)
+                {
+                    // Console output Task may be asleep, wake it up
+                    _semaphore.Release();
                 }
             }
 
@@ -268,6 +276,76 @@ namespace Microsoft.Extensions.Logging.Console
                 builder.Insert(length, _messagePadding);
                 builder.AppendLine();
             }
+        }
+
+        private async Task ProcessLogQueue(CancellationToken token)
+        {
+            do
+            {
+                if (_messageQueue.IsEmpty)
+                {
+                    // No messages; wait for new messages
+                    try
+                    {
+                        await _semaphore.WaitAsync(token).ConfigureAwait(false);
+                    }
+                    // Catch woken up by shutdown
+                    catch (TaskCanceledException) { }
+                    catch (AggregateException ex) when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException) { }
+                }
+
+                LogMessageEntry message;
+                while (_messageQueue.TryDequeue(out message))
+                {
+                    if (message.LevelString != null)
+                    {
+                        Console.Write(message.LevelString, message.LevelBackground, message.LevelForeground);
+                    }
+
+                    Console.Write(message.Message, DefaultConsoleColor, DefaultConsoleColor);
+                }
+
+                // In case of AnsiLogConsole, the messages are not yet written to the console, flush them
+                Console.Flush();
+
+            } while (!token.IsCancellationRequested);
+        }
+
+        private void RegisterForExit()
+        {
+            // Hooks to detect Process exit, and allow the Console to complete output
+#if NET451
+            AppDomain.CurrentDomain.ProcessExit += InitiateShutdown;
+#elif NETSTANDARD1_5
+            var currentAssembly = typeof(ConsoleLogger).GetTypeInfo().Assembly;
+            System.Runtime.Loader.AssemblyLoadContext.GetLoadContext(currentAssembly).Unloading += InitiateShutdown;
+#endif
+        }
+
+#if NET451
+        private void InitiateShutdown(object sender, EventArgs e)
+#elif NETSTANDARD1_5
+        private void InitiateShutdown(System.Runtime.Loader.AssemblyLoadContext obj)
+#else
+        private void InitiateShutdown()
+#endif
+        {
+            _cts.Cancel();
+            _semaphore.Release(); // Fast wake up vs cts
+            try
+            {
+                _outputTask.Wait(1500); // with timeout in-case Console is locked by user input
+            }
+            catch (TaskCanceledException) { }
+            catch (AggregateException ex) when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException) { }
+        }
+
+        private struct LogMessageEntry
+        {
+            public string LevelString;
+            public ConsoleColor? LevelBackground;
+            public ConsoleColor? LevelForeground;
+            public string Message;
         }
 
         private struct ConsoleColors
