@@ -98,6 +98,8 @@ namespace Microsoft.Extensions.Logging.Console
 
         public string Name { get; }
 
+        public bool HasQueuedMessages => !_messageQueue.IsEmpty;
+
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             if (!IsEnabled(logLevel))

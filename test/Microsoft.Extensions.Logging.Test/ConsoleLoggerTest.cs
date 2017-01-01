@@ -65,11 +65,14 @@ namespace Microsoft.Extensions.Logging.Test
 
             ((TestConsole)t.Item1.Console).OnFlush = () =>
             {
-                // Assert
-                Assert.Equal(6, sink.Writes.Count);
-                Assert.Equal(GetMessage("crit", 0, "[null]", null     ), GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("crit", 0, "[null]", null     ), GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("crit", 0, "[null]", exception), GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
+                if (!t.Item1.HasQueuedMessages)
+                {
+                    // Assert
+                    Assert.Equal(6, sink.Writes.Count);
+                    Assert.Equal(GetMessage("crit", 0, "[null]", null     ), GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("crit", 0, "[null]", null     ), GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("crit", 0, "[null]", exception), GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
+                }
             };
 
             // Act
@@ -89,12 +92,15 @@ namespace Microsoft.Extensions.Logging.Test
 
             ((TestConsole)t.Item1.Console).OnFlush = () =>
             {
-                // Assert
-                Assert.Equal(8, sink.Writes.Count);
-                Assert.Equal(GetMessage("crit",  0, logMessage, null), GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("crit", 10, logMessage, null), GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("crit", 10, logMessage, null), GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("crit", 10, logMessage, null), GetMessage(sink.Writes.GetRange(3 * WritesPerMsg, WritesPerMsg)));
+                if (!t.Item1.HasQueuedMessages)
+                {
+                    // Assert
+                    Assert.Equal(8, sink.Writes.Count);
+                    Assert.Equal(GetMessage("crit",  0, logMessage, null), GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("crit", 10, logMessage, null), GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("crit", 10, logMessage, null), GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("crit", 10, logMessage, null), GetMessage(sink.Writes.GetRange(3 * WritesPerMsg, WritesPerMsg)));
+                }
             };
             // Act
             logger.LogCritical(logMessage);
@@ -173,20 +179,18 @@ namespace Microsoft.Extensions.Logging.Test
             var logger = t.Item1;
             var sink = t.Item2;
 
-            ((TestConsole)logger.Console).OnFlush = () =>
-            {
-                // Assert
-                Assert.Equal(0, sink.Writes.Count);
-            };
             // Act
             logger.Log(LogLevel.Warning, 0, _state, null, _defaultFormatter);
 
+            Assert.Equal(false, logger.HasQueuedMessages);
+            Assert.Equal(0, sink.Writes.Count);
 
             ((TestConsole)logger.Console).OnFlush = () =>
             {
                 // Assert
                 Assert.Equal(2, sink.Writes.Count);
             };
+
             // Act
             logger.Log(LogLevel.Critical, 0, _state, null, _defaultFormatter);
         }
@@ -199,14 +203,12 @@ namespace Microsoft.Extensions.Logging.Test
             var logger = t.Item1;
             var sink = t.Item2;
 
-            ((TestConsole)logger.Console).OnFlush = () =>
-            {
-                // Assert
-                Assert.Equal(0, sink.Writes.Count);
-            };
             // Act
             logger.Log(LogLevel.Warning, 0, _state, null, null);
 
+            // Assert
+            Assert.Equal(false, logger.HasQueuedMessages);
+            Assert.Equal(0, sink.Writes.Count);
 
             ((TestConsole)logger.Console).OnFlush = () =>
             {
@@ -225,13 +227,12 @@ namespace Microsoft.Extensions.Logging.Test
             var logger = t.Item1;
             var sink = t.Item2;
 
-            ((TestConsole)logger.Console).OnFlush = () =>
-            {
-                // Assert
-                Assert.Equal(0, sink.Writes.Count);
-            };
             // Act
             logger.Log(LogLevel.Information, 0, _state, null, null);
+
+            // Assert
+            Assert.Equal(false, logger.HasQueuedMessages);
+            Assert.Equal(0, sink.Writes.Count);
 
             ((TestConsole)logger.Console).OnFlush = () =>
             {
@@ -250,13 +251,12 @@ namespace Microsoft.Extensions.Logging.Test
             var logger = t.Item1;
             var sink = t.Item2;
 
-            ((TestConsole)logger.Console).OnFlush = () =>
-            {
-                // Assert
-                Assert.Equal(0, sink.Writes.Count);
-            };
             // Act
             logger.Log(LogLevel.Debug, 0, _state, null, null);
+
+            // Assert
+            Assert.Equal(false, logger.HasQueuedMessages);
+            Assert.Equal(0, sink.Writes.Count);
 
             ((TestConsole)logger.Console).OnFlush = () =>
             {
@@ -275,13 +275,12 @@ namespace Microsoft.Extensions.Logging.Test
             var logger = t.Item1;
             var sink = t.Item2;
 
-            ((TestConsole)logger.Console).OnFlush = () =>
-            {
-                // Assert
-                Assert.Equal(0, sink.Writes.Count);
-            };
             // Act
             logger.Log(LogLevel.Trace, 0, _state, null, null);
+
+            // Assert
+            Assert.Equal(false, logger.HasQueuedMessages);
+            Assert.Equal(0, sink.Writes.Count);
 
             ((TestConsole)logger.Console).OnFlush = () =>
             {
@@ -303,8 +302,11 @@ namespace Microsoft.Extensions.Logging.Test
 
             ((TestConsole)logger.Console).OnFlush = () =>
             {
-                // Assert
-                Assert.Equal(12, sink.Writes.Count);
+                if (!logger.HasQueuedMessages)
+                {
+                    // Assert
+                    Assert.Equal(12, sink.Writes.Count);
+                }
             };
 
             // Act
@@ -472,14 +474,17 @@ namespace Microsoft.Extensions.Logging.Test
 
             ((TestConsole)logger.Console).OnFlush = () =>
             {
-                // Assert
-                Assert.Equal(12, sink.Writes.Count);
-                Assert.Equal(GetMessage("crit", 0, ex), GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("fail", 0, ex), GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("warn", 0, ex), GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("info", 0, ex), GetMessage(sink.Writes.GetRange(3 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("dbug", 0, ex), GetMessage(sink.Writes.GetRange(4 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("trce", 0, ex), GetMessage(sink.Writes.GetRange(5 * WritesPerMsg, WritesPerMsg)));
+                if (!logger.HasQueuedMessages)
+                { 
+                    // Assert
+                    Assert.Equal(12, sink.Writes.Count);
+                    Assert.Equal(GetMessage("crit", 0, ex), GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("fail", 0, ex), GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("warn", 0, ex), GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("info", 0, ex), GetMessage(sink.Writes.GetRange(3 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("dbug", 0, ex), GetMessage(sink.Writes.GetRange(4 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("trce", 0, ex), GetMessage(sink.Writes.GetRange(5 * WritesPerMsg, WritesPerMsg)));
+                }
             };
 
             // Act
@@ -664,17 +669,20 @@ namespace Microsoft.Extensions.Logging.Test
 
             ((TestConsole)logger.Console).OnFlush = () =>
             {
-                // Assert
-                Assert.Equal(4, sink.Writes.Count);
-                // scope
-                var write = sink.Writes[1];
-                Assert.Equal(expectedHeader + expectedScope1 + expectedMessage, write.Message);
-                Assert.Equal(TestConsole.DefaultBackgroundColor, write.BackgroundColor);
-                Assert.Equal(TestConsole.DefaultForegroundColor, write.ForegroundColor);
-                write = sink.Writes[3];
-                Assert.Equal(expectedHeader + expectedScope2 + expectedMessage, write.Message);
-                Assert.Equal(TestConsole.DefaultBackgroundColor, write.BackgroundColor);
-                Assert.Equal(TestConsole.DefaultForegroundColor, write.ForegroundColor);
+                if (!logger.HasQueuedMessages)
+                {
+                    // Assert
+                    Assert.Equal(4, sink.Writes.Count);
+                    // scope
+                    var write = sink.Writes[1];
+                    Assert.Equal(expectedHeader + expectedScope1 + expectedMessage, write.Message);
+                    Assert.Equal(TestConsole.DefaultBackgroundColor, write.BackgroundColor);
+                    Assert.Equal(TestConsole.DefaultForegroundColor, write.ForegroundColor);
+                    write = sink.Writes[3];
+                    Assert.Equal(expectedHeader + expectedScope2 + expectedMessage, write.Message);
+                    Assert.Equal(TestConsole.DefaultBackgroundColor, write.BackgroundColor);
+                    Assert.Equal(TestConsole.DefaultForegroundColor, write.ForegroundColor);
+                }
             };
 
             // Act
@@ -838,14 +846,17 @@ namespace Microsoft.Extensions.Logging.Test
 
             ((TestConsole)logger.Console).OnFlush = () =>
             {
-                // Assert
-                Assert.Equal(6, sink.Writes.Count);
-                Assert.Equal(expected, sink.Writes[0].Message);
-                Assert.Equal(expected, sink.Writes[1].Message);
-                Assert.Equal(expected, sink.Writes[2].Message);
-                Assert.Equal(expected, sink.Writes[3].Message);
-                Assert.Equal(expected, sink.Writes[4].Message);
-                Assert.Equal(expected, sink.Writes[5].Message);
+                if (!logger.HasQueuedMessages)
+                {
+                    // Assert
+                    Assert.Equal(6, sink.Writes.Count);
+                    Assert.Equal(expected, sink.Writes[0].Message);
+                    Assert.Equal(expected, sink.Writes[1].Message);
+                    Assert.Equal(expected, sink.Writes[2].Message);
+                    Assert.Equal(expected, sink.Writes[3].Message);
+                    Assert.Equal(expected, sink.Writes[4].Message);
+                    Assert.Equal(expected, sink.Writes[5].Message);
+                }
             };
 
             // Act
@@ -868,14 +879,17 @@ namespace Microsoft.Extensions.Logging.Test
 
             ((TestConsole)logger.Console).OnFlush = () =>
             {
-                // Assert
-                Assert.Equal(12, sink.Writes.Count);
-                Assert.Equal(GetMessage("crit", 0, ex), GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("fail", 0, ex), GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("warn", 0, ex), GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("info", 0, ex), GetMessage(sink.Writes.GetRange(3 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("dbug", 0, ex), GetMessage(sink.Writes.GetRange(4 * WritesPerMsg, WritesPerMsg)));
-                Assert.Equal(GetMessage("trce", 0, ex), GetMessage(sink.Writes.GetRange(5 * WritesPerMsg, WritesPerMsg)));
+                if (!logger.HasQueuedMessages)
+                {
+                    // Assert
+                    Assert.Equal(12, sink.Writes.Count);
+                    Assert.Equal(GetMessage("crit", 0, ex), GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("fail", 0, ex), GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("warn", 0, ex), GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("info", 0, ex), GetMessage(sink.Writes.GetRange(3 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("dbug", 0, ex), GetMessage(sink.Writes.GetRange(4 * WritesPerMsg, WritesPerMsg)));
+                    Assert.Equal(GetMessage("trce", 0, ex), GetMessage(sink.Writes.GetRange(5 * WritesPerMsg, WritesPerMsg)));
+                }
             };
 
             // Act
@@ -906,6 +920,7 @@ namespace Microsoft.Extensions.Logging.Test
             logger.Log(LogLevel.Trace, 0, message, ex, (s,e) => s);
 
             // Assert
+            Assert.Equal(false, logger.HasQueuedMessages);
             Assert.Equal(0, sink.Writes.Count);
         }
 
