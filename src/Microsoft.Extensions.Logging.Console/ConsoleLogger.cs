@@ -2,39 +2,22 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Concurrent;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Console.Internal;
 
 namespace Microsoft.Extensions.Logging.Console
 {
     public class ConsoleLogger : ILogger
     {
-        private const int _maxQueuedMessages = 1024;
-
         private static readonly string _loglevelPadding = ": ";
         private static readonly string _messagePadding;
         private static readonly string _newLineWithMessagePadding;
 
-        // Async Semaphore so the Console is inactive when not actively logging
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(0);
-        private readonly ConcurrentQueue<LogMessageEntry> _messageQueue = new ConcurrentQueue<LogMessageEntry>();
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-        private readonly Task _outputTask;
-
-        private readonly ManualResetEventSlim _backpressureMre = new ManualResetEventSlim(true);
-        private readonly object _countLock = new object();
-
-        private int _queuedMessageCount;
-
         // ConsoleColor does not have a value to specify the 'Default' color
         private readonly ConsoleColor? DefaultConsoleColor = null;
 
-        private IConsole _console;
+        private readonly ConsoleLoggerProcessor _queueProcessor = new ConsoleLoggerProcessor();
         private Func<string, LogLevel, bool> _filter;
 
         [ThreadStatic]
@@ -66,28 +49,12 @@ namespace Microsoft.Extensions.Logging.Console
             {
                 Console = new AnsiLogConsole(new AnsiSystemConsole());
             }
-
-            RegisterForExit();
-
-            // Start Console message queue processor
-            _outputTask = Task.Factory.StartNew(
-                                ProcessLogQueue,
-                                this,
-                                TaskCreationOptions.LongRunning);
         }
 
         public IConsole Console
         {
-            get { return _console; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                _console = value;
-            }
+            get { return _queueProcessor.Console; }
+            set { _queueProcessor.Console = value; }
         }
 
         public Func<string, LogLevel, bool> Filter
@@ -108,7 +75,7 @@ namespace Microsoft.Extensions.Logging.Console
 
         public string Name { get; }
 
-        public bool HasQueuedMessages => !_messageQueue.IsEmpty;
+        public bool HasQueuedMessages => _queueProcessor.HasQueuedMessages;
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
@@ -128,26 +95,6 @@ namespace Microsoft.Extensions.Logging.Console
             {
                 WriteMessage(logLevel, Name, eventId.Id, message, exception);
             }
-        }
-
-        private void EnqueueMessage(LogMessageEntry message)
-        {
-            ApplyBackpressure();
-
-            _messageQueue.Enqueue(message);
-
-            WakeupProcessor();
-        }
-
-        private void ProcessLogQueue(CancellationToken token)
-        {
-            do
-            {
-                WaitForNewMessages(token);
-
-                OutputQueuedMessages();
-
-            } while (!token.IsCancellationRequested);
         }
 
         public virtual void WriteMessage(LogLevel logLevel, string logName, int eventId, string message, Exception exception)
@@ -201,9 +148,10 @@ namespace Microsoft.Extensions.Logging.Console
             {
                 var hasLevel = !string.IsNullOrEmpty(logLevelString);
                 // Queue log message
-                EnqueueMessage(new LogMessageEntry()
+                _queueProcessor.EnqueueMessage(new LogMessageEntry()
                 {
                     Message = logBuilder.ToString(),
+                    MessageColor = DefaultConsoleColor,
                     LevelString = hasLevel ? logLevelString : null,
                     LevelBackground = hasLevel ? logLevelColors.Background : null,
                     LevelForeground = hasLevel ? logLevelColors.Foreground : null
@@ -302,147 +250,6 @@ namespace Microsoft.Extensions.Logging.Console
                 builder.Insert(length, _messagePadding);
                 builder.AppendLine();
             }
-        }
-
-        private void WaitForNewMessages(CancellationToken token)
-        {
-            if (_messageQueue.IsEmpty)
-            {
-                // No messages; wait for new messages
-                try
-                {
-                    _semaphore.Wait(token);
-                }
-                // Catch woken up by shutdown
-                catch (TaskCanceledException)
-                {
-                }
-                catch (AggregateException ex)
-                    when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException)
-                {
-                }
-            }
-        }
-
-        private void OutputQueuedMessages()
-        {
-            var messagesOutput = 0;
-            LogMessageEntry message;
-            while (_messageQueue.TryDequeue(out message))
-            {
-                if (message.LevelString != null)
-                {
-                    Console.Write(message.LevelString, message.LevelBackground, message.LevelForeground);
-                }
-
-                Console.Write(message.Message, DefaultConsoleColor, DefaultConsoleColor);
-                messagesOutput++;
-            }
-
-            if (messagesOutput > 0)
-            {
-                // In case of AnsiLogConsole, the messages are not yet written to the console, flush them
-                Console.Flush();
-
-                ReleaseBackpressure(messagesOutput);
-            }
-        }
-
-        private void WakeupProcessor()
-        {
-            if (_semaphore.CurrentCount == 0)
-            {
-                // Console output Task may be asleep, wake it up
-                _semaphore.Release();
-            }
-        }
-
-        private void ApplyBackpressure()
-        {
-            var wasBlocked = false;
-            do
-            {
-                lock (_countLock)
-                {
-                    if (_queuedMessageCount == _maxQueuedMessages)
-                    {
-                        wasBlocked = true;
-                        // Message would put the queue over max, set blocking
-                        _backpressureMre.Reset();
-                    }
-                    else if (_queuedMessageCount + 1 <= _maxQueuedMessages)
-                    {
-                        _queuedMessageCount++;
-                    }
-                    else
-                    {
-                        wasBlocked = true;
-                    }
-                }
-
-                if (wasBlocked)
-                {
-                    _backpressureMre.Wait();
-                }
-            } while (wasBlocked);
-        }
-
-        private void ReleaseBackpressure(int messagesOutput)
-        {
-            lock (_countLock)
-            {
-                if (_queuedMessageCount >= _maxQueuedMessages &&
-                    _queuedMessageCount - messagesOutput < _maxQueuedMessages)
-                {
-                    // Was blocked, unblock
-                    _backpressureMre.Set();
-                }
-                _queuedMessageCount -= messagesOutput;
-            }
-        }
-
-        private static void ProcessLogQueue(object state)
-        {
-            var consoleLogger = (ConsoleLogger)state;
-
-            consoleLogger.ProcessLogQueue(consoleLogger._cts.Token);
-        }
-
-        private void RegisterForExit()
-        {
-            // Hooks to detect Process exit, and allow the Console to complete output
-#if NET451
-            AppDomain.CurrentDomain.ProcessExit += InitiateShutdown;
-#elif NETSTANDARD1_5
-            var currentAssembly = typeof(ConsoleLogger).GetTypeInfo().Assembly;
-            System.Runtime.Loader.AssemblyLoadContext.GetLoadContext(currentAssembly).Unloading += InitiateShutdown;
-#endif
-        }
-
-#if NET451
-        private void InitiateShutdown(object sender, EventArgs e)
-#elif NETSTANDARD1_5
-        private void InitiateShutdown(System.Runtime.Loader.AssemblyLoadContext obj)
-#else
-        private void InitiateShutdown()
-#endif
-        {
-            _cts.Cancel();
-            _semaphore.Release(); // Fast wake up vs cts
-            try
-            {
-                _outputTask.Wait(1500); // with timeout in-case Console is locked by user input
-            }
-            catch (TaskCanceledException) { }
-            catch (AggregateException ex) when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException) { }
-        }
-
-        private struct LogMessageEntry
-        {
-            public string LevelString;
-            public ConsoleColor? LevelBackground;
-            public ConsoleColor? LevelForeground;
-            public string Message;
         }
 
         private struct ConsoleColors
