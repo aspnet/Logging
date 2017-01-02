@@ -37,7 +37,6 @@ namespace Microsoft.Extensions.Logging.Console
         private IConsole _console;
         private Func<string, LogLevel, bool> _filter;
 
-
         [ThreadStatic]
         private static StringBuilder _logBuilder;
 
@@ -68,10 +67,13 @@ namespace Microsoft.Extensions.Logging.Console
                 Console = new AnsiLogConsole(new AnsiSystemConsole());
             }
 
-            // Start Console message queue processor
-            _outputTask = ProcessLogQueue(_cts.Token);
-
             RegisterForExit();
+
+            // Start Console message queue processor
+            _outputTask = Task.Factory.StartNew(
+                                ProcessLogQueue,
+                                this,
+                                TaskCreationOptions.LongRunning);
         }
 
         public IConsole Console
@@ -126,6 +128,26 @@ namespace Microsoft.Extensions.Logging.Console
             {
                 WriteMessage(logLevel, Name, eventId.Id, message, exception);
             }
+        }
+
+        private void EnqueueMessage(LogMessageEntry message)
+        {
+            ApplyBackpressure();
+
+            _messageQueue.Enqueue(message);
+
+            WakeupProcessor();
+        }
+
+        private void ProcessLogQueue(CancellationToken token)
+        {
+            do
+            {
+                WaitForNewMessages(token);
+
+                OutputQueuedMessages();
+
+            } while (!token.IsCancellationRequested);
         }
 
         public virtual void WriteMessage(LogLevel logLevel, string logName, int eventId, string message, Exception exception)
@@ -282,34 +304,24 @@ namespace Microsoft.Extensions.Logging.Console
             }
         }
 
-        private void EnqueueMessage(LogMessageEntry message)
+        private void WaitForNewMessages(CancellationToken token)
         {
-            ApplyBackpressure();
-
-            _messageQueue.Enqueue(message);
-
-            WakeupProcessor();
-        }
-
-        private async Task ProcessLogQueue(CancellationToken token)
-        {
-            do
+            if (_messageQueue.IsEmpty)
             {
-                if (_messageQueue.IsEmpty)
+                // No messages; wait for new messages
+                try
                 {
-                    // No messages; wait for new messages
-                    try
-                    {
-                        await _semaphore.WaitAsync(token).ConfigureAwait(false);
-                    }
-                    // Catch woken up by shutdown
-                    catch (TaskCanceledException) { }
-                    catch (AggregateException ex) when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException) { }
+                    _semaphore.Wait(token);
                 }
-
-                OutputQueuedMessages();
-
-            } while (!token.IsCancellationRequested);
+                // Catch woken up by shutdown
+                catch (TaskCanceledException)
+                {
+                }
+                catch (AggregateException ex)
+                    when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException)
+                {
+                }
+            }
         }
 
         private void OutputQueuedMessages()
@@ -355,6 +367,7 @@ namespace Microsoft.Extensions.Logging.Console
                     if (_queuedMessageCount == _maxQueuedMessages)
                     {
                         wasBlocked = true;
+                        // Message would put the queue over max, set blocking
                         _backpressureMre.Reset();
                     }
                     else if (_queuedMessageCount + 1 <= _maxQueuedMessages)
@@ -366,6 +379,7 @@ namespace Microsoft.Extensions.Logging.Console
                         wasBlocked = true;
                     }
                 }
+
                 if (wasBlocked)
                 {
                     _backpressureMre.Wait();
@@ -375,21 +389,23 @@ namespace Microsoft.Extensions.Logging.Console
 
         private void ReleaseBackpressure(int messagesOutput)
         {
-            var shouldUnblock = false;
             lock (_countLock)
             {
                 if (_queuedMessageCount >= _maxQueuedMessages &&
                     _queuedMessageCount - messagesOutput < _maxQueuedMessages)
                 {
-                    shouldUnblock = true;
+                    // Was blocked, unblock
+                    _backpressureMre.Set();
                 }
                 _queuedMessageCount -= messagesOutput;
             }
+        }
 
-            if (shouldUnblock)
-            {
-                _backpressureMre.Set();
-            }
+        private static void ProcessLogQueue(object state)
+        {
+            var consoleLogger = (ConsoleLogger)state;
+
+            consoleLogger.ProcessLogQueue(consoleLogger._cts.Token);
         }
 
         private void RegisterForExit()
