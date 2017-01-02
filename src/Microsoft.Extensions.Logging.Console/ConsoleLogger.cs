@@ -14,6 +14,8 @@ namespace Microsoft.Extensions.Logging.Console
 {
     public class ConsoleLogger : ILogger
     {
+        private const int _maxQueuedMessages = 1024;
+
         private static readonly string _loglevelPadding = ": ";
         private static readonly string _messagePadding;
         private static readonly string _newLineWithMessagePadding;
@@ -24,11 +26,17 @@ namespace Microsoft.Extensions.Logging.Console
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly Task _outputTask;
 
+        private readonly ManualResetEventSlim _backpressureMre = new ManualResetEventSlim(true);
+        private readonly object _countLock = new object();
+
+        private int _queuedMessageCount;
+
         // ConsoleColor does not have a value to specify the 'Default' color
         private readonly ConsoleColor? DefaultConsoleColor = null;
 
         private IConsole _console;
         private Func<string, LogLevel, bool> _filter;
+
 
         [ThreadStatic]
         private static StringBuilder _logBuilder;
@@ -171,19 +179,13 @@ namespace Microsoft.Extensions.Logging.Console
             {
                 var hasLevel = !string.IsNullOrEmpty(logLevelString);
                 // Queue log message
-                _messageQueue.Enqueue(new LogMessageEntry()
+                EnqueueMessage(new LogMessageEntry()
                 {
                     Message = logBuilder.ToString(),
                     LevelString = hasLevel ? logLevelString : null,
                     LevelBackground = hasLevel ? logLevelColors.Background : null,
                     LevelForeground = hasLevel ? logLevelColors.Foreground : null
                 });
-
-                if (_semaphore.CurrentCount == 0)
-                {
-                    // Console output Task may be asleep, wake it up
-                    _semaphore.Release();
-                }
             }
 
             logBuilder.Clear();
@@ -280,6 +282,15 @@ namespace Microsoft.Extensions.Logging.Console
             }
         }
 
+        private void EnqueueMessage(LogMessageEntry message)
+        {
+            ApplyBackpressure();
+
+            _messageQueue.Enqueue(message);
+
+            WakeupProcessor();
+        }
+
         private async Task ProcessLogQueue(CancellationToken token)
         {
             do
@@ -296,21 +307,89 @@ namespace Microsoft.Extensions.Logging.Console
                     catch (AggregateException ex) when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException) { }
                 }
 
-                LogMessageEntry message;
-                while (_messageQueue.TryDequeue(out message))
-                {
-                    if (message.LevelString != null)
-                    {
-                        Console.Write(message.LevelString, message.LevelBackground, message.LevelForeground);
-                    }
+                OutputQueuedMessages();
 
-                    Console.Write(message.Message, DefaultConsoleColor, DefaultConsoleColor);
+            } while (!token.IsCancellationRequested);
+        }
+
+        private void OutputQueuedMessages()
+        {
+            var messagesOutput = 0;
+            LogMessageEntry message;
+            while (_messageQueue.TryDequeue(out message))
+            {
+                if (message.LevelString != null)
+                {
+                    Console.Write(message.LevelString, message.LevelBackground, message.LevelForeground);
                 }
 
+                Console.Write(message.Message, DefaultConsoleColor, DefaultConsoleColor);
+                messagesOutput++;
+            }
+
+            if (messagesOutput > 0)
+            {
                 // In case of AnsiLogConsole, the messages are not yet written to the console, flush them
                 Console.Flush();
 
-            } while (!token.IsCancellationRequested);
+                ReleaseBackpressure(messagesOutput);
+            }
+        }
+
+        private void WakeupProcessor()
+        {
+            if (_semaphore.CurrentCount == 0)
+            {
+                // Console output Task may be asleep, wake it up
+                _semaphore.Release();
+            }
+        }
+
+        private void ApplyBackpressure()
+        {
+            var wasBlocked = false;
+            do
+            {
+                lock (_countLock)
+                {
+                    if (_queuedMessageCount == _maxQueuedMessages)
+                    {
+                        wasBlocked = true;
+                        _backpressureMre.Reset();
+                    }
+                    else if (_queuedMessageCount + 1 <= _maxQueuedMessages)
+                    {
+                        _queuedMessageCount++;
+                    }
+                    else
+                    {
+                        wasBlocked = true;
+                    }
+                }
+                if (wasBlocked)
+                {
+                    _backpressureMre.Wait();
+                }
+            } while (wasBlocked);
+        }
+
+        private void ReleaseBackpressure(int messagesOutput)
+        {
+            var shouldUnblock = false;
+            lock (_countLock)
+            {
+                if (_queuedMessageCount >= _maxQueuedMessages &&
+                    _queuedMessageCount - messagesOutput < _maxQueuedMessages)
+                {
+                    shouldUnblock = true;
+                }
+                _queuedMessageCount -= messagesOutput;
+            }
+
+            if (shouldUnblock)
+            {
+                _backpressureMre.Set();
+            }
         }
 
         private void RegisterForExit()
