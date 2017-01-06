@@ -16,6 +16,16 @@ namespace Microsoft.Extensions.Logging.EventLog
             DiagnosticsEventLog = new System.Diagnostics.EventLog(logName, machineName, sourceName);
         }
 
+        public WindowsEventLog(string logName, string machineName, string sourceName, bool autocreate)
+        {
+            if (autocreate && !System.Diagnostics.EventLog.SourceExists(sourceName))
+            {
+                System.Diagnostics.EventLog.CreateEventSource(sourceName, logName);
+            }
+            DiagnosticsEventLog = new System.Diagnostics.EventLog(logName, machineName, sourceName);
+        }
+
+
         public System.Diagnostics.EventLog DiagnosticsEventLog { get; }
 
         public int MaxMessageSize

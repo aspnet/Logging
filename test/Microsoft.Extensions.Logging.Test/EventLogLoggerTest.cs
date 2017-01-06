@@ -35,7 +35,7 @@ namespace Microsoft.Extensions.Logging
             var sourceName = "blah";
 
             // Act
-            var windowsEventLog = new WindowsEventLog(logName, machineName, sourceName);
+            var windowsEventLog = new WindowsEventLog(logName, machineName, sourceName, false);
 
             // Assert
             Assert.NotNull(windowsEventLog.DiagnosticsEventLog);

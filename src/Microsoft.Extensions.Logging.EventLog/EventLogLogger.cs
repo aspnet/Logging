@@ -46,7 +46,7 @@ namespace Microsoft.Extensions.Logging.EventLog
             // 1. Log name & source name existence check only works on local computer.
             // 2. Source name existence check requires Administrative privileges.
 
-            EventLog = settings.EventLog ?? new WindowsEventLog(logName, machineName, sourceName);
+            EventLog = settings.EventLog ?? new WindowsEventLog(logName, machineName, sourceName, settings.AutoCreate);
 
             // Examples:
             // 1. An error occu...
