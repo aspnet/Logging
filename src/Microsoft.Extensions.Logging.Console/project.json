@@ -33,6 +33,11 @@
         }
       }
     },
-    "netstandard1.3": {}
+    "netstandard1.3": {},
+    "netstandard1.5": {
+      "dependencies": {
+        "System.Runtime.Loader": "4.4.0-*"
+      }
+    }
   }
 }
