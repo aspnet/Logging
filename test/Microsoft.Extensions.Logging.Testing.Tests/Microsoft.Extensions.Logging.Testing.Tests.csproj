@@ -3,7 +3,6 @@
   <Import Project="..\..\build\common.props" />
 
   <PropertyGroup>
-    <VersionPrefix>1.1.0</VersionPrefix>
     <TargetFrameworks>netcoreapp1.1</TargetFrameworks>
     <TargetFrameworks Condition="'$(OS)'=='Windows_NT'">$(TargetFrameworks);net451</TargetFrameworks>
   </PropertyGroup>

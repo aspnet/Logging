@@ -9,8 +9,9 @@ Microsoft.Extensions.Logging.ILogger
 Microsoft.Extensions.Logging.ILoggerFactory
 Microsoft.Extensions.Logging.ILogger&lt;TCategoryName&gt;
 Microsoft.Extensions.Logging.LogLevel
-Microsoft.Extensions.Logging.
-Microsoft.Extensions.Logging.</Description>
+Microsoft.Extensions.Logging.Logger&lt;T&gt;
+Microsoft.Extensions.Logging.LoggerMessage
+Microsoft.Extensions.Logging.Abstractions.NullLogger</Description>
     <TargetFramework>netstandard1.1</TargetFramework>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
