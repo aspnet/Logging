@@ -3,12 +3,12 @@
     "emitEntryPoint": true
   },
   "dependencies": {
-    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.1",
-    "Microsoft.Extensions.Configuration.Json": "1.0.1",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.2",
+    "Microsoft.Extensions.Configuration.Json": "1.0.2",
     "Microsoft.Extensions.FileProviders.Physical": "1.0.1",
-    "Microsoft.Extensions.Logging": "1.0.1",
-    "Microsoft.Extensions.Logging.Console": "1.0.1",
-    "Microsoft.Extensions.Logging.Filter": "1.0.1",
+    "Microsoft.Extensions.Logging": "1.0.2",
+    "Microsoft.Extensions.Logging.Console": "1.0.2",
+    "Microsoft.Extensions.Logging.Filter": "1.0.2",
     "Microsoft.Extensions.PlatformAbstractions": "1.0.0"
   },
   "publishOptions": {
@@ -19,13 +19,13 @@
   "frameworks": {
     "net451": {
       "dependencies": {
-        "Microsoft.Extensions.Logging.EventLog": "1.0.1"
+        "Microsoft.Extensions.Logging.EventLog": "1.0.2"
       }
     },
     "netcoreapp1.0": {
       "dependencies": {
         "Microsoft.NETCore.App": {
-          "version": "1.0.3",
+          "version": "1.0.4",
           "type": "platform"
         },
         "System.Console": "4.0.0"

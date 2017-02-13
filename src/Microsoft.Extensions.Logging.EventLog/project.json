@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Windows Event Log logger provider implementation for Microsoft.Extensions.Logging.",
   "packOptions": {
     "repository": {
@@ -21,7 +21,7 @@
     "xmlDoc": true
   },
   "dependencies": {
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.1"
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.2"
   },
   "frameworks": {
     "net451": {
