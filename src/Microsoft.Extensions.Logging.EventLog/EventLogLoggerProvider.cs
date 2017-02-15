@@ -34,9 +34,5 @@ namespace Microsoft.Extensions.Logging.EventLog
         {
             return new EventLogLogger(name, _settings ?? new EventLogSettings());
         }
-
-        public void Dispose()
-        {
-        }
     }
 }

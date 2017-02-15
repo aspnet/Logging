@@ -26,9 +26,5 @@ namespace Microsoft.Extensions.Logging.Debug
         {
             return new DebugLogger(name, _filter);
         }
-
-        public void Dispose()
-        {            
-        }
     }
 }
