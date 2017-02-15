@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Logging.Test.Console;
 using Microsoft.Extensions.Primitives;
@@ -746,6 +747,25 @@ namespace Microsoft.Extensions.Logging.Test
 
                 Assert.Equal(i % 2 == 1, logger.IsEnabled(LogLevel.Trace));
             }
+        }
+
+        [Fact]
+        public void ConsoleLogger_Settings_LogLevelIgnoreCase()
+        {
+            var section = new Mock<IConfigurationSection>();
+            section.SetupGet(x => x["MyTest"])
+                .Returns("INFOrmAtiOn");
+
+            var configuration = new Mock<IConfiguration>();
+            configuration.Setup(x => x.GetSection("LogLevel"))
+                .Returns(section.Object);
+
+            var settings = new ConfigurationConsoleLoggerSettings(configuration.Object);
+
+            LogLevel logLevel = LogLevel.None;
+            settings.TryGetSwitch("MyTest", out logLevel);
+
+            Assert.Equal(LogLevel.Information, logLevel);
         }
 
         [Fact]
