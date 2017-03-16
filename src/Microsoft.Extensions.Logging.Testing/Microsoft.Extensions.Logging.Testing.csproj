@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="xunit.extensibility.core" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.assert" Version="$(XunitVersion)" />
   </ItemGroup>
 
