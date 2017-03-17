@@ -8,13 +8,13 @@ namespace Microsoft.Extensions.Logging
 {
     public static class XunitLoggerFactoryExtensions
     {
-        public static ILoggerFactory AddXUnit(this ILoggerFactory loggerFactory, ITestOutputHelper output)
+        public static ILoggerFactory AddXunit(this ILoggerFactory loggerFactory, ITestOutputHelper output)
         {
             loggerFactory.AddProvider(new XunitLoggerProvider(output));
             return loggerFactory;
         }
 
-        public static ILoggerFactory AddXUnit(this ILoggerFactory loggerFactory, ITestOutputHelper output, LogLevel minLevel)
+        public static ILoggerFactory AddXunit(this ILoggerFactory loggerFactory, ITestOutputHelper output, LogLevel minLevel)
         {
             loggerFactory.AddProvider(new XunitLoggerProvider(output, minLevel));
             return loggerFactory;
