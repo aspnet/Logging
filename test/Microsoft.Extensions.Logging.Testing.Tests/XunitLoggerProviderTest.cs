@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Extensions.Logging.Testing.Tests
 {
-    public class XUnitLoggerProviderTest
+    public class XunitLoggerProviderTest
     {
         [Fact]
         public void LoggerProviderWritesToTestOutputHelper()
@@ -18,8 +18,8 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
             loggerFactory.AddXUnit(testTestOutputHelper);
 
             var logger = loggerFactory.CreateLogger("TestCategory");
-            logger.LogInformation("This is some {0} information", "great");
-            logger.LogTrace("This is some {0} information", "unimportant");
+            logger.LogInformation("This is some great information");
+            logger.LogTrace("This is some unimportant information");
 
             var expectedOutput =
                 "| TestCategory Information: This is some great information" + Environment.NewLine +
@@ -36,8 +36,8 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
             loggerFactory.AddXUnit(testTestOutputHelper, LogLevel.Error);
 
             var logger = loggerFactory.CreateLogger("TestCategory");
-            logger.LogInformation("This is some {0} information", "great");
-            logger.LogError("This is a {0} error", "bad");
+            logger.LogInformation("This is some great information");
+            logger.LogError("This is a bad error");
 
             Assert.Equal("| TestCategory Error: This is a bad error" + Environment.NewLine, testTestOutputHelper.Output);
         }

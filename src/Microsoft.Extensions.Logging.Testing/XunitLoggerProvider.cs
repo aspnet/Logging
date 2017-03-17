@@ -7,17 +7,17 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Extensions.Logging.Testing
 {
-    public class XUnitLoggerProvider : ILoggerProvider
+    public class XunitLoggerProvider : ILoggerProvider
     {
         private readonly ITestOutputHelper _output;
         private readonly LogLevel _minLevel;
 
-        public XUnitLoggerProvider(ITestOutputHelper output)
+        public XunitLoggerProvider(ITestOutputHelper output)
             : this(output, LogLevel.Trace)
         {
         }
 
-        public XUnitLoggerProvider(ITestOutputHelper output, LogLevel minLevel)
+        public XunitLoggerProvider(ITestOutputHelper output, LogLevel minLevel)
         {
             _output = output;
             _minLevel = minLevel;
@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.Logging.Testing
 
         public ILogger CreateLogger(string categoryName)
         {
-            return new XUnitLogger(_output, categoryName, _minLevel);
+            return new XunitLogger(_output, categoryName, _minLevel);
         }
 
         public void Dispose()
@@ -33,15 +33,14 @@ namespace Microsoft.Extensions.Logging.Testing
         }
     }
 
-    public class XUnitLogger : ILogger, IDisposable
+    public class XunitLogger : ILogger
     {
         private static readonly char[] NewLineChars = new[] { '\r', '\n' };
         private readonly string _category;
         private readonly LogLevel _minLogLevel;
         private readonly ITestOutputHelper _output;
-        private bool _disposed;
 
-        public XUnitLogger(ITestOutputHelper output, string category, LogLevel minLogLevel)
+        public XunitLogger(ITestOutputHelper output, string category, LogLevel minLogLevel)
         {
             _minLogLevel = minLogLevel;
             _category = category;
@@ -67,7 +66,7 @@ namespace Microsoft.Extensions.Logging.Testing
         }
 
         public bool IsEnabled(LogLevel logLevel)
-            => logLevel >= _minLogLevel && !_disposed;
+            => logLevel >= _minLogLevel;
 
         public IDisposable BeginScope<TState>(TState state)
             => new NullScope();
@@ -77,11 +76,6 @@ namespace Microsoft.Extensions.Logging.Testing
             public void Dispose()
             {
             }
-        }
-
-        public void Dispose()
-        {
-            _disposed = true;
         }
     }
 }
