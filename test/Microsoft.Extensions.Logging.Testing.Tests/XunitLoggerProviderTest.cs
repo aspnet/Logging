@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
         {
             var testTestOutputHelper = new TestTestOutputHelper();
             var loggerFactory = new LoggerFactory();
-            loggerFactory.AddXUnit(testTestOutputHelper);
+            loggerFactory.AddXunit(testTestOutputHelper);
 
             var logger = loggerFactory.CreateLogger("TestCategory");
             logger.LogInformation("This is some great information");
@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
         {
             var testTestOutputHelper = new TestTestOutputHelper();
             var loggerFactory = new LoggerFactory();
-            loggerFactory.AddXUnit(testTestOutputHelper, LogLevel.Error);
+            loggerFactory.AddXunit(testTestOutputHelper, LogLevel.Error);
 
             var logger = loggerFactory.CreateLogger("TestCategory");
             logger.LogInformation("This is some great information");
@@ -47,7 +47,7 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
         {
             var testTestOutputHelper = new TestTestOutputHelper();
             var loggerFactory = new LoggerFactory();
-            loggerFactory.AddXUnit(testTestOutputHelper);
+            loggerFactory.AddXunit(testTestOutputHelper);
 
             var logger = loggerFactory.CreateLogger("TestCategory");
             logger.LogInformation("This is a" + Environment.NewLine + "multi-line" + Environment.NewLine + "message");
