@@ -77,7 +77,7 @@ namespace Microsoft.Extensions.Logging.Testing
             {
                 _output.WriteLine(message);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 // We could fail because we're on a background thread and our captured ITestOutputHelper is
                 // busted (if the test "completed" before the background thread fired).
