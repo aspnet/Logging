@@ -375,31 +375,6 @@ namespace Microsoft.Extensions.Logging.Test
         }
 
         [Fact]
-        public void AddFilterWithDictionaryFiltersDifferentCategories()
-        {
-            var factory = new LoggerFactory();
-            var provider = new TestLoggerProvider(new TestSink(), isEnabled: true);
-            factory.AddProvider("Name", provider);
-            factory.AddFilter("Name", new Dictionary<string, LogLevel>
-            {
-                { "Test", LogLevel.Warning },
-                { "Microsoft", LogLevel.Information }
-            });
-
-            var logger = factory.CreateLogger("Test");
-
-            logger.LogInformation("Message");
-
-            var writes = provider.Sink.Writes;
-            Assert.Equal(0, writes.Count);
-
-            logger = factory.CreateLogger("Microsoft");
-            logger.LogInformation("Message");
-
-            Assert.Equal(1, writes.Count);
-        }
-
-        [Fact]
         public void AddFilterIsAdditive()
         {
             var factory = new LoggerFactory();
@@ -458,29 +433,6 @@ namespace Microsoft.Extensions.Logging.Test
             Assert.Equal(0, writes.Count);
 
             logger.LogError("Message");
-            Assert.Equal(1, writes.Count);
-        }
-
-        [Fact]
-        public void AddFilterWithDictionarySplitsCategoryNameByDots()
-        {
-            var factory = new LoggerFactory();
-            var provider = new TestLoggerProvider(new TestSink(), isEnabled: true);
-            factory.AddProvider("Name", provider);
-            factory.AddFilter("Name", new Dictionary<string, LogLevel>
-            {
-                { "Sample", LogLevel.Warning }
-            });
-
-            var logger = factory.CreateLogger("Sample.Test");
-
-            logger.LogInformation("Message");
-
-            var writes = provider.Sink.Writes;
-            Assert.Equal(0, writes.Count);
-
-            logger.LogWarning("Message");
-
             Assert.Equal(1, writes.Count);
         }
 
