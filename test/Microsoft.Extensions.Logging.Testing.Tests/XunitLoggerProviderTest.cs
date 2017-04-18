@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Microsoft.Extensions.Logging.Testing.Tests
 {
-    public partial class XunitLoggerProviderTest
+    public class XunitLoggerProviderTest
     {
         [Fact]
         public void LoggerProviderWritesToTestOutputHelper()
