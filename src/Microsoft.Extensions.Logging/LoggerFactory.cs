@@ -48,10 +48,15 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Replaces the <see cref="IConfiguration"/> used for filtering.
         /// </summary>
-        /// <param name="configuration">The replacing configuration.</param>
+        /// <param name="configuration">The new configuration to use.</param>
         /// <returns>The <see cref="LoggerFactory"/> so that additional calls can be chained.</returns>
         public LoggerFactory UseConfiguration(IConfiguration configuration)
         {
+            if (configuration == _configuration)
+            {
+                return this;
+            }
+
             // unregister the previous configuration callback if there was one
             _changeTokenRegistration?.Dispose();
 
@@ -159,11 +164,12 @@ namespace Microsoft.Extensions.Logging
 
         /// <summary>
         /// Adds a filter that applies to <paramref name="providerName"/> and <paramref name="categoryName"/> with the given
-        /// <paramref name="filter"/>, returning true means allow log through, false means reject log.
+        /// <paramref name="filter"/>.
         /// </summary>
         /// <param name="providerName">The name of the provider.</param>
         /// <param name="categoryName">The name of the logger category.</param>
-        /// <param name="filter">The filter that applies to logs for <paramref name="providerName"/> and <paramref name="categoryName"/>.</param>
+        /// <param name="filter">The filter that applies to logs for <paramref name="providerName"/> and <paramref name="categoryName"/>,
+        /// returning true means allow log through, false means reject log.</param>
         /// <returns>The <see cref="LoggerFactory"/> so that additional calls can be chained.</returns>
         public LoggerFactory AddFilter(string providerName, string categoryName, Func<LogLevel, bool> filter)
         {
