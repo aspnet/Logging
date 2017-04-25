@@ -322,6 +322,37 @@ namespace Microsoft.Extensions.Logging
             return this;
         }
 
+        /// <summary>
+        /// Adds a filter that applies to <paramref name="providerName"/> and <paramref name="categoryName"/>, allowing logs with the given
+        /// minimum <see cref="LogLevel"/> or higher.
+        /// </summary>
+        /// <param name="providerName">The name of the provider.</param>
+        /// <param name="categoryName">The name of the logger category.</param>
+        /// <param name="minLevel">The minimum <see cref="LogLevel"/> that logs from
+        /// <paramref name="providerName"/> and <paramref name="categoryName"/> are allowed.</param>
+        public LoggerFactory AddFilter(string providerName, string categoryName, LogLevel minLevel)
+        {
+            return AddFilter(providerName, categoryName, level => level >= minLevel);
+        }
+
+        /// <summary>
+        /// Adds a filter that applies to <paramref name="providerName"/> with the given
+        /// <paramref name="filter"/>.
+        /// </summary>
+        /// <param name="providerName">The name of the provider.</param>
+        /// <param name="filter">The filter that applies to logs for <paramref name="providerName"/>.
+        /// Returning true means allow log through, false means reject log.</param>
+        public LoggerFactory AddFilter(string providerName, Func<LogLevel, bool> filter)
+        {
+            if (filter == null)
+            {
+                throw new ArgumentNullException(nameof(filter));
+            }
+
+            // Using 'Default' for the category name means this filter will apply for all category names
+            return AddFilter(providerName, "Default", filter);
+        }
+
         // TODO: Figure out how to do this better, perhaps a new IConfigurableLogger interface?
         public IConfiguration Configuration => _configuration;
 
