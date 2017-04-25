@@ -102,6 +102,7 @@ namespace Microsoft.Extensions.Logging.Test
             Assert.Equal(1, writes.Count);
         }
 
+        [Fact]
         public void UseConfigurationReplacesOldConfiguration()
         {
             // Arrange

@@ -168,11 +168,16 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="providerName">The name of the provider.</param>
         /// <param name="categoryName">The name of the logger category.</param>
-        /// <param name="filter">The filter that applies to logs for <paramref name="providerName"/> and <paramref name="categoryName"/>,
-        /// returning true means allow log through, false means reject log.</param>
+        /// <param name="filter">The filter that applies to logs for <paramref name="providerName"/> and <paramref name="categoryName"/>.
+        /// Returning true means allow log through, false means reject log.</param>
         /// <returns>The <see cref="LoggerFactory"/> so that additional calls can be chained.</returns>
         public LoggerFactory AddFilter(string providerName, string categoryName, Func<LogLevel, bool> filter)
         {
+            if (filter == null)
+            {
+                throw new ArgumentNullException(nameof(filter));
+            }
+
             lock (_sync)
             {
                 if (_categoryFilters.TryGetValue(categoryName, out var previousFilter))
@@ -210,15 +215,20 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        /// Adds a filter that applies to <paramref name="providerName"/> with the given
-        /// <paramref name="filter"/>, returning true means allow log through, false means reject log.
+        /// Adds a filter that applies to <paramref name="providerName"/> with the given <paramref name="filter"/>.
         /// </summary>
         /// <param name="providerName">The name of the provider.</param>
         /// <param name="filter">The filter that applies to logs for <paramref name="providerName"/>.
-        /// The string argument is the category being logged to.</param>
+        /// The string argument is the category being logged to.
+        /// Returning true means allow log through, false means reject log.</param>
         /// <returns>The <see cref="LoggerFactory"/> so that additional calls can be chained.</returns>
         public LoggerFactory AddFilter(string providerName, Func<string, LogLevel, bool> filter)
         {
+            if (filter == null)
+            {
+                throw new ArgumentNullException(nameof(filter));
+            }
+
             lock (_sync)
             {
                 if (_providerFilters.TryGetValue(providerName, out var value))
@@ -243,14 +253,19 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        /// Adds a filter that applies to all logs,
-        /// returning true means allow log through, false means reject log.
+        /// Adds a filter that applies to all logs.
         /// </summary>
         /// <param name="filter">The filter that applies to logs.
-        /// The first string is the provider name and the second string is the category name being logged to.</param>
+        /// The first string is the provider name and the second string is the category name being logged to.
+        /// Returning true means allow log through, false means reject log.</param>
         /// <returns>The <see cref="LoggerFactory"/> so that additional calls can be chained.</returns>
         public LoggerFactory AddFilter(Func<string, string, LogLevel, bool> filter)
         {
+            if (filter == null)
+            {
+                throw new ArgumentNullException(nameof(filter));
+            }
+
             lock (_sync)
             {
                 var previousFilters = _genericFilters;
@@ -276,6 +291,11 @@ namespace Microsoft.Extensions.Logging
         /// <returns>The <see cref="LoggerFactory"/> so that additional calls can be chained.</returns>
         public LoggerFactory AddFilter(IDictionary<string, LogLevel> filter)
         {
+            if (filter == null)
+            {
+                throw new ArgumentNullException(nameof(filter));
+            }
+
             lock (_sync)
             {
                 foreach (var kvp in filter)
