@@ -181,6 +181,11 @@ namespace Microsoft.Extensions.Logging.Console
 
         public bool IsEnabled(LogLevel logLevel)
         {
+            if (logLevel == LogLevel.None)
+            {
+                return false;
+            }
+
             return Filter(Name, logLevel);
         }
 
