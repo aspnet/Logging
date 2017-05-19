@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.AzureAppServices;
 using Microsoft.Extensions.Logging.AzureAppServices.Internal;
 
@@ -15,25 +16,30 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds an Azure Web Apps diagnostics logger.
         /// </summary>
-        /// <param name="factory">The extension method argument</param>
-        public static LoggerFactory AddAzureWebAppDiagnostics(this LoggerFactory factory)
+        /// <param name="collection">The extension method argument</param>
+        public static IServiceCollection AddAzureWebAppDiagnostics(this IServiceCollection collection)
         {
-            return AddAzureWebAppDiagnostics(factory, new AzureAppServicesDiagnosticsSettings());
+            return AddAzureWebAppDiagnostics(collection, null);
         }
 
         /// <summary>
         /// Adds an Azure Web Apps diagnostics logger.
         /// </summary>
-        /// <param name="factory">The extension method argument</param>
+        /// <param name="collection">The extension method argument</param>
         /// <param name="settings">The setting object to configure loggers.</param>
-        public static LoggerFactory AddAzureWebAppDiagnostics(this LoggerFactory factory, AzureAppServicesDiagnosticsSettings settings)
+        public static IServiceCollection AddAzureWebAppDiagnostics(this IServiceCollection collection, AzureAppServicesDiagnosticsSettings settings)
         {
             if (WebAppContext.Default.IsRunningInAzureWebApp)
             {
                 // Only add the provider if we're in Azure WebApp. That cannot change once the apps started
-                factory.AddProvider("AzureAppServices", new AzureAppServicesDiagnosticsLoggerProvider(WebAppContext.Default, settings));
+                collection.AddSingleton(WebAppContext.Default);
+                collection.AddSingleton<ILoggerProvider, AzureAppServicesDiagnosticsLoggerProvider>();
+                if (settings != null)
+                {
+                    collection.AddSingleton(settings);
+                }
             }
-            return factory;
+            return collection;
         }
 
         /// <summary>

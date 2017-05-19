@@ -9,59 +9,19 @@ namespace Microsoft.Extensions.Logging
 {
     internal class Logger : ILogger
     {
-        private readonly LoggerFactory _loggerFactory;
-        private readonly string _categoryName;
-        private LoggerInformation[] _loggers;
-        private readonly Func<string, LogLevel, bool> _categoryFilter;
-
-        public Logger(LoggerFactory loggerFactory, string categoryName, Func<string, LogLevel, bool> categoryFilter)
-        {
-            _loggerFactory = loggerFactory;
-            _categoryName = categoryName;
-
-            var providers = loggerFactory.GetProviders();
-            if (providers.Length > 0)
-            {
-                _loggers = new LoggerInformation[providers.Length];
-                for (var index = 0; index < providers.Length; index++)
-                {
-                    _loggers[index] = new LoggerInformation
-                    {
-                        Logger = providers[index].Key.CreateLogger(categoryName),
-                        // Order of preference
-                        // 1. Custom Name
-                        // 2. Provider FullName
-                        ProviderNames = new List<string>
-                        {
-                            providers[index].Value,
-                            providers[index].Key.GetType().FullName
-                        }
-                    };
-                }
-            }
-
-            _categoryFilter = categoryFilter;
-        }
+        public LoggerInformation[] Loggers { get; set; }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            if (_loggers == null)
+            if (Loggers == null)
             {
                 return;
             }
 
             List<Exception> exceptions = null;
-            foreach (var loggerInfo in _loggers)
+            foreach (var loggerInfo in Loggers)
             {
-                // TODO: Try to noop if no filters set
-                if (!_categoryFilter(loggerInfo.ProviderNames[0], logLevel) ||
-                    !_categoryFilter(loggerInfo.ProviderNames[1], logLevel))
-                {
-                    continue;
-                }
-
-                // checks config and filters set on the LoggerFactory
-                if (!_loggerFactory.IsEnabled(loggerInfo.ProviderNames, _categoryName, logLevel))
+                if (!loggerInfo.IsEnabled(logLevel))
                 {
                     continue;
                 }
@@ -90,24 +50,17 @@ namespace Microsoft.Extensions.Logging
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            if (_loggers == null)
+            if (Loggers == null)
             {
                 return false;
             }
 
             List<Exception> exceptions = null;
-            foreach (var loggerInfo in _loggers)
+            foreach (var loggerInfo in Loggers)
             {
-                if (!_categoryFilter(loggerInfo.ProviderNames[0], logLevel) ||
-                    !_categoryFilter(loggerInfo.ProviderNames[1], logLevel))
+                if (!loggerInfo.IsEnabled(logLevel))
                 {
-                    continue;
-                }
-
-                // checks config and filters set on the LoggerFactory
-                if (!_loggerFactory.IsEnabled(loggerInfo.ProviderNames, _categoryName, logLevel))
-                {
-                    continue;
+                    return false;
                 }
 
                 try
@@ -140,17 +93,17 @@ namespace Microsoft.Extensions.Logging
 
         public IDisposable BeginScope<TState>(TState state)
         {
-            if (_loggers == null)
+            if (Loggers == null)
             {
                 return NullScope.Instance;
             }
 
-            if (_loggers.Length == 1)
+            if (Loggers.Length == 1)
             {
-                return _loggers[0].Logger.BeginScope(state);
+                return Loggers[0].Logger.BeginScope(state);
             }
 
-            var loggers = _loggers;
+            var loggers = Loggers;
 
             var scope = new Scope(loggers.Length);
             List<Exception> exceptions = null;
@@ -181,33 +134,6 @@ namespace Microsoft.Extensions.Logging
             return scope;
         }
 
-        internal void AddProvider(string providerName, ILoggerProvider provider)
-        {
-            var logger = provider.CreateLogger(_categoryName);
-            int logIndex;
-            if (_loggers == null)
-            {
-                logIndex = 0;
-                _loggers = new LoggerInformation[1];
-            }
-            else
-            {
-                logIndex = _loggers.Length;
-                Array.Resize(ref _loggers, logIndex + 1);
-            }
-            _loggers[logIndex] = new LoggerInformation
-            {
-                Logger = logger,
-                // Order of preference
-                // 1. Custom Name
-                // 2. Provider FullName
-                ProviderNames = new List<string>
-                {
-                    providerName,
-                    provider.GetType().FullName
-                }
-            };
-        }
 
         private class Scope : IDisposable
         {
@@ -275,10 +201,30 @@ namespace Microsoft.Extensions.Logging
             }
         }
 
-        private struct LoggerInformation
+        public struct LoggerInformation
         {
             public ILogger Logger { get; set; }
-            public List<string> ProviderNames { get; set; }
+
+            public string Category { get; set; }
+
+            public LogLevel? MinLevel { get; set; }
+
+            public LogMessageFilter Filter { get; set; }
+
+            public bool IsEnabled(LogLevel level)
+            {
+                if (MinLevel != null && level < MinLevel)
+                {
+                    return false;
+                }
+
+                if (Filter != null)
+                {
+                    return Filter(Logger.GetType().FullName, Category, level);
+                }
+
+                return true;
+            }
         }
     }
 }

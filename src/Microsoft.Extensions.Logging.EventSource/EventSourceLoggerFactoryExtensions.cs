@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.EventSource;
 
 namespace Microsoft.Extensions.Logging
@@ -14,18 +15,18 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds an event logger named 'EventSource' to the factory.
         /// </summary>
-        /// <param name="factory">The extension method argument.</param>
-        public static LoggerFactory AddEventSourceLogger(this LoggerFactory factory)
+        /// <param name="serviceCollection">The extension method argument.</param>
+        public static IServiceCollection AddEventSourceLogger(this IServiceCollection serviceCollection)
         {
-            if (factory == null)
+            if (serviceCollection == null)
             {
-                throw new ArgumentNullException(nameof(factory));
+                throw new ArgumentNullException(nameof(serviceCollection));
             }
 
             var loggerProvider = LoggingEventSource.Instance.CreateLoggerProvider();
-            factory.AddProvider("EventSource", loggerProvider);
+            serviceCollection.AddSingleton<ILoggerProvider>(loggerProvider);
 
-            return factory;
+            return serviceCollection;
         }
 
         /// <summary>

@@ -11,13 +11,13 @@ namespace Microsoft.Extensions.Logging
     {
         public static LoggerFactory AddXunit(this LoggerFactory loggerFactory, ITestOutputHelper output)
         {
-            loggerFactory.AddProvider("Xunit", new XunitLoggerProvider(output));
+            loggerFactory.AddProvider(new XunitLoggerProvider(output));
             return loggerFactory;
         }
 
         public static LoggerFactory AddXunit(this LoggerFactory loggerFactory, ITestOutputHelper output, LogLevel minLevel)
         {
-            loggerFactory.AddProvider("Xunit", new XunitLoggerProvider(output, minLevel));
+            loggerFactory.AddProvider(new XunitLoggerProvider(output, minLevel));
             return loggerFactory;
         }
 

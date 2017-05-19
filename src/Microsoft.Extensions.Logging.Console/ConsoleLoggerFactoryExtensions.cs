@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Console;
 
 namespace Microsoft.Extensions.Logging
@@ -12,11 +13,11 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds a console logger named 'Console' to the factory.
         /// </summary>
-        /// <param name="factory">The <see cref="LoggerFactory"/> to use.</param>
-        public static LoggerFactory AddConsole(this LoggerFactory factory)
+        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
+        public static IServiceCollection AddConsole(this IServiceCollection collection)
         {
-            factory.AddProvider("Console", new ConsoleLoggerProvider(factory.Configuration));
-            return factory;
+            collection.AddSingleton<ILoggerProvider, ConsoleLoggerProvider>();
+            return collection;
         }
 
         /// <summary>

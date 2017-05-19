@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.TraceSource;
 
 namespace Microsoft.Extensions.Logging
@@ -12,15 +13,15 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds a TraceSource logger named 'TraceSource' to the factory.
         /// </summary>
-        /// <param name="factory">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
         /// <param name="switchName">The name of the <see cref="SourceSwitch"/> to use.</param>
-        public static LoggerFactory AddTraceSource(
-            this LoggerFactory factory,
+        public static IServiceCollection AddTraceSource(
+            this IServiceCollection collection,
             string switchName)
         {
-            if (factory == null)
+            if (collection == null)
             {
-                throw new ArgumentNullException(nameof(factory));
+                throw new ArgumentNullException(nameof(collection));
             }
 
             if (switchName == null)
@@ -28,23 +29,23 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(switchName));
             }
 
-            return factory.AddTraceSource(new SourceSwitch(switchName));
+            return collection.AddTraceSource(new SourceSwitch(switchName));
         }
 
         /// <summary>
         /// Adds a TraceSource logger named 'TraceSource' to the factory.
         /// </summary>
-        /// <param name="factory">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
         /// <param name="switchName">The name of the <see cref="SourceSwitch"/> to use.</param>
         /// <param name="listener">The <see cref="TraceListener"/> to use.</param>
-        public static LoggerFactory AddTraceSource(
-            this LoggerFactory factory,
+        public static IServiceCollection AddTraceSource(
+            this IServiceCollection collection,
             string switchName,
             TraceListener listener)
         {
-            if (factory == null)
+            if (collection == null)
             {
-                throw new ArgumentNullException(nameof(factory));
+                throw new ArgumentNullException(nameof(collection));
             }
 
             if (switchName == null)
@@ -57,21 +58,21 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(listener));
             }
 
-            return factory.AddTraceSource(new SourceSwitch(switchName), listener);
+            return collection.AddTraceSource(new SourceSwitch(switchName), listener);
         }
 
         /// <summary>
         /// Adds a TraceSource logger named 'TraceSource' to the factory.
         /// </summary>
-        /// <param name="factory">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
         /// <param name="sourceSwitch">The <see cref="SourceSwitch"/> to use.</param>
-        public static LoggerFactory AddTraceSource(
-            this LoggerFactory factory,
+        public static IServiceCollection AddTraceSource(
+            this IServiceCollection collection,
             SourceSwitch sourceSwitch)
         {
-            if (factory == null)
+            if (collection == null)
             {
-                throw new ArgumentNullException(nameof(factory));
+                throw new ArgumentNullException(nameof(collection));
             }
 
             if (sourceSwitch == null)
@@ -79,25 +80,25 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(sourceSwitch));
             }
 
-            factory.AddProvider("TraceSource", new TraceSourceLoggerProvider(sourceSwitch));
+            collection.AddSingleton<ILoggerProvider>(new TraceSourceLoggerProvider(sourceSwitch));
 
-            return factory;
+            return collection;
         }
 
         /// <summary>
         /// Adds a TraceSource logger named 'TraceSource' to the factory.
         /// </summary>
-        /// <param name="factory">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
         /// <param name="sourceSwitch">The <see cref="SourceSwitch"/> to use.</param>
         /// <param name="listener">The <see cref="TraceListener"/> to use.</param>
-        public static LoggerFactory AddTraceSource(
-            this LoggerFactory factory,
+        public static IServiceCollection AddTraceSource(
+            this IServiceCollection collection,
             SourceSwitch sourceSwitch,
             TraceListener listener)
         {
-            if (factory == null)
+            if (collection == null)
             {
-                throw new ArgumentNullException(nameof(factory));
+                throw new ArgumentNullException(nameof(collection));
             }
 
             if (sourceSwitch == null)
@@ -110,9 +111,9 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(listener));
             }
 
-            factory.AddProvider("TraceSource", new TraceSourceLoggerProvider(sourceSwitch, listener));
+            collection.AddSingleton<ILoggerProvider>(new TraceSourceLoggerProvider(sourceSwitch, listener));
 
-            return factory;
+            return collection;
         }
 
         /// <summary>
