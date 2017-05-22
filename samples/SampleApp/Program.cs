@@ -7,6 +7,7 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SampleApp
 {
@@ -23,27 +24,30 @@ namespace SampleApp
 
             // A Web App based program would configure logging via the WebHostBuilder.
             // Create a logger factory with filters that can be applied across all logger providers.
-            var factory = new LoggerFactory()
-                .UseConfiguration(loggingConfiguration.GetSection("Logging"))
-                .AddFilter(new Dictionary<string, LogLevel>
-                {
-                    { "Microsoft", LogLevel.Warning },
-                    { "System", LogLevel.Warning },
-                    { "SampleApp.Program", LogLevel.Debug }
-                });
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(loggingConfiguration.GetSection("Logging"));
+
+            serviceCollection.Configure<LoggerFilterOptions>(options =>
+            {
+                options
+                    .AddFilter("Microsoft", LogLevel.Warning)
+                    .AddFilter("System", LogLevel.Warning)
+                    .AddFilter("SampleApp.Program", LogLevel.Debug);
+            });
 
             // providers may be added to a LoggerFactory before any loggers are created
 #if NET46
-            factory.AddEventLog();
+            serviceCollection.AddEventLog();
 #elif NETCOREAPP2_0
 #else
 #error Target framework needs to be updated
 #endif
 
-            factory.AddConsole();
+            serviceCollection.AddConsole();
 
+            var serviceProvider = serviceCollection.BuildServiceProvider();
             // getting the logger using the class's name is conventional
-            _logger = factory.CreateLogger<Program>();
+            _logger = serviceProvider.GetRequiredService<ILogger<Program>>();
         }
 
         public static void Main(string[] args)

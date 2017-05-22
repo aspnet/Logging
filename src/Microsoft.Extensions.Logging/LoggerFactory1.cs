@@ -7,11 +7,17 @@ namespace Microsoft.Extensions.Logging
 {
     public class LoggerFactory : ILoggerFactory
     {
+        private struct ProviderRegistration
+        {
+            public ILoggerProvider Provider;
+            public bool ShouldDispose;
+        }
+
         private static readonly LoggerRuleSelector RuleSelector = new LoggerRuleSelector();
 
         private readonly Dictionary<string, Logger> _loggers = new Dictionary<string, Logger>(StringComparer.Ordinal);
 
-        private readonly List<ILoggerProvider> _providers;
+        private readonly List<ProviderRegistration> _providerRegistrations;
         private readonly object _sync = new object();
         private volatile bool _disposed;
         private IDisposable _changeTokenRegistration;
@@ -27,7 +33,7 @@ namespace Microsoft.Extensions.Logging
 
         public LoggerFactory(IEnumerable<ILoggerProvider> providers, IOptionsMonitor<LoggerFilterOptions> filterOption)
         {
-            _providers = providers.ToList();
+            _providerRegistrations = providers.Select(provider => new ProviderRegistration { Provider = provider}).ToList();
             _changeTokenRegistration = filterOption.OnChange(RefreshFilters);
             RefreshFilters(filterOption.CurrentValue);
         }
@@ -49,6 +55,11 @@ namespace Microsoft.Extensions.Logging
 
         public ILogger CreateLogger(string categoryName)
         {
+            if (CheckDisposed())
+            {
+                throw new ObjectDisposedException(nameof(LoggerFactory));
+            }
+
             lock (_sync)
             {
                 Logger logger;
@@ -69,9 +80,14 @@ namespace Microsoft.Extensions.Logging
 
         void ILoggerFactory.AddProvider(ILoggerProvider provider)
         {
+            if (CheckDisposed())
+            {
+                throw new ObjectDisposedException(nameof(LoggerFactory));
+            }
+
             lock (_sync)
             {
-                _providers.Add(provider);
+                _providerRegistrations.Add(new ProviderRegistration { Provider = provider, ShouldDispose = true});
                 foreach (var logger in _loggers)
                 {
                     var loggerInformation = logger.Value.Loggers;
@@ -80,18 +96,24 @@ namespace Microsoft.Extensions.Logging
                     Array.Resize(ref loggerInformation, loggerInformation.Length + 1);
                     var newLoggerIndex = loggerInformation.Length - 1;
                     loggerInformation[newLoggerIndex].Logger = provider.CreateLogger(categoryName);
+                    loggerInformation[newLoggerIndex].ProviderType = provider.GetType().FullName;
 
                     ApplyRules(loggerInformation, categoryName, newLoggerIndex, 1);
+
+                    logger.Value.Loggers = loggerInformation;
                 }
             }
         }
 
         private Logger.LoggerInformation[] CreateLoggers(string categoryName)
         {
-            Logger.LoggerInformation[] loggers = new Logger.LoggerInformation[_providers.Count];
-            for (int i = 0; i < _providers.Count; i++)
+            Logger.LoggerInformation[] loggers = new Logger.LoggerInformation[_providerRegistrations.Count];
+            for (int i = 0; i < _providerRegistrations.Count; i++)
             {
-                loggers[i].Logger = _providers[i].CreateLogger(categoryName);
+                var provider = _providerRegistrations[i].Provider;
+
+                loggers[i].Logger = provider.CreateLogger(categoryName);
+                loggers[i].ProviderType = provider.GetType().FullName;
             }
 
             ApplyRules(loggers, categoryName, 0, loggers.Length);
@@ -105,11 +127,12 @@ namespace Microsoft.Extensions.Logging
                 ref var loggerInformation = ref loggers[index];
 
                 RuleSelector.Select(_filterOptions,
-                    loggerInformation.Logger.GetType().FullName,
+                    loggerInformation.ProviderType,
                     categoryName,
                     out var minLevel,
                     out var filter);
 
+                loggerInformation.Category = categoryName;
                 loggerInformation.MinLevel = minLevel;
                 loggerInformation.Filter = filter;
             }
@@ -129,11 +152,14 @@ namespace Microsoft.Extensions.Logging
 
                 _changeTokenRegistration?.Dispose();
 
-                foreach (var provider in _providers)
+                foreach (var registration in _providerRegistrations)
                 {
                     try
                     {
-                        provider.Dispose();
+                        if (registration.ShouldDispose)
+                        {
+                            registration.Provider.Dispose();
+                        }
                     }
                     catch
                     {

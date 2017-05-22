@@ -15,31 +15,32 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds an event logger named 'EventLog' to the factory.
         /// </summary>
-        /// <param name="serviceCollection">The extension method argument.</param>
-        public static IServiceCollection AddEventLog(this IServiceCollection serviceCollection)
+        /// <param name="collection">The extension method argument.</param>
+        public static IServiceCollection AddEventLog(this IServiceCollection collection)
         {
-            if (serviceCollection == null)
+            if (collection == null)
             {
-                throw new ArgumentNullException(nameof(serviceCollection));
+                throw new ArgumentNullException(nameof(collection));
             }
 
-            serviceCollection.AddSingleton<ILoggerProvider, EventLogLoggerProvider>();
+            collection.AddLogging();
+            collection.AddSingleton<ILoggerProvider, EventLogLoggerProvider>();
 
-            return serviceCollection;
+            return collection;
         }
 
         /// <summary>
         /// Adds an event logger. Use <paramref name="settings"/> to enable logging for specific <see cref="LogLevel"/>s.
         /// </summary>
-        /// <param name="factory">The extension method argument.</param>
+        /// <param name="collection">The extension method argument.</param>
         /// <param name="settings">The <see cref="EventLogSettings"/>.</param>
-        public static LoggerFactory AddEventLog(
-            this LoggerFactory factory,
+        public static IServiceCollection AddEventLog(
+            this IServiceCollection collection,
             EventLogSettings settings)
         {
-            if (factory == null)
+            if (collection == null)
             {
-                throw new ArgumentNullException(nameof(factory));
+                throw new ArgumentNullException(nameof(collection));
             }
 
             if (settings == null)
@@ -47,8 +48,10 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            factory.AddProvider(new EventLogLoggerProvider(settings));
-            return factory;
+            collection.AddLogging();
+            collection.AddSingleton<ILoggerProvider>(new EventLogLoggerProvider(settings));
+
+            return collection;
         }
 
         /// <summary>

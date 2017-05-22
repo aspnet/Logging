@@ -29,15 +29,12 @@ namespace Microsoft.Extensions.Logging
         /// <param name="settings">The setting object to configure loggers.</param>
         public static IServiceCollection AddAzureWebAppDiagnostics(this IServiceCollection collection, AzureAppServicesDiagnosticsSettings settings)
         {
+            collection.AddLogging();
             if (WebAppContext.Default.IsRunningInAzureWebApp)
             {
                 // Only add the provider if we're in Azure WebApp. That cannot change once the apps started
                 collection.AddSingleton(WebAppContext.Default);
-                collection.AddSingleton<ILoggerProvider, AzureAppServicesDiagnosticsLoggerProvider>();
-                if (settings != null)
-                {
-                    collection.AddSingleton(settings);
-                }
+                collection.AddSingleton<ILoggerProvider>(new AzureAppServicesDiagnosticsLoggerProvider(WebAppContext.Default, settings ?? new AzureAppServicesDiagnosticsSettings()));
             }
             return collection;
         }

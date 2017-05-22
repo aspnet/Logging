@@ -207,6 +207,8 @@ namespace Microsoft.Extensions.Logging
 
             public string Category { get; set; }
 
+            public string ProviderType { get; set; }
+
             public LogLevel? MinLevel { get; set; }
 
             public LogMessageFilter Filter { get; set; }
@@ -220,7 +222,7 @@ namespace Microsoft.Extensions.Logging
 
                 if (Filter != null)
                 {
-                    return Filter(Logger.GetType().FullName, Category, level);
+                    return Filter(ProviderType, Category, level);
                 }
 
                 return true;

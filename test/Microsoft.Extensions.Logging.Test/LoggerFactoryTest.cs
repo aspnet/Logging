@@ -16,7 +16,9 @@ namespace Microsoft.Extensions.Logging.Test
         {
             var factory = new LoggerFactory();
             factory.Dispose();
-            Assert.Throws<ObjectDisposedException>(() => factory.AddProvider(CreateProvider()));
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.Throws<ObjectDisposedException>(() => ((ILoggerFactory) factory).AddProvider(CreateProvider()));
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         [Fact]
@@ -48,8 +50,11 @@ namespace Microsoft.Extensions.Logging.Test
             var factory = new LoggerFactory();
             var disposableProvider1 = CreateProvider();
             var disposableProvider2 = CreateProvider();
-            factory.AddProvider(disposableProvider1);
-            factory.AddProvider(disposableProvider2);
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            ((ILoggerFactory) factory).AddProvider(disposableProvider1);
+            ((ILoggerFactory) factory).AddProvider(disposableProvider2);
+#pragma warning restore CS0618 // Type or member is obsolete
 
             // Act
             factory.Dispose();
@@ -78,7 +83,9 @@ namespace Microsoft.Extensions.Logging.Test
             throwingProvider.As<IDisposable>()
                 .Setup(p => p.Dispose())
                 .Throws<Exception>();
-            factory.AddProvider(throwingProvider.Object);
+#pragma warning disable CS0618 // Type or member is obsolete
+            ((ILoggerFactory) factory).AddProvider(throwingProvider.Object);
+#pragma warning restore CS0618 // Type or member is obsolete
 
             // Act
             factory.Dispose();

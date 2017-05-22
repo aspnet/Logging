@@ -16,7 +16,47 @@ namespace Microsoft.Extensions.Logging
         /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
         public static IServiceCollection AddConsole(this IServiceCollection collection)
         {
+            collection.AddLogging();
             collection.AddSingleton<ILoggerProvider, ConsoleLoggerProvider>();
+
+            return collection;
+        }
+
+        /// <summary>
+        /// Adds a console logger named 'Console' to the factory.
+        /// </summary>
+        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="configure"></param>
+        public static IServiceCollection AddConsole(this IServiceCollection collection, Action<ConsoleLoggerOptions> configure)
+        {
+            if (configure == null)
+            {
+                throw new ArgumentNullException(nameof(configure));
+            }
+            collection.AddConsole();
+
+            if (configure != null)
+            {
+                collection.Configure(configure);
+            }
+            return collection;
+        }
+
+        /// <summary>
+        /// Adds a console logger named 'Console' to the factory.
+        /// </summary>
+        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="configuration"></param>
+        public static IServiceCollection AddConsole(this IServiceCollection collection, IConfiguration configuration)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            collection.AddConsole();
+            collection.Configure<ConsoleLoggerOptions>(configuration);
+
             return collection;
         }
 

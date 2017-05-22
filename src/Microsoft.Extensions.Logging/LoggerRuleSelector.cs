@@ -16,6 +16,7 @@ namespace Microsoft.Extensions.Logging
             // Filter rule selection:
             // 1. Select rules for current logger type, if there is none, select ones without logger type specified
             // 2. Select rules with longest matching categories
+            // 3. If there no category
             // 3. If there is only one rule use it's level and filter
             // 4. If there are multiple rules combine them using AND operator
             // 5. If there are no applicable rules use global minimal level
@@ -38,6 +39,11 @@ namespace Microsoft.Extensions.Logging
                 if (categorySpecificRules?.Any() != true)
                 {
                     categorySpecificRules = loggerSpecificRules.Where(rule => string.IsNullOrEmpty(rule.CategoryName)).ToList();
+                }
+
+                if (!categorySpecificRules.Any())
+                {
+                    categorySpecificRules = loggerSpecificRules.Where(rule => rule.CategoryName.Equals("Default", StringComparison.OrdinalIgnoreCase)).ToList();
                 }
 
                 if (categorySpecificRules.Any())

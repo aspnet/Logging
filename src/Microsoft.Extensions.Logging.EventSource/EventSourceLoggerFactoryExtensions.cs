@@ -15,18 +15,20 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds an event logger named 'EventSource' to the factory.
         /// </summary>
-        /// <param name="serviceCollection">The extension method argument.</param>
-        public static IServiceCollection AddEventSourceLogger(this IServiceCollection serviceCollection)
+        /// <param name="collection">The extension method argument.</param>
+        public static IServiceCollection AddEventSourceLogger(this IServiceCollection collection)
         {
-            if (serviceCollection == null)
+            if (collection == null)
             {
-                throw new ArgumentNullException(nameof(serviceCollection));
+                throw new ArgumentNullException(nameof(collection));
             }
 
-            var loggerProvider = LoggingEventSource.Instance.CreateLoggerProvider();
-            serviceCollection.AddSingleton<ILoggerProvider>(loggerProvider);
+            collection.AddLogging();
 
-            return serviceCollection;
+            var loggerProvider = LoggingEventSource.Instance.CreateLoggerProvider();
+            collection.AddSingleton<ILoggerProvider>(loggerProvider);
+
+            return collection;
         }
 
         /// <summary>

@@ -5,12 +5,11 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Logging
 {
-    // TODO: Reload support
-    public class LoggerFilterOptionsConfigurationSetup : IConfigureOptions<LoggerFilterOptions>
+    public class ConfigurationLoggerFilterConfigureOptions : IConfigureOptions<LoggerFilterOptions>
     {
         private readonly IConfiguration _configuration;
 
-        public LoggerFilterOptionsConfigurationSetup(IConfiguration configuration)
+        public ConfigurationLoggerFilterConfigureOptions(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -41,7 +40,7 @@ namespace Microsoft.Extensions.Logging
                     {
                         // Load logger specific rules
                         var logger = ExpandLoggerAlias(configurationSection.Key);
-                        LoadRules(rules, configurationSection, logger);
+                        LoadRules(rules, logLevelSection, logger);
                     }
                 }
             }

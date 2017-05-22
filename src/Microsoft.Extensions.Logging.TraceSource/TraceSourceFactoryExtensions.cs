@@ -80,6 +80,7 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(sourceSwitch));
             }
 
+            collection.AddLogging();
             collection.AddSingleton<ILoggerProvider>(new TraceSourceLoggerProvider(sourceSwitch));
 
             return collection;
@@ -111,6 +112,7 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(listener));
             }
 
+            collection.AddLogging();
             collection.AddSingleton<ILoggerProvider>(new TraceSourceLoggerProvider(sourceSwitch, listener));
 
             return collection;

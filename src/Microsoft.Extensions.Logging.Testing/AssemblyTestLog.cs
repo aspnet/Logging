@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Serilog;
 using Xunit.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Extensions.Logging.Testing
 {
@@ -53,12 +54,15 @@ namespace Microsoft.Extensions.Logging.Testing
 
         public ILoggerFactory CreateLoggerFactory(ITestOutputHelper output, string className, [CallerMemberName] string testName = null)
         {
-            var loggerFactory = new LoggerFactory();
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging();
+
             if (output != null)
             {
-                loggerFactory.AddXunit(output, LogLevel.Debug);
+                serviceCollection.AddXunit(output, LogLevel.Debug);
             }
 
+            var loggerFactory = serviceCollection.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
             // Try to shorten the class name using the assembly name
             if (className.StartsWith(_assemblyName + "."))
             {
@@ -77,10 +81,12 @@ namespace Microsoft.Extensions.Logging.Testing
 
         public static AssemblyTestLog Create(string assemblyName, string baseDirectory)
         {
-            var loggerFactory = new LoggerFactory();
+            var serviceCollection = new ServiceCollection();
 
             // Let the global logger log to the console, it's just "Starting X..." "Finished X..."
-            loggerFactory.AddConsole();
+            serviceCollection.AddConsole();
+
+            var loggerFactory = serviceCollection.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
 
             if (!string.IsNullOrEmpty(baseDirectory))
             {
@@ -106,7 +112,7 @@ namespace Microsoft.Extensions.Logging.Testing
             }
         }
 
-        private static void AddFileLogging(LoggerFactory loggerFactory, string fileName)
+        private static void AddFileLogging(ILoggerFactory loggerFactory, string fileName)
         {
             var dir = Path.GetDirectoryName(fileName);
             if (!Directory.Exists(dir))

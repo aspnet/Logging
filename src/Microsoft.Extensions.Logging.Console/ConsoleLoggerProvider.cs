@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Console.Internal;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Logging.Console
 {
@@ -16,10 +17,10 @@ namespace Microsoft.Extensions.Logging.Console
         private readonly Func<string, LogLevel, bool> _filter;
         private IConsoleLoggerSettings _settings;
         private readonly ConsoleLoggerProcessor _messageQueue = new ConsoleLoggerProcessor();
-        private readonly bool _isLegacy;
 
         private static readonly Func<string, LogLevel, bool> trueFilter = (cat, level) => true;
         private static readonly Func<string, LogLevel, bool> falseFilter = (cat, level) => false;
+        private IDisposable _optionsReloadToken;
 
         [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider(IConfiguration).")]
         public ConsoleLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
@@ -34,27 +35,24 @@ namespace Microsoft.Extensions.Logging.Console
             {
                 IncludeScopes = includeScopes,
             };
-
-            _isLegacy = true;
         }
 
-        public ConsoleLoggerProvider(IConfiguration configuration)
+        public ConsoleLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options)
         {
-            if (configuration != null)
-            {
-                _settings = new ConfigurationConsoleLoggerSettings(configuration);
+            // Filter would be applied on LoggerFactory level
+            _filter = trueFilter;
+            _optionsReloadToken = options.OnChange(ReloadLoggerOptions);
+            ReloadLoggerOptions(options.CurrentValue);
+        }
 
-                if (_settings.ChangeToken != null)
-                {
-                    _settings.ChangeToken.RegisterChangeCallback(OnConfigurationReload, null);
-                }
-            }
-            else
+        private void ReloadLoggerOptions(ConsoleLoggerOptions options)
+        {
+            var includeScopes = options.IncludeScopes;
+            foreach (var logger in _loggers.Values)
             {
-                _settings = new ConsoleLoggerSettings();
+                logger.Filter = GetFilter(logger.Name, _settings);
+                logger.IncludeScopes = includeScopes;
             }
-
-            _isLegacy = false;
         }
 
         [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider(IConfiguration).")]
@@ -71,8 +69,6 @@ namespace Microsoft.Extensions.Logging.Console
             {
                 _settings.ChangeToken.RegisterChangeCallback(OnConfigurationReload, null);
             }
-
-            _isLegacy = true;
         }
 
         private void OnConfigurationReload(object state)
@@ -86,10 +82,7 @@ namespace Microsoft.Extensions.Logging.Console
                 var includeScopes = _settings?.IncludeScopes ?? false;
                 foreach (var logger in _loggers.Values)
                 {
-                    if (_isLegacy)
-                    {
-                        logger.Filter = GetFilter(logger.Name, _settings);
-                    }
+                    logger.Filter = GetFilter(logger.Name, _settings);
                     logger.IncludeScopes = includeScopes;
                 }
             }
@@ -119,12 +112,6 @@ namespace Microsoft.Extensions.Logging.Console
 
         private Func<string, LogLevel, bool> GetFilter(string name, IConsoleLoggerSettings settings)
         {
-            // Filters are now handled in Logger.cs with the Configuration and AddFilter methods on LoggerFactory
-            if (!_isLegacy)
-            {
-                return trueFilter;
-            }
-
             if (_filter != null)
             {
                 return _filter;
@@ -162,7 +149,20 @@ namespace Microsoft.Extensions.Logging.Console
 
         public void Dispose()
         {
+            _optionsReloadToken?.Dispose();
             _messageQueue.Dispose();
+        }
+    }
+
+    public class ConsoleLoggerOptions
+    {
+        public bool IncludeScopes { get; set; } = false;
+    }
+
+    public class ConfigurationConsoleLoggerConfigureOptions : ConfigureOptions<ConsoleLoggerOptions>
+    {
+        public ConfigurationConsoleLoggerConfigureOptions(IConfiguration configuration) : base(options => configuration.Bind(options))
+        {
         }
     }
 }
