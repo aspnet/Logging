@@ -20,8 +20,8 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = LoggerFactoryBuilder.Create()
-                    .WithServices(services => services.AddEventSourceLogger())
+                var factory = TestLoggerBuilder.Create()
+                    .AddEventSourceLogger()
                     .Build();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = LoggerFactoryBuilder.Create()
+                var factory = TestLoggerBuilder.Create()
                     .Build();
 
                 // No call to factory.AddEventSourceLogger();
@@ -77,8 +77,8 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = LoggerFactoryBuilder.Create()
-                    .WithServices(services => services.AddEventSourceLogger())
+                var factory = TestLoggerBuilder.Create()
+                    .AddEventSourceLogger()
                     .Build();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
@@ -110,8 +110,8 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = LoggerFactoryBuilder.Create()
-                    .WithServices(services => services.AddEventSourceLogger())
+                var factory = TestLoggerBuilder.Create()
+                    .AddEventSourceLogger()
                     .Build();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
@@ -143,8 +143,8 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = LoggerFactoryBuilder.Create()
-                    .WithServices(services => services.AddEventSourceLogger())
+                var factory = TestLoggerBuilder.Create()
+                    .AddEventSourceLogger()
                     .Build();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
@@ -176,8 +176,8 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = LoggerFactoryBuilder.Create()
-                    .WithServices(services => services.AddEventSourceLogger())
+                var factory = TestLoggerBuilder.Create()
+                    .AddEventSourceLogger()
                     .Build();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
@@ -209,8 +209,8 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = LoggerFactoryBuilder.Create()
-                    .WithServices(services => services.AddEventSourceLogger())
+                var factory = TestLoggerBuilder.Create()
+                    .AddEventSourceLogger()
                     .Build();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
@@ -236,8 +236,8 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = LoggerFactoryBuilder.Create()
-                    .WithServices(services => services.AddEventSourceLogger())
+                var factory = TestLoggerBuilder.Create()
+                    .AddEventSourceLogger()
                     .Build();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
@@ -265,8 +265,8 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = LoggerFactoryBuilder.Create()
-                    .WithServices(services => services.AddEventSourceLogger())
+                var factory = TestLoggerBuilder.Create()
+                    .AddEventSourceLogger()
                     .Build();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
@@ -289,8 +289,8 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = LoggerFactoryBuilder.Create()
-                    .WithServices(services => services.AddEventSourceLogger())
+                var factory = TestLoggerBuilder.Create()
+                    .AddEventSourceLogger()
                     .Build();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
@@ -311,8 +311,8 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = LoggerFactoryBuilder.Create()
-                    .WithServices(services => services.AddEventSourceLogger())
+                var factory = TestLoggerBuilder.Create()
+                    .AddEventSourceLogger()
                     .Build();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();

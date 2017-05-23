@@ -25,25 +25,21 @@ namespace SampleApp
             // A Web App based program would configure logging via the WebHostBuilder.
             // Create a logger factory with filters that can be applied across all logger providers.
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddLogging(loggingConfiguration.GetSection("Logging"));
-
-            serviceCollection.Configure<LoggerFilterOptions>(options =>
-            {
-                options
-                    .AddFilter("Microsoft", LogLevel.Warning)
-                    .AddFilter("System", LogLevel.Warning)
-                    .AddFilter("SampleApp.Program", LogLevel.Debug);
-            });
+            var loggingBuilder = serviceCollection
+                .AddLogging(loggingConfiguration.GetSection("Logging"))
+                .AddFilter("Microsoft", LogLevel.Warning)
+                .AddFilter("System", LogLevel.Warning)
+                .AddFilter("SampleApp.Program", LogLevel.Debug);
 
             // providers may be added to a LoggerFactory before any loggers are created
 #if NET46
-            serviceCollection.AddEventLog();
+            loggingBuilder.AddEventLog();
 #elif NETCOREAPP2_0
 #else
 #error Target framework needs to be updated
 #endif
 
-            serviceCollection.AddConsole();
+            loggingBuilder.AddConsole();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             // getting the logger using the class's name is conventional

@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Microsoft.Extensions.Logging.Test
@@ -15,7 +14,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             // Arrange
             var store = new List<string>();
-            var loggerFactory = LoggerFactoryBuilder.Create()
+            var loggerFactory = TestLoggerBuilder.Create()
                 .WithProvider(new CustomLoggerProvider("provider1", ThrowExceptionAt.None, store))
                 .WithProvider(new CustomLoggerProvider("provider2", ThrowExceptionAt.Log, store))
                 .WithProvider(new CustomLoggerProvider("provider3", ThrowExceptionAt.None, store))
@@ -40,7 +39,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             // Arrange
             var store = new List<string>();
-            var loggerFactory = LoggerFactoryBuilder.Create()
+            var loggerFactory = TestLoggerBuilder.Create()
                 .WithProvider(new CustomLoggerProvider("provider1", ThrowExceptionAt.None, store))
                 .WithProvider(new CustomLoggerProvider("provider2", ThrowExceptionAt.BeginScope, store))
                 .WithProvider(new CustomLoggerProvider("provider3", ThrowExceptionAt.None, store))
@@ -65,7 +64,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             // Arrange
             var store = new List<string>();
-            var loggerFactory = LoggerFactoryBuilder.Create()
+            var loggerFactory = TestLoggerBuilder.Create()
                 .WithProvider(new CustomLoggerProvider("provider1", ThrowExceptionAt.None, store))
                 .WithProvider(new CustomLoggerProvider("provider2", ThrowExceptionAt.IsEnabled, store))
                 .WithProvider(new CustomLoggerProvider("provider3", ThrowExceptionAt.None, store))
@@ -90,7 +89,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             // Arrange
             var store = new List<string>();
-            var loggerFactory = LoggerFactoryBuilder.Create()
+            var loggerFactory = TestLoggerBuilder.Create()
                 .WithProvider(new CustomLoggerProvider("provider1", ThrowExceptionAt.Log, store))
                 .WithProvider(new CustomLoggerProvider("provider2", ThrowExceptionAt.Log, store))
                 .Build();

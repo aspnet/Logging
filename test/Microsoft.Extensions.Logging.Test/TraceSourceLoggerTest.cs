@@ -16,8 +16,8 @@ namespace Microsoft.Extensions.Logging.Test
             var testSwitch = new SourceSwitch("TestSwitch", "Level will be set to warning for this test");
             testSwitch.Level = SourceLevels.Warning;
 
-            var factory = LoggerFactoryBuilder.Create()
-                .WithServices(collection => collection.AddTraceSource(testSwitch))
+            var factory = TestLoggerBuilder.Create()
+                .AddTraceSource(testSwitch)
                 .Build();
 
             // Act
@@ -48,13 +48,9 @@ namespace Microsoft.Extensions.Logging.Test
 
             // Act
 
-            var factory = LoggerFactoryBuilder.Create()
-                .WithServices(collection =>
-                {
-                    collection
-                        .AddTraceSource(firstSwitch)
-                        .AddTraceSource(secondSwitch);
-                })
+            var factory = TestLoggerBuilder.Create()
+                .AddTraceSource(firstSwitch)
+                .AddTraceSource(secondSwitch)
                 .Build();
 
             var logger = factory.CreateLogger("Test");

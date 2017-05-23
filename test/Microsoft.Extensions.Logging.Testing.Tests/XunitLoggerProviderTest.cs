@@ -14,8 +14,8 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
         {
             var testTestOutputHelper = new TestTestOutputHelper();
 
-            var loggerFactory = LoggerFactoryBuilder.Create()
-                .WithServices(services => services.AddXunit(testTestOutputHelper))
+            var loggerFactory = TestLoggerBuilder.Create()
+                .AddXunit(testTestOutputHelper)
                 .Build();
 
             var logger = loggerFactory.CreateLogger("TestCategory");
@@ -33,8 +33,8 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
         public void LoggerProviderDoesNotWriteLogMessagesBelowMinimumLevel()
         {
             var testTestOutputHelper = new TestTestOutputHelper();
-            var loggerFactory = LoggerFactoryBuilder.Create()
-                .WithServices(services => services.AddXunit(testTestOutputHelper))
+            var loggerFactory = TestLoggerBuilder.Create()
+                .AddXunit(testTestOutputHelper)
                 .Build();
 
             var logger = loggerFactory.CreateLogger("TestCategory");
@@ -48,8 +48,8 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
         public void LoggerProviderPrependsPrefixToEachLine()
         {
             var testTestOutputHelper = new TestTestOutputHelper();
-            var loggerFactory = LoggerFactoryBuilder.Create()
-                .WithServices(services => services.AddXunit(testTestOutputHelper))
+            var loggerFactory = TestLoggerBuilder.Create()
+                .AddXunit(testTestOutputHelper)
                 .Build();
 
             var logger = loggerFactory.CreateLogger("TestCategory");
@@ -67,8 +67,8 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
         public void LoggerProviderDoesNotThrowIfOutputHelperThrows()
         {
             var testTestOutputHelper = new TestTestOutputHelper();
-            var loggerFactory = LoggerFactoryBuilder.Create()
-                .WithServices(services => services.AddXunit(testTestOutputHelper))
+            var loggerFactory = TestLoggerBuilder.Create()
+                .AddXunit(testTestOutputHelper)
                 .Build();
 
             testTestOutputHelper.Throw = true;

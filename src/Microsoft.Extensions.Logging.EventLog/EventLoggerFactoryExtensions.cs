@@ -15,32 +15,29 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds an event logger named 'EventLog' to the factory.
         /// </summary>
-        /// <param name="collection">The extension method argument.</param>
-        public static IServiceCollection AddEventLog(this IServiceCollection collection)
+        /// <param name="builder">The extension method argument.</param>
+        public static ILoggerBuilder AddEventLog(this ILoggerBuilder builder)
         {
-            if (collection == null)
+            if (builder == null)
             {
-                throw new ArgumentNullException(nameof(collection));
+                throw new ArgumentNullException(nameof(builder));
             }
 
-            collection.AddLogging();
-            collection.AddSingleton<ILoggerProvider, EventLogLoggerProvider>();
+            builder.Services.AddSingleton<ILoggerProvider, EventLogLoggerProvider>();
 
-            return collection;
+            return builder;
         }
 
         /// <summary>
         /// Adds an event logger. Use <paramref name="settings"/> to enable logging for specific <see cref="LogLevel"/>s.
         /// </summary>
-        /// <param name="collection">The extension method argument.</param>
+        /// <param name="builder">The extension method argument.</param>
         /// <param name="settings">The <see cref="EventLogSettings"/>.</param>
-        public static IServiceCollection AddEventLog(
-            this IServiceCollection collection,
-            EventLogSettings settings)
+        public static ILoggerBuilder AddEventLog(this ILoggerBuilder builder, EventLogSettings settings)
         {
-            if (collection == null)
+            if (builder == null)
             {
-                throw new ArgumentNullException(nameof(collection));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (settings == null)
@@ -48,10 +45,9 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            collection.AddLogging();
-            collection.AddSingleton<ILoggerProvider>(new EventLogLoggerProvider(settings));
+            builder.Services.AddSingleton<ILoggerProvider>(new EventLogLoggerProvider(settings));
 
-            return collection;
+            return builder;
         }
 
         /// <summary>

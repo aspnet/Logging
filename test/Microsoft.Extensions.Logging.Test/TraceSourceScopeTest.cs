@@ -17,8 +17,8 @@ namespace Microsoft.Extensions.Logging.Test
             Trace.CorrelationManager.StartLogicalOperation(baseState);
             var state = "1337state7331";
 
-            var factory = LoggerFactoryBuilder.Create()
-                .WithServices(collection => collection.AddTraceSource(new SourceSwitch("TestSwitch"), new ConsoleTraceListener()))
+            var factory = TestLoggerBuilder.Create()
+                .AddTraceSource(new SourceSwitch("TestSwitch"), new ConsoleTraceListener())
                 .Build();
 
             var logger = factory.CreateLogger("Test");

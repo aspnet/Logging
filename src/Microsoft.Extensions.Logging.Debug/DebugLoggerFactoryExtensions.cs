@@ -15,13 +15,12 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds a debug logger named 'Debug' to the factory.
         /// </summary>
-        /// <param name="collection">The extension method argument.</param>
-        public static IServiceCollection AddDebug(this IServiceCollection collection)
+        /// <param name="builder">The extension method argument.</param>
+        public static ILoggerBuilder AddDebug(this ILoggerBuilder builder)
         {
-            collection.AddLogging();
-            collection.AddSingleton<ILoggerProvider, DebugLoggerProvider>();
+            builder.Services.AddSingleton<ILoggerProvider, DebugLoggerProvider>();
 
-            return collection;
+            return builder;
         }
 
         /// <summary>

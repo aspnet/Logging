@@ -194,11 +194,6 @@ namespace Microsoft.Extensions.Logging
                     _isDisposed = true;
                 }
             }
-
-            internal void Add(IDisposable disposable)
-            {
-                throw new NotImplementedException();
-            }
         }
 
         public struct LoggerInformation

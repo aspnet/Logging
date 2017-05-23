@@ -55,11 +55,11 @@ namespace Microsoft.Extensions.Logging.Testing
         public ILoggerFactory CreateLoggerFactory(ITestOutputHelper output, string className, [CallerMemberName] string testName = null)
         {
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddLogging();
+            var loggerBuilder = serviceCollection.AddLogging();
 
             if (output != null)
             {
-                serviceCollection.AddXunit(output, LogLevel.Debug);
+                loggerBuilder.AddXunit(output, LogLevel.Debug);
             }
 
             var loggerFactory = serviceCollection.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
@@ -84,7 +84,7 @@ namespace Microsoft.Extensions.Logging.Testing
             var serviceCollection = new ServiceCollection();
 
             // Let the global logger log to the console, it's just "Starting X..." "Finished X..."
-            serviceCollection.AddConsole();
+            serviceCollection.AddLogging().AddConsole();
 
             var loggerFactory = serviceCollection.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
 

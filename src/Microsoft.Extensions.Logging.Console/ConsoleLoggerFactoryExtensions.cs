@@ -13,51 +13,48 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds a console logger named 'Console' to the factory.
         /// </summary>
-        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
-        public static IServiceCollection AddConsole(this IServiceCollection collection)
+        /// <param name="builder">The <see cref="LoggerFactory"/> to use.</param>
+        public static ILoggerBuilder AddConsole(this ILoggerBuilder builder)
         {
-            collection.AddLogging();
-            collection.AddSingleton<ILoggerProvider, ConsoleLoggerProvider>();
+            builder.Services.AddSingleton<ILoggerProvider, ConsoleLoggerProvider>();
 
-            return collection;
+            return builder;
         }
 
         /// <summary>
         /// Adds a console logger named 'Console' to the factory.
         /// </summary>
-        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="builder">The <see cref="LoggerFactory"/> to use.</param>
         /// <param name="configure"></param>
-        public static IServiceCollection AddConsole(this IServiceCollection collection, Action<ConsoleLoggerOptions> configure)
+        public static ILoggerBuilder AddConsole(this ILoggerBuilder builder, Action<ConsoleLoggerOptions> configure)
         {
             if (configure == null)
             {
                 throw new ArgumentNullException(nameof(configure));
             }
-            collection.AddConsole();
 
-            if (configure != null)
-            {
-                collection.Configure(configure);
-            }
-            return collection;
+            builder.AddConsole();
+            builder.Services.Configure(configure);
+
+            return builder;
         }
 
         /// <summary>
         /// Adds a console logger named 'Console' to the factory.
         /// </summary>
-        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="builder">The <see cref="LoggerFactory"/> to use.</param>
         /// <param name="configuration"></param>
-        public static IServiceCollection AddConsole(this IServiceCollection collection, IConfiguration configuration)
+        public static ILoggerBuilder AddConsole(this ILoggerBuilder builder, IConfiguration configuration)
         {
             if (configuration == null)
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            collection.AddConsole();
-            collection.Configure<ConsoleLoggerOptions>(configuration);
+            builder.AddConsole();
+            builder.Services.Configure<ConsoleLoggerOptions>(configuration);
 
-            return collection;
+            return builder;
         }
 
         /// <summary>

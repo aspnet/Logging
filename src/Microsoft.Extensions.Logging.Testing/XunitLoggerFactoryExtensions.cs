@@ -10,18 +10,16 @@ namespace Microsoft.Extensions.Logging
 {
     public static class XunitLoggerFactoryExtensions
     {
-        public static IServiceCollection AddXunit(this IServiceCollection services, ITestOutputHelper output)
+        public static ILoggerBuilder AddXunit(this ILoggerBuilder builder, ITestOutputHelper output)
         {
-            services.AddLogging();
-            services.AddSingleton<ILoggerProvider>(new XunitLoggerProvider(output));
-            return services;
+            builder.Services.AddSingleton<ILoggerProvider>(new XunitLoggerProvider(output));
+            return builder;
         }
 
-        public static IServiceCollection AddXunit(this IServiceCollection services, ITestOutputHelper output, LogLevel minLevel)
+        public static ILoggerBuilder AddXunit(this ILoggerBuilder builder, ITestOutputHelper output, LogLevel minLevel)
         {
-            services.AddLogging();
-            services.AddSingleton<ILoggerProvider>(new XunitLoggerProvider(output));
-            return services;
+            builder.Services.AddSingleton<ILoggerProvider>(new XunitLoggerProvider(output));
+            return builder;
         }
 
         [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is to call the Microsoft.Extensions.Logging.AddXunit() extension method on the Microsoft.Extensions.Logging.LoggerFactory instance.")]

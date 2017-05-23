@@ -16,27 +16,26 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds an Azure Web Apps diagnostics logger.
         /// </summary>
-        /// <param name="collection">The extension method argument</param>
-        public static IServiceCollection AddAzureWebAppDiagnostics(this IServiceCollection collection)
+        /// <param name="builder">The extension method argument</param>
+        public static ILoggerBuilder AddAzureWebAppDiagnostics(this ILoggerBuilder builder)
         {
-            return AddAzureWebAppDiagnostics(collection, null);
+            return AddAzureWebAppDiagnostics(builder, null);
         }
 
         /// <summary>
         /// Adds an Azure Web Apps diagnostics logger.
         /// </summary>
-        /// <param name="collection">The extension method argument</param>
+        /// <param name="builder">The extension method argument</param>
         /// <param name="settings">The setting object to configure loggers.</param>
-        public static IServiceCollection AddAzureWebAppDiagnostics(this IServiceCollection collection, AzureAppServicesDiagnosticsSettings settings)
+        public static ILoggerBuilder AddAzureWebAppDiagnostics(this ILoggerBuilder builder, AzureAppServicesDiagnosticsSettings settings)
         {
-            collection.AddLogging();
             if (WebAppContext.Default.IsRunningInAzureWebApp)
             {
                 // Only add the provider if we're in Azure WebApp. That cannot change once the apps started
-                collection.AddSingleton(WebAppContext.Default);
-                collection.AddSingleton<ILoggerProvider>(new AzureAppServicesDiagnosticsLoggerProvider(WebAppContext.Default, settings ?? new AzureAppServicesDiagnosticsSettings()));
+                builder.Services.AddSingleton(WebAppContext.Default);
+                builder.Services.AddSingleton<ILoggerProvider>(new AzureAppServicesDiagnosticsLoggerProvider(WebAppContext.Default, settings ?? new AzureAppServicesDiagnosticsSettings()));
             }
-            return collection;
+            return builder;
         }
 
         /// <summary>
