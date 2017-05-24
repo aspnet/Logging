@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.Logging
 
         public static ILoggerBuilder AddXunit(this ILoggerBuilder builder, ITestOutputHelper output, LogLevel minLevel)
         {
-            builder.Services.AddSingleton<ILoggerProvider>(new XunitLoggerProvider(output));
+            builder.Services.AddSingleton<ILoggerProvider>(new XunitLoggerProvider(output, minLevel));
             return builder;
         }
 

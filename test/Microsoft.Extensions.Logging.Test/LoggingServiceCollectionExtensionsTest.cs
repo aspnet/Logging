@@ -9,11 +9,12 @@ namespace Microsoft.Extensions.Logging.Test
     public class LoggingServiceCollectionExtensionsTest
     {
         [Fact]
-        public void AddLogging_allows_chaining()
+        public void AddLogging_WrapsServiceCollection()
         {
             var services = new ServiceCollection();
 
-            Assert.Same(services, services.AddLogging());
+            var loggerBuilder = services.AddLogging();
+            Assert.Same(services, loggerBuilder.Services);
         }
     }
 }

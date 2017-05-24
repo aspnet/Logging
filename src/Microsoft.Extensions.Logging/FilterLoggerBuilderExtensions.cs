@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return AddRule(builder, new LoggerFilterRule(null, category, level, null));
         }
 
-        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, string category, LogLevel level)
+        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, string category, LogLevel level) where T: ILoggerProvider
         {
             return AddRule(builder, new LoggerFilterRule(typeof(T).FullName, category, level, null));
         }
@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return AddRule(builder, new LoggerFilterRule(null, null, null, filter));
         }
-        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, LogMessageFilter filter)
+        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, LogMessageFilter filter) where T : ILoggerProvider
         {
             return AddRule(builder, new LoggerFilterRule(typeof(T).FullName, null, null, filter));
         }
@@ -35,7 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return AddRule(builder, new LoggerFilterRule(null, null, null, (type, name, level) => categoryLevelFilter(name, level)));
         }
 
-        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, Func<string, LogLevel, bool> categoryLevelFilter)
+        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, Func<string, LogLevel, bool> categoryLevelFilter) where T : ILoggerProvider
         {
             return AddRule(builder, new LoggerFilterRule(typeof(T).FullName, null, null, (type, name, level) => categoryLevelFilter(name, level)));
         }
@@ -45,7 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return AddRule(builder, new LoggerFilterRule(null, category, null, (type, name, level) => levelFilter(level)));
         }
 
-        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, string category, Func<LogLevel, bool> levelFilter)
+        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, string category, Func<LogLevel, bool> levelFilter) where T : ILoggerProvider
         {
             return AddRule(builder, new LoggerFilterRule(typeof(T).FullName, category, null, (type, name, level) => levelFilter(level)));
         }
