@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
         {
             var testTestOutputHelper = new TestTestOutputHelper();
             var loggerFactory = TestLoggerBuilder.Create()
-                .AddXunit(testTestOutputHelper)
+                .AddXunit(testTestOutputHelper, LogLevel.Warning)
                 .Build();
 
             var logger = loggerFactory.CreateLogger("TestCategory");
