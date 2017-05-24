@@ -25,11 +25,5 @@ namespace Microsoft.Extensions.Logging.Test
         {
             return builder.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
         }
-
-        public static ILoggerBuilder WithProvider(this ILoggerBuilder builder, ILoggerProvider provider)
-        {
-            builder.Services.AddSingleton(provider);
-            return builder;
-        }
     }
 }
