@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Options;
@@ -7,12 +10,6 @@ namespace Microsoft.Extensions.Logging
 {
     public class LoggerFactory : ILoggerFactory
     {
-        private struct ProviderRegistration
-        {
-            public ILoggerProvider Provider;
-            public bool ShouldDispose;
-        }
-
         private static readonly LoggerRuleSelector RuleSelector = new LoggerRuleSelector();
 
         private readonly Dictionary<string, Logger> _loggers = new Dictionary<string, Logger>(StringComparer.Ordinal);
@@ -109,9 +106,9 @@ namespace Microsoft.Extensions.Logging
             }
         }
 
-        private Logger.LoggerInformation[] CreateLoggers(string categoryName)
+        private LoggerInformation[] CreateLoggers(string categoryName)
         {
-            Logger.LoggerInformation[] loggers = new Logger.LoggerInformation[_providerRegistrations.Count];
+            var loggers = new LoggerInformation[_providerRegistrations.Count];
             for (int i = 0; i < _providerRegistrations.Count; i++)
             {
                 var provider = _providerRegistrations[i].Provider;
@@ -124,7 +121,7 @@ namespace Microsoft.Extensions.Logging
             return loggers;
         }
 
-        private void ApplyRules(Logger.LoggerInformation[] loggers, string categoryName, int start, int count)
+        private void ApplyRules(LoggerInformation[] loggers, string categoryName, int start, int count)
         {
             for (var index = start; index < start + count; index++)
             {
@@ -171,6 +168,12 @@ namespace Microsoft.Extensions.Logging
                     }
                 }
             }
+        }
+
+        private struct ProviderRegistration
+        {
+            public ILoggerProvider Provider;
+            public bool ShouldDispose;
         }
     }
 }

@@ -1,14 +1,15 @@
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Logging
 {
     public class LoggerRuleSelector
     {
-        public void Select(LoggerFilterOptions options, string logger, string category, out LogLevel? minLevel, out LogMessageFilter filter)
+        public void Select(LoggerFilterOptions options, string logger, string category, out LogLevel? minLevel, out Func<string, string, LogLevel, bool> filter)
         {
             filter = null;
 

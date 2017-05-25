@@ -13,15 +13,15 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds a TraceSource logger named 'TraceSource' to the factory.
         /// </summary>
-        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="builder">The <see cref="ILoggerBuilder"/> to use.</param>
         /// <param name="switchName">The name of the <see cref="SourceSwitch"/> to use.</param>
         public static ILoggerBuilder AddTraceSource(
-            this ILoggerBuilder collection,
+            this ILoggerBuilder builder,
             string switchName)
         {
-            if (collection == null)
+            if (builder == null)
             {
-                throw new ArgumentNullException(nameof(collection));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (switchName == null)
@@ -29,23 +29,23 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(switchName));
             }
 
-            return collection.AddTraceSource(new SourceSwitch(switchName));
+            return builder.AddTraceSource(new SourceSwitch(switchName));
         }
 
         /// <summary>
         /// Adds a TraceSource logger named 'TraceSource' to the factory.
         /// </summary>
-        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="builder">The <see cref="ILoggerBuilder"/> to use.</param>
         /// <param name="switchName">The name of the <see cref="SourceSwitch"/> to use.</param>
         /// <param name="listener">The <see cref="TraceListener"/> to use.</param>
         public static ILoggerBuilder AddTraceSource(
-            this ILoggerBuilder collection,
+            this ILoggerBuilder builder,
             string switchName,
             TraceListener listener)
         {
-            if (collection == null)
+            if (builder == null)
             {
-                throw new ArgumentNullException(nameof(collection));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (switchName == null)
@@ -58,21 +58,21 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(listener));
             }
 
-            return collection.AddTraceSource(new SourceSwitch(switchName), listener);
+            return builder.AddTraceSource(new SourceSwitch(switchName), listener);
         }
 
         /// <summary>
         /// Adds a TraceSource logger named 'TraceSource' to the factory.
         /// </summary>
-        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="builder">The <see cref="ILoggerBuilder"/> to use.</param>
         /// <param name="sourceSwitch">The <see cref="SourceSwitch"/> to use.</param>
         public static ILoggerBuilder AddTraceSource(
-            this ILoggerBuilder collection,
+            this ILoggerBuilder builder,
             SourceSwitch sourceSwitch)
         {
-            if (collection == null)
+            if (builder == null)
             {
-                throw new ArgumentNullException(nameof(collection));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (sourceSwitch == null)
@@ -80,25 +80,25 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(sourceSwitch));
             }
 
-            collection.Services.AddSingleton<ILoggerProvider>(new TraceSourceLoggerProvider(sourceSwitch));
+            builder.Services.AddSingleton<ILoggerProvider>(new TraceSourceLoggerProvider(sourceSwitch));
 
-            return collection;
+            return builder;
         }
 
         /// <summary>
         /// Adds a TraceSource logger named 'TraceSource' to the factory.
         /// </summary>
-        /// <param name="collection">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="builder">The <see cref="LoggerFactory"/> to use.</param>
         /// <param name="sourceSwitch">The <see cref="SourceSwitch"/> to use.</param>
         /// <param name="listener">The <see cref="TraceListener"/> to use.</param>
         public static ILoggerBuilder AddTraceSource(
-            this ILoggerBuilder collection,
+            this ILoggerBuilder builder,
             SourceSwitch sourceSwitch,
             TraceListener listener)
         {
-            if (collection == null)
+            if (builder == null)
             {
-                throw new ArgumentNullException(nameof(collection));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (sourceSwitch == null)
@@ -111,9 +111,9 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(listener));
             }
 
-            collection.Services.AddSingleton<ILoggerProvider>(new TraceSourceLoggerProvider(sourceSwitch, listener));
+            builder.Services.AddSingleton<ILoggerProvider>(new TraceSourceLoggerProvider(sourceSwitch, listener));
 
-            return collection;
+            return builder;
         }
 
         /// <summary>

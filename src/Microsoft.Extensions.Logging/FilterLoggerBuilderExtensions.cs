@@ -26,11 +26,11 @@ namespace Microsoft.Extensions.DependencyInjection
             return AddRule(builder, new LoggerFilterRule(typeof(T).FullName, category, level, null));
         }
 
-        public static ILoggerBuilder AddFilter(this ILoggerBuilder builder, LogMessageFilter filter)
+        public static ILoggerBuilder AddFilter(this ILoggerBuilder builder, Func<string, string, LogLevel, bool> filter)
         {
             return AddRule(builder, new LoggerFilterRule(null, null, null, filter));
         }
-        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, LogMessageFilter filter) where T : ILoggerProvider
+        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, Func<string, string, LogLevel, bool> filter) where T : ILoggerProvider
         {
             return AddRule(builder, new LoggerFilterRule(typeof(T).FullName, null, null, filter));
         }

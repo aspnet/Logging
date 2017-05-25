@@ -197,33 +197,5 @@ namespace Microsoft.Extensions.Logging
                 }
             }
         }
-
-        public struct LoggerInformation
-        {
-            public ILogger Logger { get; set; }
-
-            public string Category { get; set; }
-
-            public string ProviderType { get; set; }
-
-            public LogLevel? MinLevel { get; set; }
-
-            public LogMessageFilter Filter { get; set; }
-
-            public bool IsEnabled(LogLevel level)
-            {
-                if (MinLevel != null && level < MinLevel)
-                {
-                    return false;
-                }
-
-                if (Filter != null)
-                {
-                    return Filter(ProviderType, Category, level);
-                }
-
-                return true;
-            }
-        }
     }
 }
