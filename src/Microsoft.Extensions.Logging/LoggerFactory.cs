@@ -31,6 +31,10 @@ namespace Microsoft.Extensions.Logging
         {
         }
 
+        public LoggerFactory(IEnumerable<ILoggerProvider> providers) : this(providers, new StaticFilterOptionsMonitor(new LoggerFilterOptions()))
+        {
+        }
+
         public LoggerFactory(IEnumerable<ILoggerProvider> providers, IOptionsMonitor<LoggerFilterOptions> filterOption)
         {
             _providerRegistrations = providers.Select(provider => new ProviderRegistration { Provider = provider}).ToList();
