@@ -11,6 +11,11 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class FilterLoggerBuilderExtensions
     {
+        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, Func<LogLevel, bool> levelFilter) where T : ILoggerProvider
+        {
+            return AddRule(builder, new LoggerFilterRule(typeof(T).FullName, null, null, (type, name, level) => levelFilter(level)));
+        }
+
         public static ILoggerBuilder AddFilter(this ILoggerBuilder builder, string category, LogLevel level)
         {
             return AddRule(builder, new LoggerFilterRule(null, category, level, null));

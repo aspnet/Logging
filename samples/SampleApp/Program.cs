@@ -2,12 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace SampleApp
 {
@@ -26,7 +25,8 @@ namespace SampleApp
             // Create a logger factory with filters that can be applied across all logger providers.
             var serviceCollection = new ServiceCollection();
             var loggingBuilder = serviceCollection
-                .AddLogging(loggingConfiguration.GetSection("Logging"))
+                .AddLogging()
+                .AddConfiguration(loggingConfiguration.GetSection("Logging"))
                 .AddFilter("Microsoft", LogLevel.Warning)
                 .AddFilter("System", LogLevel.Warning)
                 .AddFilter("SampleApp.Program", LogLevel.Debug);

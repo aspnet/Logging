@@ -13,13 +13,14 @@ namespace Microsoft.Extensions.Logging
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            if (Loggers == null)
+            var loggers = Loggers;
+            if (loggers == null)
             {
                 return;
             }
 
             List<Exception> exceptions = null;
-            foreach (var loggerInfo in Loggers)
+            foreach (var loggerInfo in loggers)
             {
                 if (!loggerInfo.IsEnabled(logLevel))
                 {
@@ -50,13 +51,14 @@ namespace Microsoft.Extensions.Logging
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            if (Loggers == null)
+            var loggers = Loggers;
+            if (loggers == null)
             {
                 return false;
             }
 
             List<Exception> exceptions = null;
-            foreach (var loggerInfo in Loggers)
+            foreach (var loggerInfo in loggers)
             {
                 if (!loggerInfo.IsEnabled(logLevel))
                 {
@@ -93,17 +95,17 @@ namespace Microsoft.Extensions.Logging
 
         public IDisposable BeginScope<TState>(TState state)
         {
-            if (Loggers == null)
+            var loggers = Loggers;
+
+            if (loggers == null)
             {
                 return NullScope.Instance;
             }
 
-            if (Loggers.Length == 1)
+            if (loggers.Length == 1)
             {
-                return Loggers[0].Logger.BeginScope(state);
+                return loggers[0].Logger.BeginScope(state);
             }
-
-            var loggers = Loggers;
 
             var scope = new Scope(loggers.Length);
             List<Exception> exceptions = null;

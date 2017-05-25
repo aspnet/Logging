@@ -10,10 +10,47 @@ namespace Microsoft.Extensions.Logging
     {
         public void Select(LoggerFilterOptions options, string logger, string category, out LogLevel? minLevel, out LogMessageFilter filter)
         {
-            minLevel = null;
             filter = null;
 
-            // Filter rule selection:
+            var categorySpecificRules = GetMatchingRules(options, logger, category);
+
+            if (categorySpecificRules?.Any() == true)
+            {
+                if (categorySpecificRules.Count == 1)
+                {
+                    var loggerFilterRule = categorySpecificRules.Single();
+                    filter = loggerFilterRule.Filter;
+                    minLevel = loggerFilterRule.LogLevel;
+                }
+                else
+                {
+                    // Combine rules, for min level we take maximum of all rules
+                    // for filter delegated we take firs if there is only one or apply AND operator to all
+                    minLevel = categorySpecificRules.Max(rule => rule.LogLevel);
+                    filter = (type, c, level) =>
+                    {
+                        foreach (var loggerFilterRule in categorySpecificRules)
+                        {
+                            if (!loggerFilterRule.Filter?.Invoke(type, c, level) == true)
+                            {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    };
+                }
+            }
+            else
+            {
+                // If there are no rules fallback to global min level
+                minLevel = options.MinLevel;
+            }
+        }
+
+        public static List<LoggerFilterRule> GetMatchingRules(LoggerFilterOptions options, string logger, string category)
+        {
+// Filter rule selection:
             // 1. Select rules for current logger type, if there is none, select ones without logger type specified
             // 2. Select rules with longest matching categories
             // 3. If there no category
@@ -27,12 +64,14 @@ namespace Microsoft.Extensions.Logging
                 loggerSpecificRules = options.Rules.Where(rule => string.IsNullOrEmpty(rule.LoggerType)).ToList();
             }
 
+            List<LoggerFilterRule> categorySpecificRules = null;
             if (loggerSpecificRules.Any())
             {
-                var categorySpecificRules = loggerSpecificRules
-                    .Where(rule => !string.IsNullOrEmpty(rule.CategoryName) && category.StartsWith(rule.CategoryName, StringComparison.OrdinalIgnoreCase))
+                categorySpecificRules = loggerSpecificRules
+                    .Where(rule => !string.IsNullOrEmpty(rule.CategoryName) &&
+                                   category.StartsWith(rule.CategoryName, StringComparison.OrdinalIgnoreCase))
                     .GroupBy(rule => rule.CategoryName.Length)
-                    .OrderByDescending(group => group.Key)
+                    .OrderByDescending(group => @group.Key)
                     .FirstOrDefault()
                     ?.ToList();
 
@@ -43,42 +82,11 @@ namespace Microsoft.Extensions.Logging
 
                 if (!categorySpecificRules.Any())
                 {
-                    categorySpecificRules = loggerSpecificRules.Where(rule => rule.CategoryName.Equals("Default", StringComparison.OrdinalIgnoreCase)).ToList();
-                }
-
-                if (categorySpecificRules.Any())
-                {
-                    if (categorySpecificRules.Count == 1)
-                    {
-                        var loggerFilterRule = categorySpecificRules.Single();
-                        filter = loggerFilterRule.Filter;
-                        minLevel = loggerFilterRule.LogLevel;
-                    }
-                    else
-                    {
-                        // Combine rules, for min level we take maximum of all rules
-                        // for filter delegated we take firs if there is only one or apply AND operator to all
-                        minLevel = categorySpecificRules.Max(rule => rule.LogLevel);
-                        filter = (type, c, level) =>
-                        {
-                            foreach (var loggerFilterRule in categorySpecificRules)
-                            {
-                                if (!loggerFilterRule.Filter(type, c, level))
-                                {
-                                    return false;
-                                }
-                            }
-
-                            return true;
-                        };
-                    }
-                }
-                else
-                {
-                    // If there are no rules fallback to global min level
-                    minLevel = options.MinLevel;
+                    categorySpecificRules = loggerSpecificRules
+                        .Where(rule => rule.CategoryName.Equals("Default", StringComparison.OrdinalIgnoreCase)).ToList();
                 }
             }
+            return categorySpecificRules;
         }
     }
 }

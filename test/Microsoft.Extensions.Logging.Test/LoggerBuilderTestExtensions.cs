@@ -7,15 +7,14 @@ namespace Microsoft.Extensions.Logging.Test
     {
         public static ILoggerBuilder Create(IConfiguration configuration = null)
         {
-            var serviceCollection = new ServiceCollection();
+            var builder = new ServiceCollection().AddLogging();
+            // Most test setup their own filtering or for all events to pass through
+            builder.Services.Configure<LoggerFilterOptions>(options => options.MinLevel = LogLevel.Trace);
             if (configuration != null)
             {
-                return serviceCollection.AddLogging(configuration);
+                builder.AddConfiguration(configuration);
             }
-            else
-            {
-                return serviceCollection.AddLogging();
-            }
+            return builder;
         }
     }
 

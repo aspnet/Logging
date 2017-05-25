@@ -8,18 +8,20 @@ namespace Microsoft.Extensions.Logging
     public class ConfigurationLoggerFilterConfigureOptions : IConfigureOptions<LoggerFilterOptions>
     {
         private readonly IConfiguration _configuration;
+        private readonly bool _replace;
 
-        public ConfigurationLoggerFilterConfigureOptions(IConfiguration configuration)
+        public ConfigurationLoggerFilterConfigureOptions(IConfiguration configuration, bool replace)
         {
             _configuration = configuration;
+            _replace = replace;
         }
 
         public void Configure(LoggerFilterOptions options)
         {
-            LoadDefaultConfigValues(options.Rules);
+            LoadDefaultConfigValues(options);
         }
 
-        private void LoadDefaultConfigValues(ICollection<LoggerFilterRule> rules)
+        private void LoadDefaultConfigValues(LoggerFilterOptions options)
         {
             if (_configuration == null)
             {
@@ -31,7 +33,7 @@ namespace Microsoft.Extensions.Logging
                 if (configurationSection.Key == "LogLevel")
                 {
                     // Load global category defaults
-                    LoadRules(rules, configurationSection, null);
+                    LoadRules(options, configurationSection, null);
                 }
                 else
                 {
@@ -40,19 +42,32 @@ namespace Microsoft.Extensions.Logging
                     {
                         // Load logger specific rules
                         var logger = ExpandLoggerAlias(configurationSection.Key);
-                        LoadRules(rules, logLevelSection, logger);
+                        LoadRules(options, logLevelSection, logger);
                     }
                 }
             }
         }
 
-        private static void LoadRules(ICollection<LoggerFilterRule> rules, IConfigurationSection configurationSection, string logger)
+        private void LoadRules(LoggerFilterOptions options, IConfigurationSection configurationSection, string logger)
         {
             foreach (var section in configurationSection.AsEnumerable(true))
             {
                 if (TryGetSwitch(section.Value, out var level))
                 {
-                    rules.Add(new LoggerFilterRule(logger, section.Key, level, null));
+                    var newRule = new LoggerFilterRule(logger, section.Key, level, null);
+                    options.Rules.Add(newRule);
+
+                    // If we are in replace mode we need to find other matching rules and remove them
+                    if (_replace)
+                    {
+                        foreach (var rule in LoggerRuleSelector.GetMatchingRules(options, logger, section.Key))
+                        {
+                            if (rule != newRule)
+                            {
+                                options.Rules.Remove(rule);
+                            }
+                        }
+                    }
                 }
             }
         }

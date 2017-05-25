@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Console.Internal;
 using Microsoft.Extensions.Options;
 
@@ -151,18 +150,6 @@ namespace Microsoft.Extensions.Logging.Console
         {
             _optionsReloadToken?.Dispose();
             _messageQueue.Dispose();
-        }
-    }
-
-    public class ConsoleLoggerOptions
-    {
-        public bool IncludeScopes { get; set; } = false;
-    }
-
-    public class ConfigurationConsoleLoggerConfigureOptions : ConfigureOptions<ConsoleLoggerOptions>
-    {
-        public ConfigurationConsoleLoggerConfigureOptions(IConfiguration configuration) : base(options => configuration.Bind(options))
-        {
         }
     }
 }
