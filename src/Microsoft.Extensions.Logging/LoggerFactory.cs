@@ -20,15 +20,11 @@ namespace Microsoft.Extensions.Logging
         private IDisposable _changeTokenRegistration;
         private LoggerFilterOptions _filterOptions;
 
-        public LoggerFactory() : this(new LoggerFilterOptions())
+        public LoggerFactory() : this(Enumerable.Empty<ILoggerProvider>(), new LoggerFilterOptions())
         {
         }
 
-        public LoggerFactory(LoggerFilterOptions filterOptions) : this(Enumerable.Empty<ILoggerProvider>(), new StaticFilterOptionsMonitor(filterOptions))
-        {
-        }
-
-        public LoggerFactory(IEnumerable<ILoggerProvider> providers) : this(providers, new StaticFilterOptionsMonitor(new LoggerFilterOptions()))
+        public LoggerFactory(IEnumerable<ILoggerProvider> providers, LoggerFilterOptions filterOptions) : this(providers, new StaticFilterOptionsMonitor(filterOptions))
         {
         }
 
