@@ -3,6 +3,7 @@
 
 #if NET46
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Microsoft.Extensions.Logging.Test
@@ -16,9 +17,7 @@ namespace Microsoft.Extensions.Logging.Test
             var testSwitch = new SourceSwitch("TestSwitch", "Level will be set to warning for this test");
             testSwitch.Level = SourceLevels.Warning;
 
-            var factory = TestLoggerBuilder.Create()
-                .AddTraceSource(testSwitch)
-                .Build();
+            var factory = TestLoggerBuilder.Create(builder => builder.AddTraceSource(testSwitch));
 
             // Act
             var logger = factory.CreateLogger("Test");
@@ -48,10 +47,9 @@ namespace Microsoft.Extensions.Logging.Test
 
             // Act
 
-            var factory = TestLoggerBuilder.Create()
+            var factory = TestLoggerBuilder.Create(builder => builder
                 .AddTraceSource(firstSwitch)
-                .AddTraceSource(secondSwitch)
-                .Build();
+                .AddTraceSource(secondSwitch));
 
             var logger = factory.CreateLogger("Test");
 

@@ -28,8 +28,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static ILoggerBuilder SetMinimalLevel(this ILoggerBuilder builder, LogLevel level)
         {
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<LoggerFilterOptions>>(
-                new DefaultLoggerLevelConfigureOptions(LogLevel.Information)));
+            builder.Services.Add(ServiceDescriptor.Singleton<IConfigureOptions<LoggerFilterOptions>>(
+                new DefaultLoggerLevelConfigureOptions(level)));
             return builder;
         }
 

@@ -20,9 +20,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = TestLoggerBuilder.Create()
-                    .AddEventSourceLogger()
-                    .Build();
+                var factory = CreateLoggerFactory();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
                 listenerSettings.Keywords = (EventKeywords)(-1);
@@ -55,10 +53,9 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = TestLoggerBuilder.Create()
-                    .Build();
-
                 // No call to factory.AddEventSourceLogger();
+                var factory = TestLoggerBuilder.Create(builder => builder
+                    .SetMinimalLevel(LogLevel.Trace));
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
                 listenerSettings.Keywords = EventKeywords.None;
@@ -77,9 +74,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = TestLoggerBuilder.Create()
-                    .AddEventSourceLogger()
-                    .Build();
+                var factory = CreateLoggerFactory();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
                 listenerSettings.Keywords = LoggingEventSource.Keywords.FormattedMessage;
@@ -110,9 +105,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = TestLoggerBuilder.Create()
-                    .AddEventSourceLogger()
-                    .Build();
+                var factory = CreateLoggerFactory();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
                 listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
@@ -143,9 +136,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = TestLoggerBuilder.Create()
-                    .AddEventSourceLogger()
-                    .Build();
+                var factory = CreateLoggerFactory();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
                 listenerSettings.Keywords = LoggingEventSource.Keywords.Message;
@@ -176,9 +167,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = TestLoggerBuilder.Create()
-                    .AddEventSourceLogger()
-                    .Build();
+                var factory = CreateLoggerFactory();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
                 listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
@@ -209,9 +198,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = TestLoggerBuilder.Create()
-                    .AddEventSourceLogger()
-                    .Build();
+                var factory = CreateLoggerFactory();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
                 listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
@@ -236,9 +223,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = TestLoggerBuilder.Create()
-                    .AddEventSourceLogger()
-                    .Build();
+                var factory = CreateLoggerFactory();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
                 listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
@@ -265,9 +250,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = TestLoggerBuilder.Create()
-                    .AddEventSourceLogger()
-                    .Build();
+                var factory = CreateLoggerFactory();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
                 listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
@@ -289,9 +272,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = TestLoggerBuilder.Create()
-                    .AddEventSourceLogger()
-                    .Build();
+                var factory = CreateLoggerFactory();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
                 listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
@@ -311,9 +292,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = TestLoggerBuilder.Create()
-                    .AddEventSourceLogger()
-                    .Build();
+                var factory = CreateLoggerFactory();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
                 listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
@@ -331,6 +310,12 @@ namespace Microsoft.Extensions.Logging.Test
             }
         }
 
+        private static ILoggerFactory CreateLoggerFactory()
+        {
+            return TestLoggerBuilder.Create(builder => builder
+                    .AddEventSourceLogger()
+                    .SetMinimalLevel(LogLevel.Trace));
+        }
 
         private void LogStuff(ILoggerFactory factory)
         {

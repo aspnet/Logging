@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Microsoft.Extensions.Logging.Test
@@ -17,9 +18,8 @@ namespace Microsoft.Extensions.Logging.Test
             Trace.CorrelationManager.StartLogicalOperation(baseState);
             var state = "1337state7331";
 
-            var factory = TestLoggerBuilder.Create()
-                .AddTraceSource(new SourceSwitch("TestSwitch"), new ConsoleTraceListener())
-                .Build();
+            var factory = TestLoggerBuilder.Create(builder =>
+                builder.AddTraceSource(new SourceSwitch("TestSwitch"), new ConsoleTraceListener()));
 
             var logger = factory.CreateLogger("Test");
 
