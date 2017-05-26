@@ -21,7 +21,6 @@ namespace Microsoft.Extensions.Logging.Console
         private static readonly Func<string, LogLevel, bool> falseFilter = (cat, level) => false;
         private IDisposable _optionsReloadToken;
 
-        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider(IConfiguration).")]
         public ConsoleLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
         {
             if (filter == null)
@@ -54,7 +53,6 @@ namespace Microsoft.Extensions.Logging.Console
             }
         }
 
-        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider(IConfiguration).")]
         public ConsoleLoggerProvider(IConsoleLoggerSettings settings)
         {
             if (settings == null)

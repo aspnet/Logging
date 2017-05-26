@@ -22,14 +22,12 @@ namespace Microsoft.Extensions.Logging
             return builder;
         }
 
-        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is to call the Microsoft.Extensions.Logging.AddXunit() extension method on the Microsoft.Extensions.Logging.LoggerFactory instance.")]
         public static ILoggerFactory AddXunit(this ILoggerFactory loggerFactory, ITestOutputHelper output)
         {
             loggerFactory.AddProvider(new XunitLoggerProvider(output));
             return loggerFactory;
         }
 
-        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is to call the Microsoft.Extensions.Logging.AddEventSourceLogger() extension method on the Microsoft.Extensions.Logging.LoggerFactory instance.")]
         public static ILoggerFactory AddXunit(this ILoggerFactory loggerFactory, ITestOutputHelper output, LogLevel minLevel)
         {
             loggerFactory.AddProvider(new XunitLoggerProvider(output, minLevel));

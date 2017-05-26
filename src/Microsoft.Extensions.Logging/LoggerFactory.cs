@@ -20,7 +20,11 @@ namespace Microsoft.Extensions.Logging
         private IDisposable _changeTokenRegistration;
         private LoggerFilterOptions _filterOptions;
 
-        public LoggerFactory() : this(Enumerable.Empty<ILoggerProvider>(), new LoggerFilterOptions())
+        public LoggerFactory() : this(Enumerable.Empty<ILoggerProvider>())
+        {
+        }
+
+        public LoggerFactory(IEnumerable<ILoggerProvider> providers) : this(providers, new StaticFilterOptionsMonitor(new LoggerFilterOptions()))
         {
         }
 
@@ -75,7 +79,7 @@ namespace Microsoft.Extensions.Logging
             }
         }
 
-        void ILoggerFactory.AddProvider(ILoggerProvider provider)
+        public void AddProvider(ILoggerProvider provider)
         {
             if (CheckDisposed())
             {

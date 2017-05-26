@@ -114,9 +114,7 @@ namespace Microsoft.Extensions.Logging.Test
             var loggerFactory = new LoggerFactory();
             var logger = loggerFactory.CreateLogger("Test");
 
-#pragma warning disable CS0618 // Type or member is obsolete
-            ((ILoggerFactory)loggerFactory).AddProvider(new CustomLoggerProvider("provider1", ThrowExceptionAt.None, store));
-#pragma warning disable CS0618 // Type or member is obsolete
+            loggerFactory.AddProvider(new CustomLoggerProvider("provider1", ThrowExceptionAt.None, store));
 
             // Act
             logger.LogInformation("Hello");

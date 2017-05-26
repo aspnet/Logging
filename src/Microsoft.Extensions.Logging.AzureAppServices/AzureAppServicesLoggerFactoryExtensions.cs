@@ -39,27 +39,19 @@ namespace Microsoft.Extensions.Logging
         }
 
         /// <summary>
-        /// <para>
-        /// This method is obsolete and will be removed in a future version. The recommended alternative is to call the Microsoft.Extensions.Logging.AddAzureWebAppDiagnostics() extension method on the Microsoft.Extensions.Logging.LoggerFactory instance.
-        /// </para>
         /// Adds an Azure Web Apps diagnostics logger.
         /// </summary>
         /// <param name="factory">The extension method argument</param>
-        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is to call the Microsoft.Extensions.Logging.AddAzureWebAppDiagnostics() extension method on the Microsoft.Extensions.Logging.LoggerFactory instance.")]
         public static ILoggerFactory AddAzureWebAppDiagnostics(this ILoggerFactory factory)
         {
             return AddAzureWebAppDiagnostics(factory, new AzureAppServicesDiagnosticsSettings());
         }
 
         /// <summary>
-        /// <para>
-        /// This method is obsolete and will be removed in a future version. The recommended alternative is to call the Microsoft.Extensions.Logging.AddAzureWebAppDiagnostics() extension method on the Microsoft.Extensions.Logging.LoggerFactory instance.
-        /// </para>
         /// Adds an Azure Web Apps diagnostics logger.
         /// </summary>
         /// <param name="factory">The extension method argument</param>
         /// <param name="settings">The setting object to configure loggers.</param>
-        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is to call the Microsoft.Extensions.Logging.AddAzureWebAppDiagnostics() extension method on the Microsoft.Extensions.Logging.LoggerFactory instance.")]
         public static ILoggerFactory AddAzureWebAppDiagnostics(this ILoggerFactory factory, AzureAppServicesDiagnosticsSettings settings)
         {
             if (WebAppContext.Default.IsRunningInAzureWebApp)
