@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.Logging
     {
         public static ILoggerBuilder AddConfiguration(this ILoggerBuilder builder, IConfiguration configuration)
         {
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<LoggerFilterOptions>>(new ConfigurationLoggerFilterConfigureOptions(configuration)));
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<LoggerFilterOptions>>(new LoggerFilterConfigureOptions(configuration)));
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<LoggerFilterOptions>>(new ConfigurationChangeTokenSource<LoggerFilterOptions>(configuration)));
 
             return builder;

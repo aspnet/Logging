@@ -7,11 +7,11 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Logging
 {
-    internal class ConfigurationLoggerFilterConfigureOptions : IConfigureOptions<LoggerFilterOptions>
+    internal class LoggerFilterConfigureOptions : IConfigureOptions<LoggerFilterOptions>
     {
         private readonly IConfiguration _configuration;
 
-        public ConfigurationLoggerFilterConfigureOptions(IConfiguration configuration)
+        public LoggerFilterConfigureOptions(IConfiguration configuration)
         {
             _configuration = configuration;
         }
