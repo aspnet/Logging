@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Microsoft.Extensions.Logging
 {
-    public class LoggerRuleSelector
+    internal class LoggerRuleSelector
     {
         public void Select(LoggerFilterOptions options, string logger, string category, out LogLevel? minLevel, out Func<string, string, LogLevel, bool> filter)
         {
@@ -30,7 +30,7 @@ namespace Microsoft.Extensions.Logging
             // Filter rule selection:
             // 1. Select rules for current logger type, if there is none, select ones without logger type specified
             // 2. Select rules with longest matching categories
-            // 3. If there no category
+            // 3. If there nothing matched by category take all rules without category
             // 3. If there is only one rule use it's level and filter
             // 4. If there are multiple rules use last
             // 5. If there are no applicable rules use global minimal level

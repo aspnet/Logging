@@ -62,7 +62,7 @@ namespace Microsoft.Extensions.Logging
             {
                 if (!loggerInfo.IsEnabled(logLevel))
                 {
-                    return false;
+                    continue;
                 }
 
                 try

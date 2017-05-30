@@ -32,7 +32,6 @@ namespace Microsoft.Extensions.Logging
             if (WebAppContext.Default.IsRunningInAzureWebApp)
             {
                 // Only add the provider if we're in Azure WebApp. That cannot change once the apps started
-                builder.Services.AddSingleton(WebAppContext.Default);
                 builder.Services.AddSingleton<ILoggerProvider>(new AzureAppServicesDiagnosticsLoggerProvider(WebAppContext.Default, settings ?? new AzureAppServicesDiagnosticsSettings()));
             }
             return builder;

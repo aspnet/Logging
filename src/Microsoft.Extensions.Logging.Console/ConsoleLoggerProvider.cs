@@ -48,7 +48,6 @@ namespace Microsoft.Extensions.Logging.Console
             var includeScopes = options.IncludeScopes;
             foreach (var logger in _loggers.Values)
             {
-                logger.Filter = GetFilter(logger.Name, _settings);
                 logger.IncludeScopes = includeScopes;
             }
         }
