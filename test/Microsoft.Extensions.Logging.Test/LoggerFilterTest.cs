@@ -273,13 +273,13 @@ namespace Microsoft.Extensions.Logging.Test
         }
 
         [Fact]
-        public void AddFilterIsAdditive()
+        public void AddFilterLastWins()
         {
             var provider = new TestLoggerProvider(new TestSink(), isEnabled: true);
             var factory = TestLoggerBuilder.Create(builder => builder
                 .AddProvider(provider)
                 .AddFilter((name, cat, level) => level >= LogLevel.Warning)
-                 .AddFilter((name, cat, level) => string.Equals(cat, "NotTest")));
+                .AddFilter((name, cat, level) => string.Equals(cat, "NotTest")));
 
             var logger = factory.CreateLogger("Test");
 
@@ -292,11 +292,11 @@ namespace Microsoft.Extensions.Logging.Test
 
             logger.LogInformation("Message");
 
-            Assert.Equal(0, writes.Count);
+            Assert.Equal(1, writes.Count);
 
             logger.LogError("Message");
 
-            Assert.Equal(1, writes.Count);
+            Assert.Equal(2, writes.Count);
         }
 
         [Fact]

@@ -10,12 +10,10 @@ namespace Microsoft.Extensions.Logging
     public class ConfigurationLoggerFilterConfigureOptions : IConfigureOptions<LoggerFilterOptions>
     {
         private readonly IConfiguration _configuration;
-        private readonly bool _replace;
 
-        public ConfigurationLoggerFilterConfigureOptions(IConfiguration configuration, bool replace)
+        public ConfigurationLoggerFilterConfigureOptions(IConfiguration configuration)
         {
             _configuration = configuration;
-            _replace = replace;
         }
 
         public void Configure(LoggerFilterOptions options)
@@ -58,18 +56,6 @@ namespace Microsoft.Extensions.Logging
                 {
                     var newRule = new LoggerFilterRule(logger, section.Key, level, null);
                     options.Rules.Add(newRule);
-
-                    // If we are in replace mode we need to find other matching rules and remove them
-                    if (_replace)
-                    {
-                        foreach (var rule in LoggerRuleSelector.GetMatchingRules(options, logger, section.Key))
-                        {
-                            if (rule != newRule)
-                            {
-                                options.Rules.Remove(rule);
-                            }
-                        }
-                    }
                 }
             }
         }

@@ -15,18 +15,13 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static ILoggerBuilder AddConfiguration(this ILoggerBuilder builder, IConfiguration configuration)
         {
-            return builder.AddConfiguration(configuration, false);
-        }
-
-        public static ILoggerBuilder AddConfiguration(this ILoggerBuilder builder, IConfiguration configuration, bool replace)
-        {
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<LoggerFilterOptions>>(new ConfigurationLoggerFilterConfigureOptions(configuration, replace)));
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<LoggerFilterOptions>>(new ConfigurationLoggerFilterConfigureOptions(configuration)));
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<LoggerFilterOptions>>(new ConfigurationChangeTokenSource<LoggerFilterOptions>(configuration)));
 
             return builder;
         }
 
-        public static ILoggerBuilder SetMinimalLevel(this ILoggerBuilder builder, LogLevel level)
+        public static ILoggerBuilder SetMinimumLevel(this ILoggerBuilder builder, LogLevel level)
         {
             builder.Services.Add(ServiceDescriptor.Singleton<IConfigureOptions<LoggerFilterOptions>>(
                 new DefaultLoggerLevelConfigureOptions(level)));

@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.Logging.Test
             {
                 // No call to factory.AddEventSourceLogger();
                 var factory = TestLoggerBuilder.Create(builder => builder
-                    .SetMinimalLevel(LogLevel.Trace));
+                    .SetMinimumLevel(LogLevel.Trace));
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
                 listenerSettings.Keywords = EventKeywords.None;
@@ -314,7 +314,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             return TestLoggerBuilder.Create(builder => builder
                     .AddEventSourceLogger()
-                    .SetMinimalLevel(LogLevel.Trace));
+                    .SetMinimumLevel(LogLevel.Trace));
         }
 
         private void LogStuff(ILoggerFactory factory)

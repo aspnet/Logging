@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
             var testTestOutputHelper = new TestTestOutputHelper();
 
             var loggerFactory = TestLoggerBuilder.Create(builder => builder
-                .SetMinimalLevel(LogLevel.Trace)
+                .SetMinimumLevel(LogLevel.Trace)
                 .AddXunit(testTestOutputHelper));
 
             var logger = loggerFactory.CreateLogger("TestCategory");
