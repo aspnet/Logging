@@ -398,6 +398,125 @@ namespace Microsoft.Extensions.Logging.Test
             Assert.Equal(1, writes.Count);
         }
 
+        [Theory]
+        [MemberData(nameof(FilterTestData))]
+        public void FilterTest(LoggerFilterOptions options, (string category, LogLevel level, bool expectInProvider1, bool expectInProvider2) message)
+        {
+            var testSink1 = new TestSink();
+            var testSink2 = new TestSink();
+
+            var loggerFactory = new LoggerFactory(new[]
+            {
+                new TestLoggerProvider(testSink1, true),
+                new TestLoggerProvider2(testSink2)
+            }, options);
+
+            var logger = loggerFactory.CreateLogger(message.category);
+            Assert.Equal(message.expectInProvider1 || message.expectInProvider2, logger.IsEnabled(message.Item2));
+            logger.Log(message.level, 0, "hello", null, (s, exception) => s);
+
+            Assert.Equal(message.expectInProvider1 ? 1 : 0, testSink1.Writes.Count);
+            Assert.Equal(message.expectInProvider2 ? 1 : 0, testSink2.Writes.Count);
+        }
+
+
+        public static TheoryData<LoggerFilterOptions, (string, LogLevel, bool, bool)> FilterTestData =
+            new TheoryData<LoggerFilterOptions, (string, LogLevel, bool, bool)>()
+            {
+                { // Provider specific rule if preferred
+                    new LoggerFilterOptions()
+                    {
+                        Rules =
+                        {
+                            new LoggerFilterRule(typeof(TestLoggerProvider).FullName, null, LogLevel.Information, null),
+                            new LoggerFilterRule(null, null, LogLevel.Critical, null)
+                        }
+                    },
+                    ("Category", LogLevel.Information, true, false)
+                },
+                { // Category specific rule if preferred
+                    new LoggerFilterOptions()
+                    {
+                        Rules =
+                        {
+                            new LoggerFilterRule(null, "Category", LogLevel.Information, null),
+                            new LoggerFilterRule(null, null, LogLevel.Critical, null)
+                        }
+                    },
+                    ("Category", LogLevel.Information, true, true)
+                },
+                { // Longest category specific rule if preferred
+                    new LoggerFilterOptions()
+                    {
+                        Rules =
+                        {
+                            new LoggerFilterRule(null, "Category.Sub", LogLevel.Trace, null),
+                            new LoggerFilterRule(null, "Category", LogLevel.Information, null),
+                            new LoggerFilterRule(null, null, LogLevel.Critical, null)
+                        }
+                    },
+                    ("Category.Sub", LogLevel.Trace, true, true)
+                },
+                { // Provider is selected first, then category
+                    new LoggerFilterOptions()
+                    {
+                        Rules =
+                        {
+                            new LoggerFilterRule(null, "Category.Sub", LogLevel.Trace, null),
+                            new LoggerFilterRule(typeof(TestLoggerProvider).FullName, "Category", LogLevel.Information, null),
+                            new LoggerFilterRule(null, null, LogLevel.Critical, null)
+                        }
+                    },
+                    ("Category.Sub", LogLevel.Trace, false, true)
+                },
+                { // Last most specific is selected
+                    new LoggerFilterOptions()
+                    {
+                        Rules =
+                        {
+                            new LoggerFilterRule(null, "Category.Sub", LogLevel.Trace, null),
+                            new LoggerFilterRule(typeof(TestLoggerProvider).FullName, "Category", LogLevel.Information, null),
+                            new LoggerFilterRule(typeof(TestLoggerProvider).FullName, "Category", LogLevel.Trace, null),
+                            new LoggerFilterRule(null, null, LogLevel.Critical, null)
+                        }
+                    },
+                    ("Category.Sub", LogLevel.Trace, true, true)
+                },
+                { // Filter is used if matches level
+                    new LoggerFilterOptions()
+                    {
+                        Rules =
+                        {
+                            new LoggerFilterRule(null, null, LogLevel.Critical, (logger, category, level) => true)
+                        }
+                    },
+                    ("Category.Sub", LogLevel.Error, false, false)
+                },
+                { // Last filter is used is used
+                    new LoggerFilterOptions()
+                    {
+                        Rules =
+                        {
+                            new LoggerFilterRule(null, null, LogLevel.Critical, (logger, category, level) => false),
+                            new LoggerFilterRule(null, null, LogLevel.Critical, (logger, category, level) => true)
+                        }
+                    },
+                    ("Category.Sub", LogLevel.Critical, true, true)
+                },
+                { // MinLevel is used when no match
+                    new LoggerFilterOptions()
+                    {
+                        Rules =
+                        {
+                            new LoggerFilterRule(typeof(TestLoggerProvider).FullName, null, LogLevel.Trace, null),
+                        },
+                        MinLevel = LogLevel.Debug
+                    },
+                    ("Category.Sub", LogLevel.Trace, true, false)
+                }
+            };
+
+
         internal ConfigurationRoot CreateConfiguration(Func<string> getJson)
         {
             var provider = new TestConfiguration(new JsonConfigurationSource { Optional = true }, getJson);

@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.Logging
 
         public LoggerFactory(IEnumerable<ILoggerProvider> providers, IOptionsMonitor<LoggerFilterOptions> filterOption)
         {
-            _providerRegistrations = providers.Select(provider => new ProviderRegistration { Provider = provider}).ToList();
+            _providerRegistrations = providers.Select(provider => new ProviderRegistration { Provider = provider }).ToList();
             _changeTokenRegistration = filterOption.OnChange(RefreshFilters);
             RefreshFilters(filterOption.CurrentValue);
         }

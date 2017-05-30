@@ -7,8 +7,14 @@ namespace Microsoft.Extensions.Logging
 {
     public class LoggerFilterOptions
     {
+        /// <summary>
+        /// Gets or sets the minimum level of log messages if none of the rules match.
+        /// </summary>
         public LogLevel MinLevel { get; set; }
 
-        public ICollection<LoggerFilterRule> Rules { get; } = new List<LoggerFilterRule>();
+        /// <summary>
+        /// Gets the collection of <see cref="LoggerFilterRule"/> used for filtering log messages.
+        /// </summary>
+        public IList<LoggerFilterRule> Rules { get; } = new List<LoggerFilterRule>();
     }
 }

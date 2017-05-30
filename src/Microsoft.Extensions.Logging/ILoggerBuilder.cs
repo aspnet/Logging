@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Extensions.Logging
 {
+    /// <summary>
+    /// An interface for configuring logging providers.
+    /// </summary>
     public interface ILoggerBuilder
     {
         /// <summary>

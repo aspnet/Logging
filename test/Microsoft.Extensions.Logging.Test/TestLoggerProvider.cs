@@ -35,4 +35,11 @@ namespace Microsoft.Extensions.Logging.Test
             DisposeCalled = true;
         }
     }
+
+    public class TestLoggerProvider2 : TestLoggerProvider
+    {
+        public TestLoggerProvider2(TestSink testSink) : base(testSink, true)
+        {
+        }
+    }
 }

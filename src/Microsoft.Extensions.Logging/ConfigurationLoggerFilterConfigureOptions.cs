@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Logging
 {
-    public class ConfigurationLoggerFilterConfigureOptions : IConfigureOptions<LoggerFilterOptions>
+    internal class ConfigurationLoggerFilterConfigureOptions : IConfigureOptions<LoggerFilterOptions>
     {
         private readonly IConfiguration _configuration;
 
