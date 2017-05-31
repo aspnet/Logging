@@ -97,7 +97,7 @@ namespace Microsoft.Extensions.Logging
                     Array.Resize(ref loggerInformation, loggerInformation.Length + 1);
                     var newLoggerIndex = loggerInformation.Length - 1;
                     loggerInformation[newLoggerIndex].Logger = provider.CreateLogger(categoryName);
-                    loggerInformation[newLoggerIndex].ProviderType = provider.GetType().FullName;
+                    loggerInformation[newLoggerIndex].ProviderType = provider.GetType();
 
                     ApplyRules(loggerInformation, categoryName, newLoggerIndex, 1);
 
@@ -114,7 +114,7 @@ namespace Microsoft.Extensions.Logging
                 var provider = _providerRegistrations[i].Provider;
 
                 loggers[i].Logger = provider.CreateLogger(categoryName);
-                loggers[i].ProviderType = provider.GetType().FullName;
+                loggers[i].ProviderType = provider.GetType();
             }
 
             ApplyRules(loggers, categoryName, 0, loggers.Length);

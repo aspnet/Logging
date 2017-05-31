@@ -2,31 +2,17 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
 
 namespace Microsoft.Extensions.Logging
 {
     internal class LoggerRuleSelector
     {
-        public void Select(LoggerFilterOptions options, string logger, string category, out LogLevel? minLevel, out Func<string, string, LogLevel, bool> filter)
+        public void Select(LoggerFilterOptions options, Type providerType, string category, out LogLevel? minLevel, out Func<string, string, LogLevel, bool> filter)
         {
             filter = null;
             minLevel = options.MinLevel;
 
-            var categorySpecificRules = GetMatchingRules(options, logger, category);
-
-            var loggerFilterRule = categorySpecificRules?.LastOrDefault();
-            if (loggerFilterRule != null)
-            {
-                filter = loggerFilterRule.Filter;
-                minLevel = loggerFilterRule.LogLevel;
-            }
-        }
-
-        private static List<LoggerFilterRule> GetMatchingRules(LoggerFilterOptions options, string logger, string category)
-        {
-            // TODO: This can be rewritten to a single loop.
             // Filter rule selection:
             // 1. Select rules for current logger type, if there is none, select ones without logger type specified
             // 2. Select rules with longest matching categories
@@ -35,35 +21,85 @@ namespace Microsoft.Extensions.Logging
             // 4. If there are multiple rules use last
             // 5. If there are no applicable rules use global minimal level
 
-            var loggerSpecificRules = options.Rules.Where(rule => rule.LoggerType == logger).ToList();
-            if (!loggerSpecificRules.Any())
+            var providerAlias = GetAlias(providerType);
+            LoggerFilterRule current = null;
+            foreach (var rule in options.Rules)
             {
-                loggerSpecificRules = options.Rules.Where(rule => string.IsNullOrEmpty(rule.LoggerType)).ToList();
-            }
-
-            List<LoggerFilterRule> categorySpecificRules = null;
-            if (loggerSpecificRules.Any())
-            {
-                categorySpecificRules = loggerSpecificRules
-                    .Where(rule => !string.IsNullOrEmpty(rule.CategoryName) &&
-                                   category.StartsWith(rule.CategoryName, StringComparison.OrdinalIgnoreCase))
-                    .GroupBy(rule => rule.CategoryName.Length)
-                    .OrderByDescending(group => group.Key)
-                    .FirstOrDefault()
-                    ?.ToList();
-
-                if (categorySpecificRules?.Any() != true)
+                if (IsBetter(rule, current, providerType.FullName, category)
+                    || (!string.IsNullOrEmpty(providerAlias) && IsBetter(rule, current, providerAlias, category)))
                 {
-                    categorySpecificRules = loggerSpecificRules.Where(rule => string.IsNullOrEmpty(rule.CategoryName)).ToList();
-                }
-
-                if (!categorySpecificRules.Any())
-                {
-                    categorySpecificRules = loggerSpecificRules
-                        .Where(rule => rule.CategoryName.Equals("Default", StringComparison.OrdinalIgnoreCase)).ToList();
+                    current = rule;
                 }
             }
-            return categorySpecificRules;
+
+            if (current != null)
+            {
+                filter = current.Filter;
+                minLevel = current.LogLevel;
+            }
         }
+
+        private string GetAlias(Type providerType)
+        {
+            return providerType.GetTypeInfo()
+                .GetCustomAttribute<ProviderAliasAttribute>()
+                ?.Name;
+        }
+
+        private static bool IsBetter(LoggerFilterRule rule, LoggerFilterRule current, string logger, string category)
+        {
+            // Skip rules with inapplicable type or category
+            if (rule.ProviderName != null && rule.ProviderName != logger)
+            {
+                return false;
+            }
+
+            if (rule.CategoryName != null && !category.StartsWith(rule.CategoryName, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            if (current?.ProviderName != null)
+            {
+                if (rule.ProviderName == null)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                // We want to skip category check when going from no provider to having provider
+                if (rule.ProviderName != null)
+                {
+                    return true;
+                }
+            }
+
+            if (current?.CategoryName != null)
+            {
+                if (rule.CategoryName == null)
+                {
+                    return false;
+                }
+
+                if (current.CategoryName.Length > rule.CategoryName.Length)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    public class ProviderAliasAttribute: Attribute
+    {
+        public ProviderAliasAttribute(string name)
+        {
+            Name = name;
+        }
+
+        public string Name { get; }
+
     }
 }

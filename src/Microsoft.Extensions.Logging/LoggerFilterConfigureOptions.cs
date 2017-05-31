@@ -54,7 +54,12 @@ namespace Microsoft.Extensions.Logging
             {
                 if (TryGetSwitch(section.Value, out var level))
                 {
-                    var newRule = new LoggerFilterRule(logger, section.Key, level, null);
+                    var category = section.Key;
+                    if (category == "Default")
+                    {
+                        category = null;
+                    }
+                    var newRule = new LoggerFilterRule(logger, category, level, null);
                     options.Rules.Add(newRule);
                 }
             }

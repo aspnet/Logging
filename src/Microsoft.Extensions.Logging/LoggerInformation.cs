@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.Logging
 
         public string Category { get; set; }
 
-        public string ProviderType { get; set; }
+        public Type ProviderType { get; set; }
 
         public LogLevel? MinLevel { get; set; }
 
@@ -26,7 +26,7 @@ namespace Microsoft.Extensions.Logging
 
             if (Filter != null)
             {
-                return Filter(ProviderType, Category, level);
+                return Filter(ProviderType.FullName, Category, level);
             }
 
             return true;
