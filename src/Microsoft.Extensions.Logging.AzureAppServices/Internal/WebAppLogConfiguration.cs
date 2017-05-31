@@ -39,32 +39,32 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
         /// <summary>
         /// Gets a value indicating whether we're running in WebApp or not.
         /// </summary>
-        public bool IsRunningInWebApp { get; private set; }
+        public bool IsRunningInWebApp { get; }
 
         /// <summary>
         /// Gets a value indicating whether the file logger is enabled or not.
         /// </summary>
-        public bool FileLoggingEnabled { get; private set; }
+        public bool FileLoggingEnabled { get; }
         /// <summary>
         /// Gets a value indicating the file logger logging level.
         /// </summary>
-        public LogLevel FileLoggingLevel { get; private set; }
+        public LogLevel FileLoggingLevel { get; }
         /// <summary>
         /// Gets a value indicating the folder where the file logger stores the logs.
         /// </summary>
-        public string FileLoggingFolder { get; private set; }
+        public string FileLoggingFolder { get; }
 
         /// <summary>
         /// Gets a value indicating whether the blob logger is enabled or not.
         /// </summary>
-        public bool BlobLoggingEnabled { get; private set; }
+        public bool BlobLoggingEnabled { get; }
         /// <summary>
         /// Gets a value indicating the blob logger logging level.
         /// </summary>
-        public LogLevel BlobLoggingLevel { get; private set; }
+        public LogLevel BlobLoggingLevel { get; }
         /// <summary>
         /// Gets the SAS endpoint where blob logs are stored.
         /// </summary>
-        public string BlobContainerUrl { get; private set; }
+        public string BlobContainerUrl { get; }
     }
 }

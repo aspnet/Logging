@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.Logging
         public static ILoggingBuilder AddAzureWebAppDiagnostics(this ILoggingBuilder builder)
         {
             return AddAzureWebAppDiagnostics(builder, null);
-        }
+        }      
 
         /// <summary>
         /// Adds an Azure Web Apps diagnostics logger.

@@ -38,10 +38,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
                 var settingsFile = Path.Combine(settingsFolder, "settings.json");
 
                 // TODO: This is a workaround because the file provider doesn't handle missing folders/files
-                if (!Directory.Exists(settingsFolder))
-                {
-                    Directory.CreateDirectory(settingsFolder);
-                }
+                Directory.CreateDirectory(settingsFolder);
                 if (!File.Exists(settingsFile))
                 {
                     File.WriteAllText(settingsFile, "{}");

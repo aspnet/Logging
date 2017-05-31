@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
     /// <summary>
     /// The <see cref="ILogEventSink"/> implemenation that stores messages by appending them to Azure Blob in batches.
     /// </summary>
-    public class AzureBlobSink : PeriodicBatchingSink
+    public class AzureBlobSink : BatchingLoggerProvider
     {
         private readonly string _appName;
         private readonly string _fileName;
@@ -67,14 +67,13 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
             _blobReferenceFactory = blobReferenceFactory;
         }
 
-        /// <inheritdoc />
-        protected override async Task EmitBatchAsync(IEnumerable<LogEvent> events)
+        protected override async Task WriteMessagesAsync(IEnumerable<LogMessage> messages)
         {
-            var eventGroups = events.GroupBy(GetBlobKey);
+            var eventGroups = messages.GroupBy(GetBlobKey);
             foreach (var eventGroup in eventGroups)
             {
                 var key = eventGroup.Key;
-                var blobName = $"{_appName}/{key.Item1}/{key.Item2:00}/{key.Item3:00}/{key.Item4:00}/{_fileName}";
+                var blobName = $"{_appName}/{key.Year}/{key.Month:00}/{key.Day:00}/{key.Hour:00}/{_fileName}";
 
                 var blob = _blobReferenceFactory(blobName);
 
@@ -94,15 +93,15 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
                 {
                     foreach (var logEvent in eventGroup)
                     {
-                        _formatter.Format(logEvent, writer);
+                        writer.Write(logEvent.Message);
                     }
                 }
             }
         }
 
-        private Tuple<int,int,int,int> GetBlobKey(LogEvent e)
+        private (int Year, int Month, int Day, int Hour) GetBlobKey(LogMessage e)
         {
-            return Tuple.Create(e.Timestamp.Year,
+            return (e.Timestamp.Year,
                 e.Timestamp.Month,
                 e.Timestamp.Day,
                 e.Timestamp.Hour);

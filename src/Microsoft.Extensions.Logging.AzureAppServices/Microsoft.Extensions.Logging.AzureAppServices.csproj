@@ -6,6 +6,7 @@
     <Description>Logger implementation to support Azure App Services 'Diagnostics logs' and 'Log stream' features.</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
     <PackageTags>logging</PackageTags>
   </PropertyGroup>
 
@@ -20,6 +21,7 @@
     <PackageReference Include="Serilog.Extensions.Logging" Version="$(SerilogExtensionsLoggingVersion)" />
     <PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="$(SerilogPeriodicBatchingVersion)" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="$(SerilogRollingFileVersion)" />
+    <PackageReference Include="System.ValueTuple" Version="$(CoreFxVersion)" />
     <PackageReference Include="WindowsAzure.Storage" Version="$(WindowsAzureStorageVersion)" />
   </ItemGroup>
 
