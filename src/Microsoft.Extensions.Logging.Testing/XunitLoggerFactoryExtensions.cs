@@ -10,13 +10,13 @@ namespace Microsoft.Extensions.Logging
 {
     public static class XunitLoggerFactoryExtensions
     {
-        public static ILoggerBuilder AddXunit(this ILoggerBuilder builder, ITestOutputHelper output)
+        public static ILoggingBuilder AddXunit(this ILoggingBuilder builder, ITestOutputHelper output)
         {
             builder.Services.AddSingleton<ILoggerProvider>(new XunitLoggerProvider(output));
             return builder;
         }
 
-        public static ILoggerBuilder AddXunit(this ILoggerBuilder builder, ITestOutputHelper output, LogLevel minLevel)
+        public static ILoggingBuilder AddXunit(this ILoggingBuilder builder, ITestOutputHelper output, LogLevel minLevel)
         {
             builder.Services.AddSingleton<ILoggerProvider>(new XunitLoggerProvider(output, minLevel));
             return builder;

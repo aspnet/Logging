@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Extensions.Logging
 {
-    internal class LoggerBuilder : ILoggerBuilder
+    internal class LoggingBuilder : ILoggingBuilder
     {
-        public LoggerBuilder(IServiceCollection services)
+        public LoggingBuilder(IServiceCollection services)
         {
             Services = services;
         }

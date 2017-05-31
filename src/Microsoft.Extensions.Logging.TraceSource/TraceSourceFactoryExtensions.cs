@@ -13,10 +13,10 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds a TraceSource logger named 'TraceSource' to the factory.
         /// </summary>
-        /// <param name="builder">The <see cref="ILoggerBuilder"/> to use.</param>
+        /// <param name="builder">The <see cref="ILoggingBuilder"/> to use.</param>
         /// <param name="switchName">The name of the <see cref="SourceSwitch"/> to use.</param>
-        public static ILoggerBuilder AddTraceSource(
-            this ILoggerBuilder builder,
+        public static ILoggingBuilder AddTraceSource(
+            this ILoggingBuilder builder,
             string switchName)
         {
             if (builder == null)
@@ -35,11 +35,11 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds a TraceSource logger named 'TraceSource' to the factory.
         /// </summary>
-        /// <param name="builder">The <see cref="ILoggerBuilder"/> to use.</param>
+        /// <param name="builder">The <see cref="ILoggingBuilder"/> to use.</param>
         /// <param name="switchName">The name of the <see cref="SourceSwitch"/> to use.</param>
         /// <param name="listener">The <see cref="TraceListener"/> to use.</param>
-        public static ILoggerBuilder AddTraceSource(
-            this ILoggerBuilder builder,
+        public static ILoggingBuilder AddTraceSource(
+            this ILoggingBuilder builder,
             string switchName,
             TraceListener listener)
         {
@@ -64,10 +64,10 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds a TraceSource logger named 'TraceSource' to the factory.
         /// </summary>
-        /// <param name="builder">The <see cref="ILoggerBuilder"/> to use.</param>
+        /// <param name="builder">The <see cref="ILoggingBuilder"/> to use.</param>
         /// <param name="sourceSwitch">The <see cref="SourceSwitch"/> to use.</param>
-        public static ILoggerBuilder AddTraceSource(
-            this ILoggerBuilder builder,
+        public static ILoggingBuilder AddTraceSource(
+            this ILoggingBuilder builder,
             SourceSwitch sourceSwitch)
         {
             if (builder == null)
@@ -91,8 +91,8 @@ namespace Microsoft.Extensions.Logging
         /// <param name="builder">The <see cref="LoggerFactory"/> to use.</param>
         /// <param name="sourceSwitch">The <see cref="SourceSwitch"/> to use.</param>
         /// <param name="listener">The <see cref="TraceListener"/> to use.</param>
-        public static ILoggerBuilder AddTraceSource(
-            this ILoggerBuilder builder,
+        public static ILoggingBuilder AddTraceSource(
+            this ILoggingBuilder builder,
             SourceSwitch sourceSwitch,
             TraceListener listener)
         {

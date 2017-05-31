@@ -27,9 +27,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds logging services to the specified <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
-        /// <param name="configure">The <see cref="ILoggerBuilder"/> configuration delegate.</param>
+        /// <param name="configure">The <see cref="ILoggingBuilder"/> configuration delegate.</param>
         /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
-        public static IServiceCollection AddLogging(this IServiceCollection services, Action<ILoggerBuilder> configure)
+        public static IServiceCollection AddLogging(this IServiceCollection services, Action<ILoggingBuilder> configure)
         {
             if (services == null)
             {
@@ -44,7 +44,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<LoggerFilterOptions>>(
                 new DefaultLoggerLevelConfigureOptions(LogLevel.Information)));
 
-            configure(new LoggerBuilder(services));
+            configure(new LoggingBuilder(services));
             return services;
         }
     }

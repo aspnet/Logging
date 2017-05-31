@@ -8,7 +8,7 @@ namespace Microsoft.Extensions.Logging
     /// <summary>
     /// An interface for configuring logging providers.
     /// </summary>
-    public interface ILoggerBuilder
+    public interface ILoggingBuilder
     {
         /// <summary>
         /// Gets the <see cref="IServiceCollection"/> where Logging services are configured.

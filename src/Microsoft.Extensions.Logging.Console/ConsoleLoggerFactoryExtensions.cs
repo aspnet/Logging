@@ -13,8 +13,8 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds a console logger named 'Console' to the factory.
         /// </summary>
-        /// <param name="builder">The <see cref="LoggerFactory"/> to use.</param>
-        public static ILoggerBuilder AddConsole(this ILoggerBuilder builder)
+        /// <param name="builder">The <see cref="ILoggingBuilder"/> to use.</param>
+        public static ILoggingBuilder AddConsole(this ILoggingBuilder builder)
         {
             builder.Services.AddSingleton<ILoggerProvider, ConsoleLoggerProvider>();
 
@@ -24,9 +24,9 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds a console logger named 'Console' to the factory.
         /// </summary>
-        /// <param name="builder">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="builder">The <see cref="ILoggingBuilder"/> to use.</param>
         /// <param name="configure"></param>
-        public static ILoggerBuilder AddConsole(this ILoggerBuilder builder, Action<ConsoleLoggerOptions> configure)
+        public static ILoggingBuilder AddConsole(this ILoggingBuilder builder, Action<ConsoleLoggerOptions> configure)
         {
             if (configure == null)
             {
@@ -42,9 +42,9 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Adds a console logger named 'Console' to the factory.
         /// </summary>
-        /// <param name="builder">The <see cref="LoggerFactory"/> to use.</param>
+        /// <param name="builder">The <see cref="ILoggingBuilder"/> to use.</param>
         /// <param name="configuration"></param>
-        public static ILoggerBuilder AddConsole(this ILoggerBuilder builder, IConfiguration configuration)
+        public static ILoggingBuilder AddConsole(this ILoggingBuilder builder, IConfiguration configuration)
         {
             if (configuration == null)
             {

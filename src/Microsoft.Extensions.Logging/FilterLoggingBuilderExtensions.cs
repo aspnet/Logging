@@ -9,54 +9,54 @@ namespace Microsoft.Extensions.Logging
     /// <summary>
     /// Extension methods for setting up logging services in an <see cref="IServiceCollection" />.
     /// </summary>
-    public static class FilterLoggerBuilderExtensions
+    public static class FilterLoggingBuilderExtensions
     {
-        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, Func<LogLevel, bool> levelFilter) where T : ILoggerProvider
+        public static ILoggingBuilder AddFilter<T>(this ILoggingBuilder builder, Func<LogLevel, bool> levelFilter) where T : ILoggerProvider
         {
             return AddRule(builder, type: typeof(T).FullName, filter: (type, name, level) => levelFilter(level));
         }
 
-        public static ILoggerBuilder AddFilter(this ILoggerBuilder builder, string category, LogLevel level)
+        public static ILoggingBuilder AddFilter(this ILoggingBuilder builder, string category, LogLevel level)
         {
             return AddRule(builder, category: category, level: level);
         }
 
-        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, string category, LogLevel level) where T: ILoggerProvider
+        public static ILoggingBuilder AddFilter<T>(this ILoggingBuilder builder, string category, LogLevel level) where T: ILoggerProvider
         {
             return AddRule(builder, type: typeof(T).FullName, category: category, level: level);
         }
 
-        public static ILoggerBuilder AddFilter(this ILoggerBuilder builder, Func<string, string, LogLevel, bool> filter)
+        public static ILoggingBuilder AddFilter(this ILoggingBuilder builder, Func<string, string, LogLevel, bool> filter)
         {
             return AddRule(builder, filter: filter);
         }
 
-        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, Func<string, string, LogLevel, bool> filter) where T : ILoggerProvider
+        public static ILoggingBuilder AddFilter<T>(this ILoggingBuilder builder, Func<string, string, LogLevel, bool> filter) where T : ILoggerProvider
         {
             return AddRule(builder, type: typeof(T).FullName, filter: filter);
         }
 
-        public static ILoggerBuilder AddFilter(this ILoggerBuilder builder, Func<string, LogLevel, bool> categoryLevelFilter)
+        public static ILoggingBuilder AddFilter(this ILoggingBuilder builder, Func<string, LogLevel, bool> categoryLevelFilter)
         {
             return AddRule(builder, filter: (type, name, level) => categoryLevelFilter(name, level));
         }
 
-        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, Func<string, LogLevel, bool> categoryLevelFilter) where T : ILoggerProvider
+        public static ILoggingBuilder AddFilter<T>(this ILoggingBuilder builder, Func<string, LogLevel, bool> categoryLevelFilter) where T : ILoggerProvider
         {
             return AddRule(builder, type: typeof(T).FullName, filter: (type, name, level) => categoryLevelFilter(name, level));
         }
 
-        public static ILoggerBuilder AddFilter(this ILoggerBuilder builder, string category, Func<LogLevel, bool> levelFilter)
+        public static ILoggingBuilder AddFilter(this ILoggingBuilder builder, string category, Func<LogLevel, bool> levelFilter)
         {
             return AddRule(builder, category: category, filter: (type, name, level) => levelFilter(level));
         }
 
-        public static ILoggerBuilder AddFilter<T>(this ILoggerBuilder builder, string category, Func<LogLevel, bool> levelFilter) where T : ILoggerProvider
+        public static ILoggingBuilder AddFilter<T>(this ILoggingBuilder builder, string category, Func<LogLevel, bool> levelFilter) where T : ILoggerProvider
         {
             return AddRule(builder, type: typeof(T).FullName, category: category, filter: (type, name, level) => levelFilter(level));
         }
 
-        private static ILoggerBuilder AddRule(ILoggerBuilder builder,
+        private static ILoggingBuilder AddRule(ILoggingBuilder builder,
             string type = null,
             string category = null,
             LogLevel? level = null,

@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.Logging
         /// Adds an Azure Web Apps diagnostics logger.
         /// </summary>
         /// <param name="builder">The extension method argument</param>
-        public static ILoggerBuilder AddAzureWebAppDiagnostics(this ILoggerBuilder builder)
+        public static ILoggingBuilder AddAzureWebAppDiagnostics(this ILoggingBuilder builder)
         {
             return AddAzureWebAppDiagnostics(builder, null);
         }
@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="builder">The extension method argument</param>
         /// <param name="settings">The setting object to configure loggers.</param>
-        public static ILoggerBuilder AddAzureWebAppDiagnostics(this ILoggerBuilder builder, AzureAppServicesDiagnosticsSettings settings)
+        public static ILoggingBuilder AddAzureWebAppDiagnostics(this ILoggingBuilder builder, AzureAppServicesDiagnosticsSettings settings)
         {
             if (WebAppContext.Default.IsRunningInAzureWebApp)
             {
