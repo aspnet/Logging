@@ -41,7 +41,7 @@ namespace Microsoft.Extensions.Logging
                     if (logLevelSection != null)
                     {
                         // Load logger specific rules
-                        var logger = ExpandLoggerAlias(configurationSection.Key);
+                        var logger = configurationSection.Key;
                         LoadRules(options, logLevelSection, logger);
                     }
                 }
@@ -63,33 +63,6 @@ namespace Microsoft.Extensions.Logging
                     options.Rules.Add(newRule);
                 }
             }
-        }
-
-        public string ExpandLoggerAlias(string name)
-        {
-            switch (name)
-            {
-                case "Console":
-                    name = "Microsoft.Extensions.Logging.ConsoleLoggerProvider";
-                    break;
-                case "Debug":
-                    name = "Microsoft.Extensions.Logging.DebugLoggerProvider";
-                    break;
-                case "AzureAppServices":
-                    name = "Microsoft.Extensions.Logging.AzureAppServices.Internal.AzureAppServicesDiagnosticsLoggerProvider";
-                    break;
-                case "EventLog":
-                    name = "Microsoft.Extensions.Logging.EventLog.EventLogLoggerProvider";
-                    break;
-                case "TraceSource":
-                    name = "Microsoft.Extensions.Logging.TraceSource.TraceSourceLoggerProvider";
-                    break;
-                case "EventSource":
-                    name = "Microsoft.Extensions.Logging.EventSource.EventSourceLoggerProvider";
-                    break;
-            }
-
-            return name;
         }
 
         private static bool TryGetSwitch(string value, out LogLevel level)

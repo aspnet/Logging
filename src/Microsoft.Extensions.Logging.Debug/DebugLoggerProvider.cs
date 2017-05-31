@@ -8,6 +8,7 @@ namespace Microsoft.Extensions.Logging.Debug
     /// <summary>
     /// The provider for the <see cref="DebugLogger"/>.
     /// </summary>
+    [ProviderAlias("Debug")]
     public class DebugLoggerProvider : ILoggerProvider
     {
         private readonly Func<string, LogLevel, bool> _filter;

@@ -43,7 +43,7 @@ namespace Microsoft.Extensions.Logging
         {
             return providerType.GetTypeInfo()
                 .GetCustomAttribute<ProviderAliasAttribute>()
-                ?.Name;
+                ?.Alias;
         }
 
         private static bool IsBetter(LoggerFilterRule rule, LoggerFilterRule current, string logger, string category)
@@ -90,16 +90,5 @@ namespace Microsoft.Extensions.Logging
 
             return true;
         }
-    }
-
-    public class ProviderAliasAttribute: Attribute
-    {
-        public ProviderAliasAttribute(string name)
-        {
-            Name = name;
-        }
-
-        public string Name { get; }
-
     }
 }
