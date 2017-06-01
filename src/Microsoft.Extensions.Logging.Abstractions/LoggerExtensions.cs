@@ -13,6 +13,9 @@ namespace Microsoft.Extensions.Logging
     /// </summary>
     public static class LoggerExtensions
     {
+        private const string Debug = "DEBUG";
+        private const string Trace = "TRACE";
+        
         private static readonly Func<object, Exception, string> _messageFormatter = MessageFormatter;
 
         //------------------------------------------DEBUG------------------------------------------//
@@ -25,6 +28,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="exception">The exception to log.</param>
         /// <param name="message">Format string of the log message.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        [Conditional(Debug)]
         public static void LogDebug(this ILogger logger, EventId eventId, Exception exception, string message, params object[] args)
         {
             if (logger == null)
@@ -42,6 +46,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="eventId">The event id associated with the log.</param>
         /// <param name="message">Format string of the log message.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        [Conditional(Debug)]
         public static void LogDebug(this ILogger logger, EventId eventId, string message, params object[] args)
         {
             if (logger == null)
@@ -75,6 +80,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
         /// <param name="message">Format string of the log message.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        [Conditional(Debug)]
         public static void LogDebug(this ILogger logger, string message, params object[] args)
         {
             if (logger == null)
@@ -95,6 +101,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="exception">The exception to log.</param>
         /// <param name="message">Format string of the log message.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        [Conditional(Trace)]
         public static void LogTrace(this ILogger logger, EventId eventId, Exception exception, string message, params object[] args)
         {
             if (logger == null)
@@ -112,6 +119,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="eventId">The event id associated with the log.</param>
         /// <param name="message">Format string of the log message.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        [Conditional(Trace)]
         public static void LogTrace(this ILogger logger, EventId eventId, string message, params object[] args)
         {
             if (logger == null)
@@ -145,6 +153,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
         /// <param name="message">Format string of the log message.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        [Conditional(Trace)]
         public static void LogTrace(this ILogger logger, string message, params object[] args)
         {
             if (logger == null)
