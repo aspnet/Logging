@@ -3,7 +3,7 @@
   <Import Project="..\..\build\common.props" />
 
   <PropertyGroup>
-    <Description>Logging infrastructure default implementation for Microsoft.Extensions.Logging.</Description>
+    <Description>Configuration support for Microsoft.Extensions.Logging.</Description>
     <TargetFramework>netstandard1.1</TargetFramework>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
