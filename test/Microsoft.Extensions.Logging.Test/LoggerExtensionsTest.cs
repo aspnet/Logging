@@ -544,6 +544,83 @@ namespace Microsoft.Extensions.Logging.Test
         }
 
         [Fact]
+        public void LogValuesError_LogsCorrectValues()
+        {
+            // Arrange
+            var sink = new TestSink();
+            var logger = SetUp(sink);
+            var testLogValues = new TestLogValues()
+            {
+                Value = 1
+            };
+
+            // Act
+            logger.LogTrace(_exception, testLogValues.ToString());
+            logger.LogInformation(_exception, testLogValues.ToString());
+            logger.LogWarning(_exception, testLogValues.ToString());
+            logger.LogError(_exception, testLogValues.ToString());
+            logger.LogCritical(_exception, testLogValues.ToString());
+            logger.LogDebug(_exception, testLogValues.ToString());
+
+            // Assert
+            Assert.Equal(6, sink.Writes.Count);
+
+            var trace = sink.Writes[0];
+            Assert.Equal(LogLevel.Trace, trace.LogLevel);
+            Assert.Equal(testLogValues.ToString(), trace.State.ToString());
+            Assert.Equal(0, trace.EventId);
+            Assert.Equal(_exception, trace.Exception);
+            Assert.Equal(
+                "Test 1",
+                trace.Formatter(trace.State, trace.Exception));
+
+            var information = sink.Writes[1];
+            Assert.Equal(LogLevel.Information, information.LogLevel);
+            Assert.Equal(testLogValues.ToString(), information.State.ToString());
+            Assert.Equal(0, information.EventId);
+            Assert.Equal(_exception, information.Exception);
+            Assert.Equal(
+                "Test 1",
+                information.Formatter(information.State, information.Exception));
+
+            var warning = sink.Writes[2];
+            Assert.Equal(LogLevel.Warning, warning.LogLevel);
+            Assert.Equal(testLogValues.ToString(), warning.State.ToString());
+            Assert.Equal(0, warning.EventId);
+            Assert.Equal(_exception, warning.Exception);
+            Assert.Equal(
+                "Test 1",
+                warning.Formatter(warning.State, warning.Exception));
+
+            var error = sink.Writes[3];
+            Assert.Equal(LogLevel.Error, error.LogLevel);
+            Assert.Equal(testLogValues.ToString(), error.State.ToString());
+            Assert.Equal(0, error.EventId);
+            Assert.Equal(_exception, error.Exception);
+            Assert.Equal(
+                "Test 1",
+                error.Formatter(error.State, error.Exception));
+
+            var critical = sink.Writes[4];
+            Assert.Equal(LogLevel.Critical, critical.LogLevel);
+            Assert.Equal(testLogValues.ToString(), critical.State.ToString());
+            Assert.Equal(0, critical.EventId);
+            Assert.Equal(_exception, critical.Exception);
+            Assert.Equal(
+                "Test 1",
+                critical.Formatter(critical.State, critical.Exception));
+
+            var debug = sink.Writes[5];
+            Assert.Equal(LogLevel.Debug, debug.LogLevel);
+            Assert.Equal(testLogValues.ToString(), debug.State.ToString());
+            Assert.Equal(0, debug.EventId);
+            Assert.Equal(_exception, debug.Exception);
+            Assert.Equal(
+                "Test 1",
+                debug.Formatter(debug.State, debug.Exception));
+        }
+
+        [Fact]
         public void LogValuesEventIdAndError_LogsCorrectValues()
         {
             // Arrange
