@@ -136,7 +136,7 @@ Information Text 4
         }
     }
 
-    internal class TestAzureBlobSink : AzureBlobSink
+    internal class TestAzureBlobSink : AzureBlobLoggerProvider
     {
         public TestAzureBlobSink(Func<string, ICloudAppendBlob> blobReferenceFactory): base (blobReferenceFactory,
                 "appname",

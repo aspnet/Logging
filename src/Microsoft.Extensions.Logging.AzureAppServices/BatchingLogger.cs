@@ -6,40 +6,35 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Logging.AzureAppServices
 {
     public class FileLoggerProvider : BatchingLoggerProvider
     {
-        private readonly string path;
+        private readonly string _path;
         private readonly string _fileName;
-        private readonly int? maxFileSize;
-        private readonly int? maxRetainedFiles;
+        private readonly int? _maxFileSize;
+        private readonly int? _maxRetainedFiles;
 
-        public FileLoggerProvider(
-            string path,
-            string fileName,
-            int? maxFileSize,
-            int? maxRetainedFiles,
-            TimeSpan interval,
-            int? maxBatchSize,
-            int? maxQueueSize) : base(interval, maxBatchSize, maxQueueSize)
+        public FileLoggerProvider(IOptions<AzureDiagnosticsFileLoggerOptions> options) : base(options)
         {
-            this.path = path;
-            _fileName = fileName;
-            this.maxFileSize = maxFileSize;
-            this.maxRetainedFiles = maxRetainedFiles;
+            var loggerOptions = options.Value;
+            _path = loggerOptions.LogDirectory;
+            _fileName = loggerOptions.FileName;
+            _maxFileSize = loggerOptions.FileSizeLimit;
+            _maxRetainedFiles = loggerOptions.RetainedFileCountLimit;
         }
 
         protected override async Task WriteMessagesAsync(IEnumerable<LogMessage> messages)
         {
-            Directory.CreateDirectory(path);
+            Directory.CreateDirectory(_path);
 
             foreach (var group in messages.GroupBy(GetGrouping))
             {
                 var fullName = GetFullName(group.Key);
                 var fileInfo = new FileInfo(fullName);
-                if (maxFileSize > 0 && fileInfo.Exists && fileInfo.Length > maxFileSize)
+                if (_maxFileSize > 0 && fileInfo.Exists && fileInfo.Length > _maxFileSize)
                 {
                     return;
                 }
@@ -58,22 +53,22 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
 
         private string GetFullName((int Year, int Month, int Day) group)
         {
-            return Path.Combine(path, $"{_fileName}.{group.Year:0000}{group.Month:00}{group.Day:00}.log");
+            return Path.Combine(_path, $"{_fileName}.{group.Year:0000}{group.Month:00}{group.Day:00}.txt");
         }
-        
+
         public (int Year, int Month, int Day) GetGrouping(LogMessage message)
         {
-            return (message.TimeSpan.Year, message.TimeSpan.Month, message.TimeSpan.Day);
+            return (message.Timestamp.Year, message.Timestamp.Month, message.Timestamp.Day);
         }
 
         protected void RollFiles()
         {
-            if (maxRetainedFiles > 0)
+            if (_maxRetainedFiles > 0)
             {
-                var files = new DirectoryInfo(path)
+                var files = new DirectoryInfo(_path)
                     .GetFiles(_fileName + "*")
                     .OrderByDescending(f => f.CreationTime)
-                    .Skip(maxRetainedFiles.Value);
+                    .Skip(_maxRetainedFiles.Value);
 
                 foreach (var item in files)
                 {
@@ -83,7 +78,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         }
     }
 
-    public abstract class BatchingLoggerProvider: IDisposable, ILoggerProvider
+    public abstract class BatchingLoggerProvider: ILoggerProvider
     {
         private readonly List<LogMessage> _currentBatch = new List<LogMessage>();
         private readonly TimeSpan _interval;
@@ -93,19 +88,29 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly int? _batchSize;
 
-        protected BatchingLoggerProvider(TimeSpan interval, int? maxBatchSize, int? maxQueueSize)
+        protected BatchingLoggerProvider(IOptions<BatchingLoggerOptions> options)
         {
-            if (maxQueueSize == null)
+            var loggerOptions = options.Value;
+            if (loggerOptions.BatchSize <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(loggerOptions.BatchSize), $"{nameof(loggerOptions.BatchSize)} must be a positive number.");
+            }
+            if (loggerOptions.FlushPeriod <= TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(loggerOptions.FlushPeriod), $"{nameof(loggerOptions.FlushPeriod)} must be longer than zero.");
+            }
+
+            if (loggerOptions.BackgroundQueueSize == 0)
             {
                 _messageQueue = new BlockingCollection<LogMessage>(new ConcurrentQueue<LogMessage>());
             }
             else
             {
-                _messageQueue = new BlockingCollection<LogMessage>(new ConcurrentQueue<LogMessage>(), maxQueueSize.Value);
+                _messageQueue = new BlockingCollection<LogMessage>(new ConcurrentQueue<LogMessage>(), loggerOptions.BackgroundQueueSize);
             }
 
-            _interval = interval;
-            _batchSize = maxBatchSize;
+            _interval = loggerOptions.FlushPeriod;
+            _batchSize = loggerOptions.BatchSize;
             _cancellationTokenSource = new CancellationTokenSource();
             _outputTask = Task.Factory.StartNew(
                 ProcessLogQueue,
@@ -119,7 +124,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         {
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
-                var limit = _batchSize ?? int.MaxValue;
+                var limit = _batchSize == 0 ? int.MaxValue : _batchSize;
 
                 while (limit > 0 && _messageQueue.TryTake(out var message))
                 {
@@ -156,11 +161,11 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
             {
                 try
                 {
-                    _messageQueue.Add(new LogMessage() { Message = message, TimeSpan = timestamp }, _cancellationTokenSource.Token);
+                    _messageQueue.Add(new LogMessage() { Message = message, Timestamp = timestamp }, _cancellationTokenSource.Token);
                 }
                 catch
                 {
-                    //cancellation token cancelled or CompleteAdding called
+                    //cancellation token canceled or CompleteAdding called
                 }
             }
         }
@@ -187,14 +192,14 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
 
     public struct LogMessage
     {
-        public DateTimeOffset TimeSpan { get; set; }
+        public DateTimeOffset Timestamp { get; set; }
         public string Message { get; set; }
     }
 
     public class BatchingLogger : ILogger
     {
-        private BatchingLoggerProvider _provider;
-        private string _category;
+        private readonly BatchingLoggerProvider _provider;
+        private readonly string _category;
 
         public BatchingLogger(BatchingLoggerProvider loggerProvider, string categoryName)
         {
@@ -211,6 +216,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         {
             return true;
         }
+
         public void Log<TState>(DateTimeOffset timestamp, LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             var builder = new StringBuilder();
