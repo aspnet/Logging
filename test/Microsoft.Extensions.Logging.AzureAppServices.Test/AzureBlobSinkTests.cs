@@ -8,12 +8,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.AzureAppServices.Internal;
+using Microsoft.Extensions.Logging.AzureAppServices;
 using Microsoft.WindowsAzure.Storage;
 using Moq;
-using Serilog.Events;
-using Serilog.Formatting.Display;
-using Serilog.Parsing;
 using Xunit;
 
 namespace Microsoft.Extensions.Logging.AzureAppServices.Test

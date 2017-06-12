@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
 
         public FileLoggerTests()
         {
-            TempPath = Path.GetTempFileName() + "_";   
+            TempPath = Path.GetTempFileName() + "_";
         }
 
         public string TempPath { get; }
@@ -241,7 +241,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
                 Batches.Add(messages.ToArray());
                 return Task.CompletedTask;
             }
-            
+
             protected override Task IntervalAsync(TimeSpan interval, CancellationToken cancellationToken)
             {
                 return IntervalControl.IntervalAsync();
