@@ -29,10 +29,10 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         /// <summary>
         /// Gets of sets the SAS endpoint where blob logs are stored.
         /// </summary>
-        internal string ContainerUrl { get; set; }
+        public string ContainerUrl { get; set; }
 
-        internal string ApplicationName { get; set; }
+        public string ApplicationName { get; set; }
 
-        internal string ApplicationInstanceId { get; set; }
+        public string ApplicationInstanceId { get; set; }
     }
 }

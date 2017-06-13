@@ -4,8 +4,8 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
 {
     public class BatchingLoggerOptions
     {
-        private int _batchSize = 32;
-        private int _backgroundQueueSize;
+        private int? _batchSize = 32;
+        private int? _backgroundQueueSize;
         private TimeSpan _flushPeriod = TimeSpan.FromSeconds(1);
 
         /// <summary>
@@ -25,11 +25,11 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         }
 
         /// <summary>
-        /// Gets or sets the maximum size of the background log message queue or 0 for no limit.
+        /// Gets or sets the maximum size of the background log message queue or null for no limit.
         /// After maximum queue size is reached log event sink would start blocking.
-        /// Defaults to <c>0</c>.
+        /// Defaults to <c>null</c>.
         /// </summary>
-        public int BackgroundQueueSize
+        public int? BackgroundQueueSize
         {
             get { return _backgroundQueueSize; }
             set
@@ -46,7 +46,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         /// Gets or sets a maximum number of events to include in a single blob append batch.
         /// Defaults to <c>32</c>.
         /// </summary>
-        public int BatchSize
+        public int? BatchSize
         {
             get { return _batchSize; }
             set
@@ -59,5 +59,6 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
             }
         }
 
+        public bool IsEnabled { get; set; }
     }
 }

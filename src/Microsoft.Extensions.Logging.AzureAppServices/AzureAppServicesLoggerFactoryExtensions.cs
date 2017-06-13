@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.Logging
             var context = WebAppContext.Default;
             if (context.IsRunningInAzureWebApp)
             {
-                var config = new AzureConfigProvider().GetAzureLoggingConfiguration(context);
+                var config = AzureDiagnosticsConfigurationProvider.GetAzureLoggingConfiguration(context);
 
                 builder.Services.AddSingleton<IConfigureOptions<AzureDiagnosticsFileLoggerOptions>, AzureFileLoggerConfigureOptions>();
                 builder.Services.AddSingleton<IConfigureOptions<LoggerFilterOptions>>(CreateFileFilterConfigureOptions(config));
@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.Logging
 
                 builder.Services.Configure<AzureBlobLoggerConfigureOptions>(config);
 
-                builder.Services.AddSingleton(context);
+                builder.Services.AddSingleton<IWebAppContext>(context);
 
                 // Only add the provider if we're in Azure WebApp. That cannot change once the apps started
                 builder.Services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
@@ -48,8 +48,7 @@ namespace Microsoft.Extensions.Logging
             return new ConfigurationBasedLevelSwitcher(
                 configuration: config,
                 provider: typeof(AzureBlobLoggerProvider),
-                levelKey: "AzureBlobTraceLevel",
-                enableKey: "AzureBlobEnabled");
+                levelKey: "AzureBlobTraceLevel");
         }
 
         private static ConfigurationBasedLevelSwitcher CreateFileFilterConfigureOptions(IConfiguration config)
@@ -57,8 +56,7 @@ namespace Microsoft.Extensions.Logging
             return new ConfigurationBasedLevelSwitcher(
                 configuration: config,
                 provider: typeof(FileLoggerProvider),
-                levelKey: "AzureDriveTraceLevel",
-                enableKey: "AzureDriveEnabled");
+                levelKey: "AzureDriveTraceLevel");
         }
 
         /// <summary>
@@ -80,13 +78,13 @@ namespace Microsoft.Extensions.Logging
             var context = WebAppContext.Default;
             if (context.IsRunningInAzureWebApp)
             {
-                var config = new AzureConfigProvider().GetAzureLoggingConfiguration(context);
+                var config = AzureDiagnosticsConfigurationProvider.GetAzureLoggingConfiguration(context);
 
                 // Only add the provider if we're in Azure WebApp. That cannot change once the apps started
-                var fileOptions = new OptionsManager<AzureDiagnosticsFileLoggerOptions>(
+                var fileOptions = new OptionsMonitor<AzureDiagnosticsFileLoggerOptions>(
                     new IConfigureOptions<AzureDiagnosticsFileLoggerOptions>[]
                     {
-                        new AzureFileLoggerConfigureOptions(context),
+                        new AzureFileLoggerConfigureOptions(config, context),
                         new ConfigureOptions<AzureDiagnosticsFileLoggerOptions>(options =>
                         {
                             options.FileSizeLimit = settings.FileSizeLimit;
@@ -97,12 +95,16 @@ namespace Microsoft.Extensions.Logging
                                 options.FlushPeriod = settings.FileFlushPeriod.Value;
                             }
                         })
+                    },
+                    new []
+                    {
+                        new ConfigurationChangeTokenSource<AzureDiagnosticsFileLoggerOptions>(config)
                     }
                     );
 
-                var blobOptions = new OptionsManager<AzureDiagnosticsBlobLoggerOptions>(
+                var blobOptions = new OptionsMonitor<AzureDiagnosticsBlobLoggerOptions>(
                     new IConfigureOptions<AzureDiagnosticsBlobLoggerOptions>[] {
-                        new AzureBlobLoggerConfigureOptions(config),
+                        new AzureBlobLoggerConfigureOptions(config, context),
                         new ConfigureOptions<AzureDiagnosticsBlobLoggerOptions>(options =>
                         {
                             options.BlobName = settings.BlobName;
@@ -110,6 +112,10 @@ namespace Microsoft.Extensions.Logging
                             options.FlushPeriod = settings.BlobCommitPeriod;
                             options.BatchSize = settings.BlobBatchSize;
                         })
+                    },
+                    new[]
+                    {
+                        new ConfigurationChangeTokenSource<AzureDiagnosticsBlobLoggerOptions>(config)
                     }
                     );
 

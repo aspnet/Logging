@@ -3,20 +3,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.AzureAppServices;
 using Microsoft.WindowsAzure.Storage;
 using Moq;
 using Xunit;
+using Microsoft.Extensions.Logging.AzureAppServices.Internal;
 
 namespace Microsoft.Extensions.Logging.AzureAppServices.Test
 {
     public class AzureBlobSinkTests
     {
+        DateTimeOffset _timestampOne = new DateTimeOffset(2016, 05, 04, 03, 02, 01, TimeSpan.Zero);
+
         [Fact]
         public async Task WritesMessagesInBatches()
         {
@@ -25,22 +25,26 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             blob.Setup(b => b.OpenWriteAsync()).Returns(() => Task.FromResult((Stream)new TestMemoryStream(buffers)));
 
             var sink = new TestAzureBlobSink(name => blob.Object);
+            var logger = (BatchingLogger)sink.CreateLogger("Cat");
 
-            var events = new List<LogEvent>();
+            await sink.IntervalControl.Pause;
 
             for (int i = 0; i < 5; i++)
             {
-                events.Add(CreateEvent(DateTime.Now, "Text "+i));
+                logger.Log(_timestampOne, LogLevel.Information, 0, "Text " + i, null, (state, ex) => state);
             }
-            await sink.DoEmitBatchInternalAsync(events.ToArray());
+
+            sink.IntervalControl.Resume();
+            await sink.IntervalControl.Pause;
 
             Assert.Equal(1, buffers.Count);
-            Assert.Equal(@"Information Text 0
-Information Text 1
-Information Text 2
-Information Text 3
-Information Text 4
-", Encoding.UTF8.GetString(buffers[0]));
+            Assert.Equal(
+                "2016-05-04 03:02:01.000 +00:00 [Information] Cat: Text 0" + Environment.NewLine +
+                "2016-05-04 03:02:01.000 +00:00 [Information] Cat: Text 1" + Environment.NewLine +
+                "2016-05-04 03:02:01.000 +00:00 [Information] Cat: Text 2" + Environment.NewLine +
+                "2016-05-04 03:02:01.000 +00:00 [Information] Cat: Text 3" + Environment.NewLine +
+                "2016-05-04 03:02:01.000 +00:00 [Information] Cat: Text 4" + Environment.NewLine,
+                Encoding.UTF8.GetString(buffers[0]));
         }
 
         [Fact]
@@ -57,22 +61,26 @@ Information Text 4
                 names.Add(name);
                 return blob.Object;
             });
+            var logger = (BatchingLogger)sink.CreateLogger("Cat");
 
-            var events = new List<LogEvent>();
-            var startDate = new DateTime(2016, 8, 29, 22, 0, 0);
+            await sink.IntervalControl.Pause;
+
+            var startDate = _timestampOne;
             for (int i = 0; i < 3; i++)
             {
-                var addHours = startDate.AddHours(i);
-                events.Add(CreateEvent(addHours, "Text"));
+                logger.Log(startDate, LogLevel.Information, 0, "Text " + i, null, (state, ex) => state);
+
+                startDate = startDate.AddHours(1);
             }
 
-            await sink.DoEmitBatchInternalAsync(events.ToArray());
+            sink.IntervalControl.Resume();
+            await sink.IntervalControl.Pause;
 
             Assert.Equal(3, buffers.Count);
 
-            Assert.Equal("appname/2016/08/29/22/filename", names[0]);
-            Assert.Equal("appname/2016/08/29/23/filename", names[1]);
-            Assert.Equal("appname/2016/08/30/00/filename", names[2]);
+            Assert.Equal("appname/2016/05/04/03/42_filename", names[0]);
+            Assert.Equal("appname/2016/05/04/04/42_filename", names[1]);
+            Assert.Equal("appname/2016/05/04/05/42_filename", names[2]);
         }
 
         [Fact]
@@ -88,7 +96,7 @@ Information Text 4
                 {
                     throw new StorageException(new RequestResult() { HttpStatusCode = 404 }, string.Empty, null);
                 }
-                return Task.FromResult((Stream) new TestMemoryStream(buffers));
+                return Task.FromResult((Stream)new TestMemoryStream(buffers));
             });
 
             blob.Setup(b => b.CreateAsync()).Returns(() =>
@@ -98,22 +106,18 @@ Information Text 4
             });
 
             var sink = new TestAzureBlobSink(name => blob.Object);
-            await sink.DoEmitBatchInternalAsync(new[] {CreateEvent(DateTime.Now, "Text")});
+            var logger = (BatchingLogger)sink.CreateLogger("Cat");
+
+            await sink.IntervalControl.Pause;
+
+            logger.Log(_timestampOne, LogLevel.Information, 0, "Text", null, (state, ex) => state);
+
+
+            sink.IntervalControl.Resume();
+            await sink.IntervalControl.Pause;
 
             Assert.Equal(1, buffers.Count);
             Assert.True(created);
-        }
-
-        private static LogEvent CreateEvent(DateTime addHours, string text)
-        {
-            MessageTemplateParser p = new MessageTemplateParser();
-            var tempd = p.Parse(text);
-            return new LogEvent(
-                new DateTimeOffset(addHours),
-                LogEventLevel.Information,
-                null,
-                tempd,
-                Enumerable.Empty<LogEventProperty>());
         }
 
         private class TestMemoryStream : MemoryStream
@@ -130,23 +134,6 @@ Information Text 4
                 Buffers.Add(ToArray());
                 base.Dispose(disposing);
             }
-        }
-    }
-
-    internal class TestAzureBlobSink : AzureBlobLoggerProvider
-    {
-        public TestAzureBlobSink(Func<string, ICloudAppendBlob> blobReferenceFactory): base (blobReferenceFactory,
-                "appname",
-                "filename",
-                new MessageTemplateTextFormatter("{Level} {Message}{NewLine}", CultureInfo.InvariantCulture),
-                10,
-                TimeSpan.FromSeconds(0.1))
-        {
-        }
-
-        public Task DoEmitBatchInternalAsync(IEnumerable<LogEvent> events)
-        {
-            return EmitBatchAsync(events);
         }
     }
 }

@@ -1,97 +1,32 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Logging.AzureAppServices
 {
-    public class FileLoggerProvider : BatchingLoggerProvider
-    {
-        private readonly string _path;
-        private readonly string _fileName;
-        private readonly int? _maxFileSize;
-        private readonly int? _maxRetainedFiles;
-
-        public FileLoggerProvider(IOptions<AzureDiagnosticsFileLoggerOptions> options) : base(options)
-        {
-            var loggerOptions = options.Value;
-            _path = loggerOptions.LogDirectory;
-            _fileName = loggerOptions.FileName;
-            _maxFileSize = loggerOptions.FileSizeLimit;
-            _maxRetainedFiles = loggerOptions.RetainedFileCountLimit;
-        }
-
-        protected override async Task WriteMessagesAsync(IEnumerable<LogMessage> messages)
-        {
-            Directory.CreateDirectory(_path);
-
-            foreach (var group in messages.GroupBy(GetGrouping))
-            {
-                var fullName = GetFullName(group.Key);
-                var fileInfo = new FileInfo(fullName);
-                if (_maxFileSize > 0 && fileInfo.Exists && fileInfo.Length > _maxFileSize)
-                {
-                    return;
-                }
-
-                using (var streamWriter = File.AppendText(fullName))
-                {
-                    foreach (var item in group)
-                    {
-                        await streamWriter.WriteAsync(item.Message);
-                    }
-                }
-            }
-
-            RollFiles();
-        }
-
-        private string GetFullName((int Year, int Month, int Day) group)
-        {
-            return Path.Combine(_path, $"{_fileName}.{group.Year:0000}{group.Month:00}{group.Day:00}.txt");
-        }
-
-        public (int Year, int Month, int Day) GetGrouping(LogMessage message)
-        {
-            return (message.Timestamp.Year, message.Timestamp.Month, message.Timestamp.Day);
-        }
-
-        protected void RollFiles()
-        {
-            if (_maxRetainedFiles > 0)
-            {
-                var files = new DirectoryInfo(_path)
-                    .GetFiles(_fileName + "*")
-                    .OrderByDescending(f => f.CreationTime)
-                    .Skip(_maxRetainedFiles.Value);
-
-                foreach (var item in files)
-                {
-                    item.Delete();
-                }
-            }
-        }
-    }
-
     public abstract class BatchingLoggerProvider: ILoggerProvider
     {
         private readonly List<LogMessage> _currentBatch = new List<LogMessage>();
         private readonly TimeSpan _interval;
 
         private readonly BlockingCollection<LogMessage> _messageQueue;
-        private readonly Task _outputTask;
-        private readonly CancellationTokenSource _cancellationTokenSource;
+        private Task _outputTask;
+        private CancellationTokenSource _cancellationTokenSource;
         private readonly int? _batchSize;
+        private bool _isEnabled;
+        private IDisposable _optionsChangeToken;
 
-        protected BatchingLoggerProvider(IOptions<BatchingLoggerOptions> options)
+        protected BatchingLoggerProvider(IOptionsMonitor<BatchingLoggerOptions> options)
         {
-            var loggerOptions = options.Value;
-            if (loggerOptions.BatchSize <= 0)
+            // NOTE: Only IsEnabled is monitored
+
+            var loggerOptions = options.CurrentValue;
+            if (loggerOptions.BatchSize < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(loggerOptions.BatchSize), $"{nameof(loggerOptions.BatchSize)} must be a positive number.");
             }
@@ -100,22 +35,38 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
                 throw new ArgumentOutOfRangeException(nameof(loggerOptions.FlushPeriod), $"{nameof(loggerOptions.FlushPeriod)} must be longer than zero.");
             }
 
-            if (loggerOptions.BackgroundQueueSize == 0)
+            if (loggerOptions.BackgroundQueueSize == null)
             {
                 _messageQueue = new BlockingCollection<LogMessage>(new ConcurrentQueue<LogMessage>());
             }
             else
             {
-                _messageQueue = new BlockingCollection<LogMessage>(new ConcurrentQueue<LogMessage>(), loggerOptions.BackgroundQueueSize);
+                _messageQueue = new BlockingCollection<LogMessage>(new ConcurrentQueue<LogMessage>(), loggerOptions.BackgroundQueueSize.Value);
             }
 
             _interval = loggerOptions.FlushPeriod;
             _batchSize = loggerOptions.BatchSize;
-            _cancellationTokenSource = new CancellationTokenSource();
-            _outputTask = Task.Factory.StartNew(
-                ProcessLogQueue,
-                null,
-                TaskCreationOptions.LongRunning);
+
+            _optionsChangeToken = options.OnChange(UpdateOptions);
+            UpdateOptions(options.CurrentValue);
+        }
+
+        private void UpdateOptions(BatchingLoggerOptions options)
+        {
+            var oldIsEnabled = _isEnabled;
+            _isEnabled = options.IsEnabled;
+            if (oldIsEnabled != _isEnabled)
+            {
+                if (_isEnabled)
+                {
+                    Start();
+                }
+                else
+                {
+                    Stop();
+                }
+            }
+
         }
 
         protected abstract Task WriteMessagesAsync(IEnumerable<LogMessage> messages);
@@ -124,7 +75,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         {
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
-                var limit = _batchSize == 0 ? int.MaxValue : _batchSize;
+                var limit = _batchSize ?? int.MaxValue;
 
                 while (limit > 0 && _messageQueue.TryTake(out var message))
                 {
@@ -161,7 +112,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
             {
                 try
                 {
-                    _messageQueue.Add(new LogMessage() { Message = message, Timestamp = timestamp }, _cancellationTokenSource.Token);
+                    _messageQueue.Add(new LogMessage { Message = message, Timestamp = timestamp }, _cancellationTokenSource.Token);
                 }
                 catch
                 {
@@ -170,7 +121,16 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
             }
         }
 
-        public void Dispose()
+        private void Start()
+        {
+            _cancellationTokenSource = new CancellationTokenSource();
+            _outputTask = Task.Factory.StartNew(
+                ProcessLogQueue,
+                null,
+                TaskCreationOptions.LongRunning);
+        }
+
+        private void Stop()
         {
             _cancellationTokenSource.Cancel();
             _messageQueue.CompleteAdding();
@@ -179,12 +139,30 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
             {
                 _outputTask.Wait(_interval);
             }
-            catch (TaskCanceledException) { }
-            catch (AggregateException ex) when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException) { }
+            catch (TaskCanceledException)
+            {
+            }
+            catch (AggregateException ex) when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException)
+            {
+            }
+        }
+
+        public void Dispose()
+        {
+            _optionsChangeToken?.Dispose();
+            if (_isEnabled)
+            {
+                Stop();
+            }
         }
 
         public ILogger CreateLogger(string categoryName)
         {
+            if (!_isEnabled)
+            {
+                return NullLogger.Instance;
+            }
+
             return new BatchingLogger(this, categoryName);
         }
 

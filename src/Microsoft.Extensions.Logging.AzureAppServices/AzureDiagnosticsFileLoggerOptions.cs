@@ -4,8 +4,8 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
 {
     public class AzureDiagnosticsFileLoggerOptions: BatchingLoggerOptions
     {
-        private int _fileSizeLimit = 10 * 1024 * 1024;
-        private int _retainedFileCountLimit = 2;
+        private int? _fileSizeLimit = 10 * 1024 * 1024;
+        private int? _retainedFileCountLimit = 2;
         private string _fileName = "diagnostics-";
 
         /// <summary>
@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         /// Once the log is full, no more messages will be appended.
         /// Defaults to <c>10MB</c>.
         /// </summary>
-        public int FileSizeLimit
+        public int? FileSizeLimit
         {
             get { return _fileSizeLimit; }
             set
@@ -30,7 +30,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         /// Gets or sets a strictly positive value representing the maximum retained file count.
         /// Defaults to <c>2</c>.
         /// </summary>
-        public int RetainedFileCountLimit
+        public int? RetainedFileCountLimit
         {
             get { return _retainedFileCountLimit; }
             set
@@ -60,6 +60,6 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
             }
         }
 
-        internal string LogDirectory { get; set; }
+        public string LogDirectory { get; set; }
     }
 }

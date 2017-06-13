@@ -26,16 +26,21 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
         /// Creates a new instance of <see cref="AzureBlobLoggerProvider"/>
         /// </summary>
         /// <param name="options"></param>
-        internal AzureBlobLoggerProvider(IOptions<AzureDiagnosticsBlobLoggerOptions> options)
+        public AzureBlobLoggerProvider(IOptionsMonitor<AzureDiagnosticsBlobLoggerOptions> options)
             : this(options,
-                   GetDefaultBlobReferenceFactory(options))
+                   GetDefaultBlobReferenceFactory(options.CurrentValue))
         {
         }
 
-        private static Func<string, ICloudAppendBlob> GetDefaultBlobReferenceFactory(IOptions<AzureDiagnosticsBlobLoggerOptions> options)
+        private static Func<string, ICloudAppendBlob> GetDefaultBlobReferenceFactory(AzureDiagnosticsBlobLoggerOptions options)
         {
-            var container = new CloudBlobContainer(new Uri(options.Value.ContainerUrl));
-            return name => new BlobAppendReferenceWrapper(container.GetAppendBlobReference(name));
+            CloudBlobContainer container = null;
+            // Delay initialize container in case logger starts disabled
+            return name =>
+            {
+                container = container ?? new CloudBlobContainer(new Uri(options.ContainerUrl));
+                return new BlobAppendReferenceWrapper(container.GetAppendBlobReference(name));
+            };
         }
 
         /// <summary>
@@ -43,12 +48,12 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
         /// </summary>
         /// <param name="blobReferenceFactory">The container to store logs to.</param>
         /// <param name="options"></param>
-        internal AzureBlobLoggerProvider(
-            IOptions<AzureDiagnosticsBlobLoggerOptions> options,
+        public AzureBlobLoggerProvider(
+            IOptionsMonitor<AzureDiagnosticsBlobLoggerOptions> options,
             Func<string, ICloudAppendBlob> blobReferenceFactory) :
             base(options)
         {
-            var value = options.Value;
+            var value = options.CurrentValue;
             _appName = value.ApplicationName;
             _fileName = value.ApplicationInstanceId + "_" + value.BlobName;
             _blobReferenceFactory = blobReferenceFactory;
