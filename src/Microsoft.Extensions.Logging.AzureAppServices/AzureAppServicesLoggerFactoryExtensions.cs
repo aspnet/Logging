@@ -36,9 +36,9 @@ namespace Microsoft.Extensions.Logging
                 builder.Services.AddSingleton<IOptionsChangeTokenSource<AzureBlobLoggerOptions>>(
                     new ConfigurationChangeTokenSource<AzureBlobLoggerOptions>(config));
 
-                builder.Services.AddSingleton<IConfigureOptions<FileLoggerOptions>>(new FileLoggerConfigureOptions(config, context));
-                builder.Services.AddSingleton<IOptionsChangeTokenSource<FileLoggerOptions>>(
-                    new ConfigurationChangeTokenSource<FileLoggerOptions>(config));
+                builder.Services.AddSingleton<IConfigureOptions<AzureFileLoggerOptions>>(new FileLoggerConfigureOptions(config, context));
+                builder.Services.AddSingleton<IOptionsChangeTokenSource<AzureFileLoggerOptions>>(
+                    new ConfigurationChangeTokenSource<AzureFileLoggerOptions>(config));
 
                 builder.Services.AddSingleton<IWebAppContext>(context);
 
@@ -88,15 +88,16 @@ namespace Microsoft.Extensions.Logging
                 var config = SiteConfigurationProvider.GetAzureLoggingConfiguration(context);
 
                 // Only add the provider if we're in Azure WebApp. That cannot change once the apps started
-                var fileOptions = new OptionsMonitor<FileLoggerOptions>(
-                    new IConfigureOptions<FileLoggerOptions>[]
+                var fileOptions = new OptionsMonitor<AzureFileLoggerOptions>(
+                    new IConfigureOptions<AzureFileLoggerOptions>[]
                     {
                         new FileLoggerConfigureOptions(config, context),
-                        new ConfigureOptions<FileLoggerOptions>(options =>
+                        new ConfigureOptions<AzureFileLoggerOptions>(options =>
                         {
                             options.FileSizeLimit = settings.FileSizeLimit;
                             options.RetainedFileCountLimit = settings.RetainedFileCountLimit;
-                            options.BackgroundQueueSize = settings.BackgroundQueueSize;
+                            options.BackgroundQueueSize = settings.BackgroundQueueSize == 0 ? (int?) null : settings.BackgroundQueueSize;
+
                             if (settings.FileFlushPeriod != null)
                             {
                                 options.FlushPeriod = settings.FileFlushPeriod.Value;
@@ -105,7 +106,7 @@ namespace Microsoft.Extensions.Logging
                     },
                     new []
                     {
-                        new ConfigurationChangeTokenSource<FileLoggerOptions>(config)
+                        new ConfigurationChangeTokenSource<AzureFileLoggerOptions>(config)
                     }
                     );
 
@@ -115,9 +116,9 @@ namespace Microsoft.Extensions.Logging
                         new ConfigureOptions<AzureBlobLoggerOptions>(options =>
                         {
                             options.BlobName = settings.BlobName;
-                            options.BackgroundQueueSize = settings.BackgroundQueueSize;
                             options.FlushPeriod = settings.BlobCommitPeriod;
                             options.BatchSize = settings.BlobBatchSize;
+                            options.BackgroundQueueSize = settings.BackgroundQueueSize == 0 ? (int?) null : settings.BackgroundQueueSize;
                         })
                     },
                     new[]

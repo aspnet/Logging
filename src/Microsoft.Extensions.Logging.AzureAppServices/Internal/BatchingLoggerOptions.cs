@@ -46,8 +46,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
         }
 
         /// <summary>
-        /// Gets or sets a maximum number of events to include in a single blob append batch.
-        /// Defaults to <c>32</c>.
+        /// Gets or sets a maximum number of events to include in a single batch.
         /// </summary>
         public int? BatchSize
         {

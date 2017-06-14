@@ -1,9 +1,15 @@
-﻿using System;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 using Microsoft.Extensions.Logging.AzureAppServices.Internal;
 
 namespace Microsoft.Extensions.Logging.AzureAppServices
 {
-    public class FileLoggerOptions: BatchingLoggerOptions
+    /// <summary>
+    /// Options for Azure diagnostics file logging.
+    /// </summary>
+    public class AzureFileLoggerOptions: BatchingLoggerOptions
     {
         private int? _fileSizeLimit = 10 * 1024 * 1024;
         private int? _retainedFileCountLimit = 2;

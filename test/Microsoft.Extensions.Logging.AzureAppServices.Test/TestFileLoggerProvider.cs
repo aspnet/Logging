@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             string fileName = "LogFile.",
             int maxFileSize = 32_000,
             int maxRetainedFiles = 100)
-            : base(new OptionsWrapperMonitor<FileLoggerOptions>(new FileLoggerOptions()
+            : base(new OptionsWrapperMonitor<AzureFileLoggerOptions>(new AzureFileLoggerOptions()
         {
             LogDirectory = path,
             FileName = fileName,

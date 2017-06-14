@@ -6,8 +6,16 @@ using Microsoft.Extensions.Logging.AzureAppServices.Internal;
 
 namespace Microsoft.Extensions.Logging.AzureAppServices
 {
+    /// <summary>
+    /// Options for Azure diagnostics blob logging.
+    /// </summary>
     public class AzureBlobLoggerOptions: BatchingLoggerOptions
     {
+        public AzureBlobLoggerOptions()
+        {
+            BatchSize = 32;
+        }
+
         private string _blobName = "applicationLog.txt";
 
         /// <summary>

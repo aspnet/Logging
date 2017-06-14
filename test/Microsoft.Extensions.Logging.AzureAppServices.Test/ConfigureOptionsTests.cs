@@ -41,7 +41,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             var contextMock = new Mock<IWebAppContext>();
             contextMock.SetupGet(c => c.HomeFolder).Returns("Home");
 
-            var options = new FileLoggerOptions();
+            var options = new AzureFileLoggerOptions();
             new FileLoggerConfigureOptions(configuration, contextMock.Object).Configure(options);
 
             Assert.Equal(Path.Combine("Home", "LogFiles", "Application"), options.LogDirectory);

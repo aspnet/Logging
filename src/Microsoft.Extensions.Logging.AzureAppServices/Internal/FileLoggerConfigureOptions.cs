@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
 {
-    public class FileLoggerConfigureOptions : BatchLoggerConfigureOptions, IConfigureOptions<FileLoggerOptions>
+    public class FileLoggerConfigureOptions : BatchLoggerConfigureOptions, IConfigureOptions<AzureFileLoggerOptions>
     {
         private readonly IWebAppContext _context;
 
@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
             _context = context;
         }
 
-        public void Configure(FileLoggerOptions options)
+        public void Configure(AzureFileLoggerOptions options)
         {
             base.Configure(options);
             options.LogDirectory = Path.Combine(_context.HomeFolder, "LogFiles", "Application");
