@@ -1,7 +1,10 @@
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging.AzureAppServices.Internal;
 
 namespace Microsoft.Extensions.Logging.AzureAppServices.Test
 {
@@ -11,10 +14,10 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
 
         public TestFileLoggerProvider(
             string path,
-            string fileName = "LogFile",
+            string fileName = "LogFile.",
             int maxFileSize = 32_000,
             int maxRetainedFiles = 100)
-            : base(new OptionsWrapperMonitor<AzureDiagnosticsFileLoggerOptions>(new AzureDiagnosticsFileLoggerOptions()
+            : base(new OptionsWrapperMonitor<FileLoggerOptions>(new FileLoggerOptions()
         {
             LogDirectory = path,
             FileName = fileName,

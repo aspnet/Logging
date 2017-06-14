@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             var buffers = new List<byte[]>();
             blob.Setup(b => b.OpenWriteAsync(It.IsAny<CancellationToken>())).Returns(() => Task.FromResult((Stream)new TestMemoryStream(buffers)));
 
-            var sink = new TestAzureBlobSink(name => blob.Object);
+            var sink = new TestBlobSink(name => blob.Object);
             var logger = (BatchingLogger)sink.CreateLogger("Cat");
 
             await sink.IntervalControl.Pause;
@@ -57,7 +57,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
 
             blob.Setup(b => b.OpenWriteAsync(It.IsAny<CancellationToken>())).Returns(() => Task.FromResult((Stream)new TestMemoryStream(buffers)));
 
-            var sink = new TestAzureBlobSink(name =>
+            var sink = new TestBlobSink(name =>
             {
                 names.Add(name);
                 return blob.Object;
@@ -106,7 +106,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
                 return Task.FromResult(0);
             });
 
-            var sink = new TestAzureBlobSink(name => blob.Object);
+            var sink = new TestBlobSink(name => blob.Object);
             var logger = (BatchingLogger)sink.CreateLogger("Cat");
 
             await sink.IntervalControl.Pause;

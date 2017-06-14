@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.AzureAppServices.Internal;
 using Xunit;
@@ -8,10 +11,10 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
     public class WebConfigurationLevelSwitchTests
     {
         [Theory]
-        [InlineData("ERROR", LogLevel.Error)]
-        [InlineData("WARNING", LogLevel.Warning)]
-        [InlineData("INFORMATION", LogLevel.Information)]
-        [InlineData("VERBOSE", LogLevel.Trace)]
+        [InlineData("Error", LogLevel.Error)]
+        [InlineData("Warning", LogLevel.Warning)]
+        [InlineData("Information", LogLevel.Information)]
+        [InlineData("Verbose", LogLevel.Trace)]
         [InlineData("ABCD", LogLevel.None)]
         public void AddsRuleWithCorrectLevel(string levelValue, LogLevel expectedLevel)
         {

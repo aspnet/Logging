@@ -6,12 +6,12 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Logging.AzureAppServices.Test
 {
-    internal class TestAzureBlobSink : AzureBlobLoggerProvider
+    internal class TestBlobSink : BlobLoggerProvider
     {
         internal ManualIntervalControl IntervalControl { get; } = new ManualIntervalControl();
 
-        public TestAzureBlobSink(Func<string, ICloudAppendBlob> blobReferenceFactory) : base(
-            new OptionsWrapperMonitor<AzureDiagnosticsBlobLoggerOptions>(new AzureDiagnosticsBlobLoggerOptions()
+        public TestBlobSink(Func<string, ICloudAppendBlob> blobReferenceFactory) : base(
+            new OptionsWrapperMonitor<AzureBlobLoggerOptions>(new AzureBlobLoggerOptions()
             {
                 ApplicationInstanceId = "42",
                 ApplicationName = "appname",

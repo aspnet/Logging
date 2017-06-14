@@ -2,10 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Extensions.Logging.AzureAppServices.Internal;
 
 namespace Microsoft.Extensions.Logging.AzureAppServices
 {
-    public class AzureDiagnosticsBlobLoggerOptions: BatchingLoggerOptions
+    public class AzureBlobLoggerOptions: BatchingLoggerOptions
     {
         private string _blobName = "applicationLog.txt";
 
@@ -26,13 +27,10 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
             }
         }
 
-        /// <summary>
-        /// Gets of sets the SAS endpoint where blob logs are stored.
-        /// </summary>
-        public string ContainerUrl { get; set; }
+        internal string ContainerUrl { get; set; }
 
-        public string ApplicationName { get; set; }
+        internal string ApplicationName { get; set; }
 
-        public string ApplicationInstanceId { get; set; }
+        internal string ApplicationInstanceId { get; set; }
     }
 }

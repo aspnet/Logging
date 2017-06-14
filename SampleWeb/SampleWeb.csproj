@@ -7,16 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\src\Microsoft.Extensions.Logging\Microsoft.Extensions.Logging.csproj" />
     <ProjectReference Include="..\src\Microsoft.Extensions.Logging.Abstractions\Microsoft.Extensions.Logging.Abstractions.csproj" />
     <ProjectReference Include="..\src\Microsoft.Extensions.Logging.Console\Microsoft.Extensions.Logging.Console.csproj" />
     <ProjectReference Include="..\src\Microsoft.Extensions.Logging.Configuration\Microsoft.Extensions.Logging.Configuration.csproj" />
     <ProjectReference Include="..\src\Microsoft.Extensions.Logging.AzureAppServices\Microsoft.Extensions.Logging.AzureAppServices.csproj" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0-preview3-*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

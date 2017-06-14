@@ -1,12 +1,14 @@
-﻿using System;
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 
-namespace Microsoft.Extensions.Logging.AzureAppServices
+namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
 {
     public abstract class BatchingLoggerProvider: ILoggerProvider
     {
@@ -121,7 +123,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
                 new BlockingCollection<LogMessage>(new ConcurrentQueue<LogMessage>(), _queueSize.Value);
 
             _cancellationTokenSource = new CancellationTokenSource();
-            _outputTask = Task.Factory.StartNew(
+            _outputTask = Task.Factory.StartNew<Task>(
                 ProcessLogQueue,
                 null,
                 TaskCreationOptions.LongRunning);
@@ -158,57 +160,5 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
             return new BatchingLogger(this, categoryName);
         }
 
-    }
-
-    public struct LogMessage
-    {
-        public DateTimeOffset Timestamp { get; set; }
-        public string Message { get; set; }
-    }
-
-    public class BatchingLogger : ILogger
-    {
-        private readonly BatchingLoggerProvider _provider;
-        private readonly string _category;
-
-        public BatchingLogger(BatchingLoggerProvider loggerProvider, string categoryName)
-        {
-            _provider = loggerProvider;
-            _category = categoryName;
-        }
-
-        public IDisposable BeginScope<TState>(TState state)
-        {
-            return null;
-        }
-
-        public bool IsEnabled(LogLevel logLevel)
-        {
-            return _provider.IsEnabled;
-        }
-
-        public void Log<TState>(DateTimeOffset timestamp, LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-        {
-            if (!IsEnabled(logLevel))
-            {
-                return;
-            }
-
-            var builder = new StringBuilder();
-            builder.Append(timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff zzz"));
-            builder.Append(" [");
-            builder.Append(logLevel.ToString());
-            builder.Append("] ");
-            builder.Append(_category);
-            builder.Append(": ");
-            builder.AppendLine(formatter(state, exception));
-
-            _provider.AddMessage(timestamp, builder.ToString());
-        }
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-        {
-            Log(DateTimeOffset.Now, logLevel, eventId, state, exception, formatter);
-        }
     }
 }

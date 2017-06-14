@@ -17,23 +17,23 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
     /// The <see cref="ILoggerProvider"/> implementation that stores messages by appending them to Azure Blob in batches.
     /// </summary>
     [ProviderAlias("AzureAppServicesBlob")]
-    public class AzureBlobLoggerProvider : BatchingLoggerProvider
+    public class BlobLoggerProvider : BatchingLoggerProvider
     {
         private readonly string _appName;
         private readonly string _fileName;
         private readonly Func<string, ICloudAppendBlob> _blobReferenceFactory;
 
         /// <summary>
-        /// Creates a new instance of <see cref="AzureBlobLoggerProvider"/>
+        /// Creates a new instance of <see cref="BlobLoggerProvider"/>
         /// </summary>
         /// <param name="options"></param>
-        public AzureBlobLoggerProvider(IOptionsMonitor<AzureDiagnosticsBlobLoggerOptions> options)
+        public BlobLoggerProvider(IOptionsMonitor<AzureBlobLoggerOptions> options)
             : this(options,
                    GetDefaultBlobReferenceFactory(options.CurrentValue))
         {
         }
 
-        private static Func<string, ICloudAppendBlob> GetDefaultBlobReferenceFactory(AzureDiagnosticsBlobLoggerOptions options)
+        private static Func<string, ICloudAppendBlob> GetDefaultBlobReferenceFactory(AzureBlobLoggerOptions options)
         {
             CloudBlobContainer container = null;
             // Delay initialize container in case logger starts disabled
@@ -45,12 +45,12 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
         }
 
         /// <summary>
-        /// Creates a new instance of <see cref="AzureBlobLoggerProvider"/>
+        /// Creates a new instance of <see cref="BlobLoggerProvider"/>
         /// </summary>
         /// <param name="blobReferenceFactory">The container to store logs to.</param>
         /// <param name="options"></param>
-        public AzureBlobLoggerProvider(
-            IOptionsMonitor<AzureDiagnosticsBlobLoggerOptions> options,
+        public BlobLoggerProvider(
+            IOptionsMonitor<AzureBlobLoggerOptions> options,
             Func<string, ICloudAppendBlob> blobReferenceFactory) :
             base(options)
         {

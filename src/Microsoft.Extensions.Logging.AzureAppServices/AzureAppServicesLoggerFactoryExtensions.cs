@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.Logging
             var context = WebAppContext.Default;
             if (context.IsRunningInAzureWebApp)
             {
-                var config = AzureDiagnosticsConfigurationProvider.GetAzureLoggingConfiguration(context);
+                var config = SiteConfigurationProvider.GetAzureLoggingConfiguration(context);
 
                 builder.Services.AddSingleton<IConfigureOptions<LoggerFilterOptions>>(CreateFileFilterConfigureOptions(config));
                 builder.Services.AddSingleton<IConfigureOptions<LoggerFilterOptions>>(CreateBlobFilterConfigureOptions(config));
@@ -32,19 +32,19 @@ namespace Microsoft.Extensions.Logging
                 builder.Services.AddSingleton<IOptionsChangeTokenSource<LoggerFilterOptions>>(
                     new ConfigurationChangeTokenSource<LoggerFilterOptions>(config));
 
-                builder.Services.AddSingleton<IConfigureOptions<AzureDiagnosticsBlobLoggerOptions>>(new AzureBlobLoggerConfigureOptions(config, context));
-                builder.Services.AddSingleton<IOptionsChangeTokenSource<AzureDiagnosticsBlobLoggerOptions>>(
-                    new ConfigurationChangeTokenSource<AzureDiagnosticsBlobLoggerOptions>(config));
+                builder.Services.AddSingleton<IConfigureOptions<AzureBlobLoggerOptions>>(new BlobLoggerConfigureOptions(config, context));
+                builder.Services.AddSingleton<IOptionsChangeTokenSource<AzureBlobLoggerOptions>>(
+                    new ConfigurationChangeTokenSource<AzureBlobLoggerOptions>(config));
 
-                builder.Services.AddSingleton<IConfigureOptions<AzureDiagnosticsFileLoggerOptions>>(new AzureFileLoggerConfigureOptions(config, context));
-                builder.Services.AddSingleton<IOptionsChangeTokenSource<AzureDiagnosticsFileLoggerOptions>>(
-                    new ConfigurationChangeTokenSource<AzureDiagnosticsFileLoggerOptions>(config));
+                builder.Services.AddSingleton<IConfigureOptions<FileLoggerOptions>>(new FileLoggerConfigureOptions(config, context));
+                builder.Services.AddSingleton<IOptionsChangeTokenSource<FileLoggerOptions>>(
+                    new ConfigurationChangeTokenSource<FileLoggerOptions>(config));
 
                 builder.Services.AddSingleton<IWebAppContext>(context);
 
                 // Only add the provider if we're in Azure WebApp. That cannot change once the apps started
                 builder.Services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
-                builder.Services.AddSingleton<ILoggerProvider, AzureBlobLoggerProvider>();
+                builder.Services.AddSingleton<ILoggerProvider, BlobLoggerProvider>();
             }
 
             return builder;
@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.Logging
         {
             return new ConfigurationBasedLevelSwitcher(
                 configuration: config,
-                provider: typeof(AzureBlobLoggerProvider),
+                provider: typeof(BlobLoggerProvider),
                 levelKey: "AzureBlobTraceLevel");
         }
 
@@ -85,14 +85,14 @@ namespace Microsoft.Extensions.Logging
             var context = WebAppContext.Default;
             if (context.IsRunningInAzureWebApp)
             {
-                var config = AzureDiagnosticsConfigurationProvider.GetAzureLoggingConfiguration(context);
+                var config = SiteConfigurationProvider.GetAzureLoggingConfiguration(context);
 
                 // Only add the provider if we're in Azure WebApp. That cannot change once the apps started
-                var fileOptions = new OptionsMonitor<AzureDiagnosticsFileLoggerOptions>(
-                    new IConfigureOptions<AzureDiagnosticsFileLoggerOptions>[]
+                var fileOptions = new OptionsMonitor<FileLoggerOptions>(
+                    new IConfigureOptions<FileLoggerOptions>[]
                     {
-                        new AzureFileLoggerConfigureOptions(config, context),
-                        new ConfigureOptions<AzureDiagnosticsFileLoggerOptions>(options =>
+                        new FileLoggerConfigureOptions(config, context),
+                        new ConfigureOptions<FileLoggerOptions>(options =>
                         {
                             options.FileSizeLimit = settings.FileSizeLimit;
                             options.RetainedFileCountLimit = settings.RetainedFileCountLimit;
@@ -105,14 +105,14 @@ namespace Microsoft.Extensions.Logging
                     },
                     new []
                     {
-                        new ConfigurationChangeTokenSource<AzureDiagnosticsFileLoggerOptions>(config)
+                        new ConfigurationChangeTokenSource<FileLoggerOptions>(config)
                     }
                     );
 
-                var blobOptions = new OptionsMonitor<AzureDiagnosticsBlobLoggerOptions>(
-                    new IConfigureOptions<AzureDiagnosticsBlobLoggerOptions>[] {
-                        new AzureBlobLoggerConfigureOptions(config, context),
-                        new ConfigureOptions<AzureDiagnosticsBlobLoggerOptions>(options =>
+                var blobOptions = new OptionsMonitor<AzureBlobLoggerOptions>(
+                    new IConfigureOptions<AzureBlobLoggerOptions>[] {
+                        new BlobLoggerConfigureOptions(config, context),
+                        new ConfigureOptions<AzureBlobLoggerOptions>(options =>
                         {
                             options.BlobName = settings.BlobName;
                             options.BackgroundQueueSize = settings.BackgroundQueueSize;
@@ -122,7 +122,7 @@ namespace Microsoft.Extensions.Logging
                     },
                     new[]
                     {
-                        new ConfigurationChangeTokenSource<AzureDiagnosticsBlobLoggerOptions>(config)
+                        new ConfigurationChangeTokenSource<AzureBlobLoggerOptions>(config)
                     }
                     );
 
@@ -139,33 +139,13 @@ namespace Microsoft.Extensions.Logging
                         new ILoggerProvider[]
                         {
                             new FileLoggerProvider(fileOptions),
-                            new AzureBlobLoggerProvider(blobOptions)
+                            new BlobLoggerProvider(blobOptions)
                         },
                         filterOptions
                         )
                     ));
             }
             return factory;
-        }
-
-        internal class ForwardingLoggerProvider : ILoggerProvider
-        {
-            private readonly ILoggerFactory _loggerFactory;
-
-            public ForwardingLoggerProvider(ILoggerFactory loggerFactory)
-            {
-                _loggerFactory = loggerFactory;
-            }
-
-            public void Dispose()
-            {
-                _loggerFactory.Dispose();
-            }
-
-            public ILogger CreateLogger(string categoryName)
-            {
-                return _loggerFactory.CreateLogger(categoryName);
-            }
         }
     }
 }

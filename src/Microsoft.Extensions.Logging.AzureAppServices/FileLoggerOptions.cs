@@ -1,8 +1,9 @@
 ﻿using System;
+using Microsoft.Extensions.Logging.AzureAppServices.Internal;
 
 namespace Microsoft.Extensions.Logging.AzureAppServices
 {
-    public class AzureDiagnosticsFileLoggerOptions: BatchingLoggerOptions
+    public class FileLoggerOptions: BatchingLoggerOptions
     {
         private int? _fileSizeLimit = 10 * 1024 * 1024;
         private int? _retainedFileCountLimit = 2;
@@ -60,6 +61,6 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
             }
         }
 
-        public string LogDirectory { get; set; }
+        internal string LogDirectory { get; set; }
     }
 }

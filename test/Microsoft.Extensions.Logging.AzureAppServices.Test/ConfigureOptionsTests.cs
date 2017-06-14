@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +25,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             }).Build();
 
             var options = new BatchingLoggerOptions();
-            new AzureBatchLoggerConfigureOptions(configuration, "IsEnabledKey").Configure(options);
+            new BatchLoggerConfigureOptions(configuration, "IsEnabledKey").Configure(options);
 
             Assert.Equal(enabled ?? false, options.IsEnabled);
         }
@@ -38,8 +41,8 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             var contextMock = new Mock<IWebAppContext>();
             contextMock.SetupGet(c => c.HomeFolder).Returns("Home");
 
-            var options = new AzureDiagnosticsFileLoggerOptions();
-            new AzureFileLoggerConfigureOptions(configuration, contextMock.Object).Configure(options);
+            var options = new FileLoggerOptions();
+            new FileLoggerConfigureOptions(configuration, contextMock.Object).Configure(options);
 
             Assert.Equal(Path.Combine("Home", "LogFiles", "Application"), options.LogDirectory);
         }
@@ -57,8 +60,8 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             contextMock.SetupGet(c => c.SiteInstanceId).Returns("InstanceId");
             contextMock.SetupGet(c => c.SiteName).Returns("Name");
 
-            var options = new AzureDiagnosticsBlobLoggerOptions();
-            new AzureBlobLoggerConfigureOptions(configuration, contextMock.Object).Configure(options);
+            var options = new AzureBlobLoggerOptions();
+            new BlobLoggerConfigureOptions(configuration, contextMock.Object).Configure(options);
 
             Assert.Equal("http://container/url", options.ContainerUrl);
             Assert.Equal("InstanceId", options.ApplicationInstanceId);

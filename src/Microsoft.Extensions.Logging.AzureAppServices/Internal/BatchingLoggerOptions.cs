@@ -1,6 +1,9 @@
-﻿using System;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-namespace Microsoft.Extensions.Logging.AzureAppServices
+using System;
+
+namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
 {
     public class BatchingLoggerOptions
     {
@@ -59,6 +62,9 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
             }
         }
 
+        /// <summary>
+        /// Gets or sets value indicating if logger accepts and queues writes.
+        /// </summary>
         public bool IsEnabled { get; set; }
     }
 }
