@@ -45,7 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{C3F6BF54
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Extensions.Logging.Configuration", "src\Microsoft.Extensions.Logging.Configuration\Microsoft.Extensions.Logging.Configuration.csproj", "{6D921637-507E-4CDC-8C5F-C3D6B62D118C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleWeb", "SampleWeb\SampleWeb.csproj", "{1C0A96A9-512F-4D40-A417-9AF2E07FC29C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "samples\SampleWeb", "samples\SampleWeb\SampleWeb.csproj", "{1C0A96A9-512F-4D40-A417-9AF2E07FC29C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

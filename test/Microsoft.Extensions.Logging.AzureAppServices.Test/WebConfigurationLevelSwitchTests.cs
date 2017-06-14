@@ -24,10 +24,11 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
                     new KeyValuePair<string, string>("levelKey", levelValue),
                 })
                 .Build();
-            var s = new ConfigurationBasedLevelSwitcher(configuration, typeof(TestFileLoggerProvider), "levelKey");
+
+            var levelSwitcher = new ConfigurationBasedLevelSwitcher(configuration, typeof(TestFileLoggerProvider), "levelKey");
 
             var filterConfiguration = new LoggerFilterOptions();
-            s.Configure(filterConfiguration);
+            levelSwitcher.Configure(filterConfiguration);
 
             Assert.Equal(1, filterConfiguration.Rules.Count);
 

@@ -19,6 +19,7 @@ namespace SampleWeb
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
+                .ConfigureLogging(builder => builder.AddAzureWebAppDiagnostics())
                 .Build();
 
             host.Run();

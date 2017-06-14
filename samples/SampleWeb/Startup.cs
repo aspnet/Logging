@@ -14,8 +14,6 @@ namespace SampleWeb
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddLogging(builder => builder
-                .AddAzureWebAppDiagnostics());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -28,15 +26,15 @@ namespace SampleWeb
 
             app.Run(async (context) =>
             {
-                var _logger = context.RequestServices.GetService<ILogger<Startup>>();
-                _logger.LogInformation("Starting");
+                var logger = context.RequestServices.GetService<ILogger<Startup>>();
+                logger.LogInformation("Starting");
 
                 var startTime = DateTimeOffset.Now;
-                _logger.LogInformation(1, "Started at '{StartTime}' and 0x{Hello:X} is hex of 42", startTime, 42);
+                logger.LogInformation(1, "Started at '{StartTime}' and 0x{Hello:X} is hex of 42", startTime, 42);
                 // or
-                _logger.ProgramStarting(startTime, 42);
+                logger.ProgramStarting(startTime, 42);
 
-                using (_logger.PurchaseOrderScope("00655321"))
+                using (logger.PurchaseOrderScope("00655321"))
                 {
                     try
                     {
@@ -44,29 +42,29 @@ namespace SampleWeb
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogCritical(1, ex, "Unexpected critical error starting application");
-                        _logger.LogError(1, ex, "Unexpected error");
-                        _logger.LogWarning(1, ex, "Unexpected warning");
+                        logger.LogCritical(1, ex, "Unexpected critical error starting application");
+                        logger.LogError(1, ex, "Unexpected error");
+                        logger.LogWarning(1, ex, "Unexpected warning");
                     }
 
-                    using (_logger.BeginScope("Main"))
+                    using (logger.BeginScope("Main"))
                     {
 
-                        _logger.LogInformation("Waiting for user input");
+                        logger.LogInformation("Waiting for user input");
 
                         var input = context.Request.QueryString.ToString();
 
-                        _logger.LogInformation("User typed '{input}' on the command line", input);
-                        _logger.LogWarning("The time is now {Time}, it's getting late!", DateTimeOffset.Now);
+                        logger.LogInformation("User typed '{input}' on the command line", input);
+                        logger.LogWarning("The time is now {Time}, it's getting late!", DateTimeOffset.Now);
                     }
                 }
 
                 var endTime = DateTimeOffset.Now;
-                _logger.LogInformation(2, "Stopping at '{StopTime}'", endTime);
+                logger.LogInformation(2, "Stopping at '{StopTime}'", endTime);
                 // or
-                _logger.ProgramStopping(endTime);
+                logger.ProgramStopping(endTime);
 
-                _logger.LogInformation("Stopping");
+                logger.LogInformation("Stopping");
                 await context.Response.WriteAsync("Hello World!");
             });
         }
