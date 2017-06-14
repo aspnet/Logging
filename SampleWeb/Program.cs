@@ -12,11 +12,12 @@ namespace SampleWeb
     {
         public static void Main(string[] args)
         {
+            Console.ReadLine();
+
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
-                .ConfigureLogging(loggerFactory => loggerFactory.AddConsole())
                 .UseStartup<Startup>()
                 .Build();
 

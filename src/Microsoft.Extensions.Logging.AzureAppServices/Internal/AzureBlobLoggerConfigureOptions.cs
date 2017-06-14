@@ -17,6 +17,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
 
         public void Configure(AzureDiagnosticsBlobLoggerOptions options)
         {
+            base.Configure(options);
             options.ContainerUrl = _configuration.GetSection("APPSETTING_DIAGNOSTICS_AZUREBLOBCONTAINERSASURL")?.Value;
             options.ApplicationName = _context.SiteName;
             options.ApplicationInstanceId = _context.SiteInstanceId;

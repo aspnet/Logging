@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Moq;
@@ -22,7 +23,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
         {
             var blob = new Mock<ICloudAppendBlob>();
             var buffers = new List<byte[]>();
-            blob.Setup(b => b.OpenWriteAsync()).Returns(() => Task.FromResult((Stream)new TestMemoryStream(buffers)));
+            blob.Setup(b => b.OpenWriteAsync(It.IsAny<CancellationToken>())).Returns(() => Task.FromResult((Stream)new TestMemoryStream(buffers)));
 
             var sink = new TestAzureBlobSink(name => blob.Object);
             var logger = (BatchingLogger)sink.CreateLogger("Cat");
@@ -54,7 +55,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             var buffers = new List<byte[]>();
             var names = new List<string>();
 
-            blob.Setup(b => b.OpenWriteAsync()).Returns(() => Task.FromResult((Stream)new TestMemoryStream(buffers)));
+            blob.Setup(b => b.OpenWriteAsync(It.IsAny<CancellationToken>())).Returns(() => Task.FromResult((Stream)new TestMemoryStream(buffers)));
 
             var sink = new TestAzureBlobSink(name =>
             {
@@ -90,7 +91,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             var buffers = new List<byte[]>();
             bool created = false;
 
-            blob.Setup(b => b.OpenWriteAsync()).Returns(() =>
+            blob.Setup(b => b.OpenWriteAsync(It.IsAny<CancellationToken>())).Returns(() =>
             {
                 if (!created)
                 {
@@ -99,7 +100,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
                 return Task.FromResult((Stream)new TestMemoryStream(buffers));
             });
 
-            blob.Setup(b => b.CreateAsync()).Returns(() =>
+            blob.Setup(b => b.CreateAsync(It.IsAny<CancellationToken>())).Returns(() =>
             {
                 created = true;
                 return Task.FromResult(0);

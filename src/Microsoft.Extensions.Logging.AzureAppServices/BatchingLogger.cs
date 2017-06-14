@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Logging.AzureAppServices
@@ -13,13 +12,13 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
     {
         private readonly List<LogMessage> _currentBatch = new List<LogMessage>();
         private readonly TimeSpan _interval;
+        private readonly int? _queueSize;
+        private readonly int? _batchSize;
+        private readonly IDisposable _optionsChangeToken;
 
-        private readonly BlockingCollection<LogMessage> _messageQueue;
+        private BlockingCollection<LogMessage> _messageQueue;
         private Task _outputTask;
         private CancellationTokenSource _cancellationTokenSource;
-        private readonly int? _batchSize;
-        private bool _isEnabled;
-        private IDisposable _optionsChangeToken;
 
         protected BatchingLoggerProvider(IOptionsMonitor<BatchingLoggerOptions> options)
         {
@@ -35,29 +34,23 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
                 throw new ArgumentOutOfRangeException(nameof(loggerOptions.FlushPeriod), $"{nameof(loggerOptions.FlushPeriod)} must be longer than zero.");
             }
 
-            if (loggerOptions.BackgroundQueueSize == null)
-            {
-                _messageQueue = new BlockingCollection<LogMessage>(new ConcurrentQueue<LogMessage>());
-            }
-            else
-            {
-                _messageQueue = new BlockingCollection<LogMessage>(new ConcurrentQueue<LogMessage>(), loggerOptions.BackgroundQueueSize.Value);
-            }
-
             _interval = loggerOptions.FlushPeriod;
             _batchSize = loggerOptions.BatchSize;
+            _queueSize = loggerOptions.BackgroundQueueSize;
 
             _optionsChangeToken = options.OnChange(UpdateOptions);
             UpdateOptions(options.CurrentValue);
         }
 
+        public bool IsEnabled { get; private set; }
+
         private void UpdateOptions(BatchingLoggerOptions options)
         {
-            var oldIsEnabled = _isEnabled;
-            _isEnabled = options.IsEnabled;
-            if (oldIsEnabled != _isEnabled)
+            var oldIsEnabled = IsEnabled;
+            IsEnabled = options.IsEnabled;
+            if (oldIsEnabled != IsEnabled)
             {
-                if (_isEnabled)
+                if (IsEnabled)
                 {
                     Start();
                 }
@@ -69,7 +62,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
 
         }
 
-        protected abstract Task WriteMessagesAsync(IEnumerable<LogMessage> messages);
+        protected abstract Task WriteMessagesAsync(IEnumerable<LogMessage> messages, CancellationToken token);
 
         private async Task ProcessLogQueue(object state)
         {
@@ -87,7 +80,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
                 {
                     try
                     {
-                        await WriteMessagesAsync(_currentBatch);
+                        await WriteMessagesAsync(_currentBatch, _cancellationTokenSource.Token);
                     }
                     catch
                     {
@@ -123,6 +116,10 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
 
         private void Start()
         {
+            _messageQueue = _queueSize == null ?
+                new BlockingCollection<LogMessage>(new ConcurrentQueue<LogMessage>()) :
+                new BlockingCollection<LogMessage>(new ConcurrentQueue<LogMessage>(), _queueSize.Value);
+
             _cancellationTokenSource = new CancellationTokenSource();
             _outputTask = Task.Factory.StartNew(
                 ProcessLogQueue,
@@ -150,7 +147,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         public void Dispose()
         {
             _optionsChangeToken?.Dispose();
-            if (_isEnabled)
+            if (IsEnabled)
             {
                 Stop();
             }
@@ -158,11 +155,6 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
 
         public ILogger CreateLogger(string categoryName)
         {
-            if (!_isEnabled)
-            {
-                return NullLogger.Instance;
-            }
-
             return new BatchingLogger(this, categoryName);
         }
 
@@ -181,8 +173,8 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
 
         public BatchingLogger(BatchingLoggerProvider loggerProvider, string categoryName)
         {
-            this._provider = loggerProvider;
-            this._category = categoryName;
+            _provider = loggerProvider;
+            _category = categoryName;
         }
 
         public IDisposable BeginScope<TState>(TState state)
@@ -192,11 +184,16 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return true;
+            return _provider.IsEnabled;
         }
 
         public void Log<TState>(DateTimeOffset timestamp, LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
+            if (!IsEnabled(logLevel))
+            {
+                return;
+            }
+
             var builder = new StringBuilder();
             builder.Append(timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff zzz"));
             builder.Append(" [");

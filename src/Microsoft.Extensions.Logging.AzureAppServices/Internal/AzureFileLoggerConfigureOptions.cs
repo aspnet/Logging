@@ -16,6 +16,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
 
         public void Configure(AzureDiagnosticsFileLoggerOptions options)
         {
+            base.Configure(options);
             options.LogDirectory = Path.Combine(_context.HomeFolder, "LogFiles", "Application");
         }
     }

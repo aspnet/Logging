@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 
@@ -22,11 +23,11 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
             _maxRetainedFiles = loggerOptions.RetainedFileCountLimit;
         }
 
-        protected override async Task WriteMessagesAsync(IEnumerable<LogMessage> messages)
+        protected override async Task WriteMessagesAsync(IEnumerable<LogMessage> messages, CancellationToken cancellationToken)
         {
             Directory.CreateDirectory(_path);
 
-            foreach (var group in messages.GroupBy<LogMessage, (int Year, int Month, int Day)>(GetGrouping))
+            foreach (var group in messages.GroupBy(GetGrouping))
             {
                 var fullName = GetFullName(group.Key);
                 var fileInfo = new FileInfo(fullName);
@@ -49,7 +50,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
 
         private string GetFullName((int Year, int Month, int Day) group)
         {
-            return Path.Combine(_path, $"{_fileName}.{group.Year:0000}{group.Month:00}{group.Day:00}.txt");
+            return Path.Combine(_path, $"{_fileName}{group.Year:0000}{group.Month:00}{group.Day:00}.txt");
         }
 
         public (int Year, int Month, int Day) GetGrouping(LogMessage message)

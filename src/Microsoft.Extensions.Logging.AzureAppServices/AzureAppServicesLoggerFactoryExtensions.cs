@@ -26,12 +26,19 @@ namespace Microsoft.Extensions.Logging
             {
                 var config = AzureDiagnosticsConfigurationProvider.GetAzureLoggingConfiguration(context);
 
-                builder.Services.AddSingleton<IConfigureOptions<AzureDiagnosticsFileLoggerOptions>, AzureFileLoggerConfigureOptions>();
                 builder.Services.AddSingleton<IConfigureOptions<LoggerFilterOptions>>(CreateFileFilterConfigureOptions(config));
-
                 builder.Services.AddSingleton<IConfigureOptions<LoggerFilterOptions>>(CreateBlobFilterConfigureOptions(config));
 
-                builder.Services.Configure<AzureBlobLoggerConfigureOptions>(config);
+                builder.Services.AddSingleton<IOptionsChangeTokenSource<LoggerFilterOptions>>(
+                    new ConfigurationChangeTokenSource<LoggerFilterOptions>(config));
+
+                builder.Services.AddSingleton<IConfigureOptions<AzureDiagnosticsBlobLoggerOptions>>(new AzureBlobLoggerConfigureOptions(config, context));
+                builder.Services.AddSingleton<IOptionsChangeTokenSource<AzureDiagnosticsBlobLoggerOptions>>(
+                    new ConfigurationChangeTokenSource<AzureDiagnosticsBlobLoggerOptions>(config));
+
+                builder.Services.AddSingleton<IConfigureOptions<AzureDiagnosticsFileLoggerOptions>>(new AzureFileLoggerConfigureOptions(config, context));
+                builder.Services.AddSingleton<IOptionsChangeTokenSource<AzureDiagnosticsFileLoggerOptions>>(
+                    new ConfigurationChangeTokenSource<AzureDiagnosticsFileLoggerOptions>(config));
 
                 builder.Services.AddSingleton<IWebAppContext>(context);
 

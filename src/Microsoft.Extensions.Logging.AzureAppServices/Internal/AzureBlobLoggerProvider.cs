@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Microsoft.WindowsAzure.Storage;
@@ -59,7 +60,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
             _blobReferenceFactory = blobReferenceFactory;
         }
 
-        protected override async Task WriteMessagesAsync(IEnumerable<LogMessage> messages)
+        protected override async Task WriteMessagesAsync(IEnumerable<LogMessage> messages, CancellationToken cancellationToken)
         {
             var eventGroups = messages.GroupBy(GetBlobKey);
             foreach (var eventGroup in eventGroups)
@@ -72,13 +73,13 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
                 Stream stream;
                 try
                 {
-                    stream = await blob.OpenWriteAsync();
+                    stream = await blob.OpenWriteAsync(cancellationToken);
                 }
                 // Blob does not exist
                 catch (StorageException ex) when (ex.RequestInformation.HttpStatusCode == 404)
                 {
-                    await blob.CreateAsync();
-                    stream = await blob.OpenWriteAsync();
+                    await blob.CreateAsync(cancellationToken);
+                    stream = await blob.OpenWriteAsync(cancellationToken);
                 }
 
                 using (var writer = new StreamWriter(stream))
