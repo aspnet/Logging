@@ -24,9 +24,8 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
 
         private static bool TextToBoolean(string text)
         {
-            bool result;
             if (string.IsNullOrEmpty(text) ||
-                !bool.TryParse(text, out result))
+                !bool.TryParse(text, out var result))
             {
                 result = false;
             }

@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
             // NOTE: Only IsEnabled is monitored
 
             var loggerOptions = options.CurrentValue;
-            if (loggerOptions.BatchSize < 0)
+            if (loggerOptions.BatchSize <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(loggerOptions.BatchSize), $"{nameof(loggerOptions.BatchSize)} must be a positive number.");
             }
@@ -159,6 +159,5 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
         {
             return new BatchingLogger(this, categoryName);
         }
-
     }
 }

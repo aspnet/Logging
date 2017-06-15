@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
             get { return _flushPeriod; }
             set
             {
-                if (value < TimeSpan.Zero)
+                if (value <= TimeSpan.Zero)
                 {
                     throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(FlushPeriod)} must be positive.");
                 }
@@ -46,7 +46,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
         }
 
         /// <summary>
-        /// Gets or sets a maximum number of events to include in a single batch.
+        /// Gets or sets a maximum number of events to include in a single batch or null for no limit.
         /// </summary>
         public int? BatchSize
         {

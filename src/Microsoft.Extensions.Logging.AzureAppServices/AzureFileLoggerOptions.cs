@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         private string _fileName = "diagnostics-";
 
         /// <summary>
-        /// Gets or sets a strictly positive value representing the maximum log size in bytes.
+        /// Gets or sets a strictly positive value representing the maximum log size in bytes or null for no limit.
         /// Once the log is full, no more messages will be appended.
         /// Defaults to <c>10MB</c>.
         /// </summary>
@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         }
 
         /// <summary>
-        /// Gets or sets a strictly positive value representing the maximum retained file count.
+        /// Gets or sets a strictly positive value representing the maximum retained file count or null for no limit.
         /// Defaults to <c>2</c>.
         /// </summary>
         public int? RetainedFileCountLimit
@@ -51,7 +51,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
         }
 
         /// <summary>
-        /// Gets or sets a strictly positive value representing the maximum retained file count.
+        /// Gets or sets a strictly positive value representing the maximum retained file count or null for no limit.
         /// Defaults to <c>2</c>.
         /// </summary>
         public string FileName
