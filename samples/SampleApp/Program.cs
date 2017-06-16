@@ -55,6 +55,26 @@ namespace SampleApp
 
         public void Execute(string[] args)
         {
+            try
+            {
+                throw new Exception("Boom");
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError(1, ex, string.Empty);
+                _logger.LogError(1, ex, string.Empty);
+                _logger.LogError(1, ex, string.Empty);
+                _logger.LogError(1, ex, string.Empty);
+                _logger.LogError(1, ex, string.Empty);
+                _logger.LogError(1, ex, string.Empty);
+                _logger.LogError(1, ex, null);
+                _logger.LogError(1, ex, null);
+                _logger.LogError(1, ex, null);
+                _logger.LogError(1, ex, null);
+                _logger.LogError(1, ex, null);
+            }
+
             _logger.LogInformation("Starting");
 
             var startTime = DateTimeOffset.Now;
@@ -70,8 +90,9 @@ namespace SampleApp
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogCritical(1, ex, "Unexpected critical error starting application");
+                    _logger.LogCritical(1, ex, null);
                     _logger.LogError(1, ex, "Unexpected error");
+                    _logger.LogError(1, ex, null);
                     _logger.LogWarning(1, ex, "Unexpected warning");
                 }
 

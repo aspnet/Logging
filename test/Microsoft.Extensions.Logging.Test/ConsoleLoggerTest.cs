@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
@@ -56,9 +55,20 @@ namespace Microsoft.Extensions.Logging.Test
 
             // Assert
             Assert.Equal(6, sink.Writes.Count);
-            Assert.Equal(GetMessage("crit", 0, "[null]", null), GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("crit", 0, "[null]", null), GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("crit", 0, "[null]", exception), GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
+            Assert.Equal(
+                "crit: test[0]" + Environment.NewLine +
+                "      [null]" + Environment.NewLine,
+                GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
+            Assert.Equal(
+                "crit: test[0]" + Environment.NewLine +
+                "      [null]" + Environment.NewLine,
+                GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
+
+            Assert.Equal(
+                "crit: test[0]" + Environment.NewLine +
+                "      [null]" + Environment.NewLine +
+                "System.InvalidOperationException: Invalid value" + Environment.NewLine,
+                GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
         }
 
         [Fact]
@@ -69,6 +79,11 @@ namespace Microsoft.Extensions.Logging.Test
             var logger = (ILogger)t.Item1;
             var sink = t.Item2;
             var logMessage = "Route with name 'Default' was not found.";
+            var expected1 = @"crit: test[0]" + Environment.NewLine +
+                            "      Route with name 'Default' was not found." + Environment.NewLine;
+
+            var expected2 = @"crit: test[10]" + Environment.NewLine +
+                            "      Route with name 'Default' was not found." + Environment.NewLine;
 
             // Act
             logger.LogCritical(logMessage);
@@ -78,10 +93,10 @@ namespace Microsoft.Extensions.Logging.Test
 
             // Assert
             Assert.Equal(8, sink.Writes.Count);
-            Assert.Equal(GetMessage("crit", 0, logMessage, null), GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("crit", 10, logMessage, null), GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("crit", 10, logMessage, null), GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("crit", 10, logMessage, null), GetMessage(sink.Writes.GetRange(3 * WritesPerMsg, WritesPerMsg)));
+            Assert.Equal(expected1, GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
+            Assert.Equal(expected2, GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
+            Assert.Equal(expected2, GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
+            Assert.Equal(expected2, GetMessage(sink.Writes.GetRange(3 * WritesPerMsg, WritesPerMsg)));
         }
 
         [Theory]
@@ -391,8 +406,9 @@ namespace Microsoft.Extensions.Logging.Test
             Assert.Equal(TestConsole.DefaultForegroundColor, write.ForegroundColor);
         }
 
-        [Fact]
-        public void WriteCore_LogsCorrectMessages()
+        [Theory]
+        [MemberData(nameof(LevelsWithPrefixes))]
+        public void WriteCore_LogsCorrectMessages(LogLevel level, string prefix)
         {
             // Arrange
             var t = SetUp(null);
@@ -401,21 +417,16 @@ namespace Microsoft.Extensions.Logging.Test
             var ex = new Exception("Exception message" + Environment.NewLine + "with a second line");
 
             // Act
-            logger.Log(LogLevel.Critical, 0, _state, ex, _defaultFormatter);
-            logger.Log(LogLevel.Error, 0, _state, ex, _defaultFormatter);
-            logger.Log(LogLevel.Warning, 0, _state, ex, _defaultFormatter);
-            logger.Log(LogLevel.Information, 0, _state, ex, _defaultFormatter);
-            logger.Log(LogLevel.Debug, 0, _state, ex, _defaultFormatter);
-            logger.Log(LogLevel.Trace, 0, _state, ex, _defaultFormatter);
+            logger.Log(level, 0, _state, ex, _defaultFormatter);
 
             // Assert
-            Assert.Equal(12, sink.Writes.Count);
-            Assert.Equal(GetMessage("crit", 0, ex), GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("fail", 0, ex), GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("warn", 0, ex), GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("info", 0, ex), GetMessage(sink.Writes.GetRange(3 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("dbug", 0, ex), GetMessage(sink.Writes.GetRange(4 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("trce", 0, ex), GetMessage(sink.Writes.GetRange(5 * WritesPerMsg, WritesPerMsg)));
+            Assert.Equal(2, sink.Writes.Count);
+            Assert.Equal(
+                prefix + ": test[0]" + Environment.NewLine +
+                "      This is a test, and {curly braces} are just fine!" + Environment.NewLine +
+                "System.Exception: Exception message" + Environment.NewLine +
+                "with a second line" + Environment.NewLine,
+                GetMessage(sink.Writes));
         }
 
         [Fact]
@@ -759,8 +770,33 @@ namespace Microsoft.Extensions.Logging.Test
             Assert.Equal(LogLevel.Information, logLevel);
         }
 
-        [Fact]
-        public void WriteCore_NullMessageWithException()
+        [Theory]
+        [MemberData(nameof(LevelsWithPrefixes))]
+        public void WriteCore_NullMessageWithException(LogLevel level, string prefix)
+        {
+            // Arrange
+            var t = SetUp(null);
+            var logger = t.Item1;
+            var sink = t.Item2;
+
+            var ex = new Exception("Exception message" + Environment.NewLine + "with a second line");
+            string message = null;
+
+            // Act
+            logger.Log(level, 0, message, ex, (s, e) => s);
+
+            // Assert
+            Assert.Equal(2, sink.Writes.Count);
+            Assert.Equal(
+                prefix + ": test[0]" + Environment.NewLine +
+                "System.Exception: Exception message" + Environment.NewLine +
+                "with a second line" + Environment.NewLine,
+                GetMessage(sink.Writes));
+        }
+
+        [Theory]
+        [MemberData(nameof(LevelsWithPrefixes))]
+        public void WriteCore_EmptyMessageWithException(LogLevel level, string prefix)
         {
             // Arrange
             var t = SetUp(null);
@@ -768,28 +804,22 @@ namespace Microsoft.Extensions.Logging.Test
             var sink = t.Item2;
             var ex = new Exception("Exception message" + Environment.NewLine + "with a second line");
             string message = null;
-            var expected = ex.ToString() + Environment.NewLine;
 
             // Act
-            logger.Log(LogLevel.Critical, 0, message, ex, (s, e) => s);
-            logger.Log(LogLevel.Error, 0, message, ex, (s, e) => s);
-            logger.Log(LogLevel.Warning, 0, message, ex, (s, e) => s);
-            logger.Log(LogLevel.Information, 0, message, ex, (s, e) => s);
-            logger.Log(LogLevel.Debug, 0, message, ex, (s, e) => s);
-            logger.Log(LogLevel.Trace, 0, message, ex, (s, e) => s);
+            logger.Log(level, 0, message, ex, (s, e) => s);
 
             // Assert
-            Assert.Equal(6, sink.Writes.Count);
-            Assert.Equal(expected, sink.Writes[0].Message);
-            Assert.Equal(expected, sink.Writes[1].Message);
-            Assert.Equal(expected, sink.Writes[2].Message);
-            Assert.Equal(expected, sink.Writes[3].Message);
-            Assert.Equal(expected, sink.Writes[4].Message);
-            Assert.Equal(expected, sink.Writes[5].Message);
+            Assert.Equal(2, sink.Writes.Count);
+            Assert.Equal(
+                prefix + ": test[0]" + Environment.NewLine +
+                "System.Exception: Exception message" + Environment.NewLine +
+                "with a second line" + Environment.NewLine,
+                GetMessage(sink.Writes));
         }
 
-        [Fact]
-        public void WriteCore_MessageWithNullException()
+        [Theory]
+        [MemberData(nameof(LevelsWithPrefixes))]
+        public void WriteCore_MessageWithNullException(LogLevel level, string prefix)
         {
             // Arrange
             var t = SetUp(null);
@@ -798,25 +828,20 @@ namespace Microsoft.Extensions.Logging.Test
             Exception ex = null;
 
             // Act
-            logger.Log(LogLevel.Critical, 0, _state, ex, (s, e) => s);
-            logger.Log(LogLevel.Error, 0, _state, ex, (s, e) => s);
-            logger.Log(LogLevel.Warning, 0, _state, ex, (s, e) => s);
-            logger.Log(LogLevel.Information, 0, _state, ex, (s, e) => s);
-            logger.Log(LogLevel.Debug, 0, _state, ex, (s, e) => s);
-            logger.Log(LogLevel.Trace, 0, _state, ex, (s, e) => s);
+            logger.Log(level, 0, _state, ex, (s, e) => s);
 
             // Assert
-            Assert.Equal(12, sink.Writes.Count);
-            Assert.Equal(GetMessage("crit", 0, ex), GetMessage(sink.Writes.GetRange(0 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("fail", 0, ex), GetMessage(sink.Writes.GetRange(1 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("warn", 0, ex), GetMessage(sink.Writes.GetRange(2 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("info", 0, ex), GetMessage(sink.Writes.GetRange(3 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("dbug", 0, ex), GetMessage(sink.Writes.GetRange(4 * WritesPerMsg, WritesPerMsg)));
-            Assert.Equal(GetMessage("trce", 0, ex), GetMessage(sink.Writes.GetRange(5 * WritesPerMsg, WritesPerMsg)));
+
+            Assert.Equal(2, sink.Writes.Count);
+            Assert.Equal(
+                prefix + ": test[0]" + Environment.NewLine +
+                "      This is a test, and {curly braces} are just fine!" + Environment.NewLine,
+                GetMessage(sink.Writes));
         }
 
-        [Fact]
-        public void WriteCore_NullMessageWithNullException()
+        [Theory]
+        [MemberData(nameof(LevelsWithPrefixes))]
+        public void WriteCore_NullMessageWithNullException(LogLevel level, string prefix)
         {
             // Arrange
             var t = SetUp(null);
@@ -826,12 +851,7 @@ namespace Microsoft.Extensions.Logging.Test
             string message = null;
 
             // Act
-            logger.Log(LogLevel.Critical, 0, message, ex, (s, e) => s);
-            logger.Log(LogLevel.Error, 0, message, ex, (s, e) => s);
-            logger.Log(LogLevel.Warning, 0, message, ex, (s, e) => s);
-            logger.Log(LogLevel.Information, 0, message, ex, (s, e) => s);
-            logger.Log(LogLevel.Debug, 0, message, ex, (s, e) => s);
-            logger.Log(LogLevel.Trace, 0, message, ex, (s, e) => s);
+            logger.Log(level, 0, message, ex, (s, e) => s);
 
             // Assert
             Assert.Equal(0, sink.Writes.Count);
@@ -855,29 +875,15 @@ namespace Microsoft.Extensions.Logging.Test
             Assert.True(sink.Writes.Count == 2);
         }
 
-        private string GetMessage(string logLevelString, int eventId, Exception exception)
-            => GetMessage(logLevelString, eventId, _state, exception);
-
-        private string GetMessage<TState>(string logLevelString, int eventId, TState state, Exception exception)
+        public static TheoryData<LogLevel, string> LevelsWithPrefixes => new TheoryData<LogLevel, string>()
         {
-            var loglevelStringWithPadding = $"{logLevelString}: ";
-
-            return
-                loglevelStringWithPadding
-                + $"{_loggerName}[{eventId}]"
-                + Environment.NewLine
-                + _paddingString
-                + ReplaceMessageNewLinesWithPadding(state?.ToString())
-                + Environment.NewLine
-                + (exception != null
-                    ? exception.ToString() + Environment.NewLine
-                    : string.Empty);
-        }
-
-        private string ReplaceMessageNewLinesWithPadding(string message)
-        {
-            return message.Replace(Environment.NewLine, Environment.NewLine + _paddingString);
-        }
+            {LogLevel.Critical, "crit"},
+            {LogLevel.Error, "fail"},
+            {LogLevel.Warning, "warn"},
+            {LogLevel.Information, "info"},
+            {LogLevel.Debug, "dbug"},
+            {LogLevel.Trace, "trce"},
+        };
 
         private string GetMessage(List<ConsoleContext> contexts)
         {
