@@ -70,6 +70,8 @@ namespace SampleApp
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogCritical(1, ex, "");
+                    _logger.LogCritical(1, ex, null);
                     _logger.LogCritical(1, ex, "Unexpected critical error starting application");
                     _logger.LogError(1, ex, "Unexpected error");
                     _logger.LogWarning(1, ex, "Unexpected warning");
