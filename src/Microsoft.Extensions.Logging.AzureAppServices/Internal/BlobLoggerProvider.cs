@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
@@ -20,21 +22,19 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
         private readonly string _appName;
         private readonly string _fileName;
         private readonly Func<string, ICloudAppendBlob> _blobReferenceFactory;
+        private readonly HttpClient _httpClient;
 
         /// <summary>
         /// Creates a new instance of <see cref="BlobLoggerProvider"/>
         /// </summary>
         /// <param name="options"></param>
         public BlobLoggerProvider(IOptionsMonitor<AzureBlobLoggerOptions> options)
-            : this(options,
-                   GetDefaultBlobReferenceFactory(options.CurrentValue))
+            : this(options, null)
         {
-        }
-
-        private static Func<string, ICloudAppendBlob> GetDefaultBlobReferenceFactory(AzureBlobLoggerOptions options)
-        {
-            // Delay initialize container in case logger starts disabled
-            return name => new BlobAppendReferenceWrapper(options.ContainerUrl, name);
+            _blobReferenceFactory = name => new BlobAppendReferenceWrapper(
+                options.CurrentValue.ContainerUrl,
+                name,
+                _httpClient);
         }
 
         /// <summary>
@@ -51,6 +51,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
             _appName = value.ApplicationName;
             _fileName = value.ApplicationInstanceId + "_" + value.BlobName;
             _blobReferenceFactory = blobReferenceFactory;
+            _httpClient = new HttpClient();
         }
 
         protected override async Task WriteMessagesAsync(IEnumerable<LogMessage> messages, CancellationToken cancellationToken)
@@ -72,8 +73,9 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
                     }
 
                     await writer.FlushAsync();
-                    stream.Position = 0;
-                    await blob.AppendAsync(stream, cancellationToken);
+                    var tryGetBuffer = stream.TryGetBuffer(out var buffer);
+                    Debug.Assert(tryGetBuffer);
+                    await blob.AppendAsync(buffer, cancellationToken);
                 }
             }
         }

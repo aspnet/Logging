@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,8 +23,8 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
         {
             var blob = new Mock<ICloudAppendBlob>();
             var buffers = new List<byte[]>();
-            blob.Setup(b => b.AppendAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
-                .Callback((Stream s, CancellationToken ct) => buffers.Add(ReadToEnd(s)))
+            blob.Setup(b => b.AppendAsync(It.IsAny<ArraySegment<byte>>(), It.IsAny<CancellationToken>()))
+                .Callback((ArraySegment<byte> s, CancellationToken ct) => buffers.Add(ToArray(s)))
                 .Returns(Task.CompletedTask);
 
             var sink = new TestBlobSink(name => blob.Object);
@@ -56,8 +57,8 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             var buffers = new List<byte[]>();
             var names = new List<string>();
 
-            blob.Setup(b => b.AppendAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
-                .Callback((Stream s, CancellationToken ct) => buffers.Add(ReadToEnd(s)))
+            blob.Setup(b => b.AppendAsync(It.IsAny<ArraySegment<byte>>(), It.IsAny<CancellationToken>()))
+                .Callback((ArraySegment<byte> s, CancellationToken ct) => buffers.Add(ToArray(s)))
                 .Returns(Task.CompletedTask);
 
             var sink = new TestBlobSink(name =>
@@ -87,13 +88,12 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             Assert.Equal("appname/2016/05/04/05/42_filename", names[2]);
         }
 
-        private byte[] ReadToEnd(Stream inputStream)
+        private byte[] ToArray(ArraySegment<byte> inputStream)
         {
-            using (var memoryStream = new MemoryStream())
-            {
-                inputStream.CopyTo(memoryStream);
-                return memoryStream.ToArray();
-            }
+            return inputStream.Array
+                .Skip(inputStream.Offset)
+                .Take(inputStream.Count)
+                .ToArray();
         }
     }
 }

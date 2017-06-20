@@ -13,42 +13,31 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
     /// <inheritdoc />
     public class BlobAppendReferenceWrapper : ICloudAppendBlob
     {
-        private readonly string _containerUrl;
-        private Uri _fullUri;
-        private HttpClient _client;
-        private Uri _appendUri;
+        private readonly Uri _fullUri;
+        private readonly HttpClient _client;
+        private readonly Uri _appendUri;
 
-        public BlobAppendReferenceWrapper(string containerUrl, string name) : this(containerUrl, name, new HttpClientHandler())
+        public BlobAppendReferenceWrapper(string containerUrl, string name, HttpClient client)
         {
-        }
-
-        public BlobAppendReferenceWrapper(string containerUrl, string name, HttpMessageHandler handler)
-        {
-            _containerUrl = containerUrl;
-            var uri = new Uri(_containerUrl);
-            var uriBuilder = new UriBuilder(uri);
+            var uriBuilder = new UriBuilder(containerUrl);
             uriBuilder.Path += "/" + name;
             _fullUri = uriBuilder.Uri;
-            uriBuilder.Query += "&comp=appendblock";
+
+            AppendBlockQuery(uriBuilder);
             _appendUri = uriBuilder.Uri;
-            _client = new HttpClient(handler);
+            _client = client;
         }
 
         /// <inheritdoc />
-        public async Task AppendAsync(Stream stream, CancellationToken cancellationToken)
+        public async Task AppendAsync(ArraySegment<byte> data, CancellationToken cancellationToken)
         {
             async Task<HttpResponseMessage> AppendDataAsync()
             {
                 var message = new HttpRequestMessage(HttpMethod.Put, _appendUri)
                 {
-                    Headers =
-                    {
-                        {"x-ms-blob-type", "AppendBlob"},
-                        {"x-ms-version", "2015-12-11"}
-                    },
-                    Content = new StreamContent(stream),
+                    Content = new ByteArrayContent(data.Array, data.Offset, data.Count)
                 };
-                message.Headers.Date = DateTimeOffset.UtcNow;
+                AddCommonHeaders(message);
 
                 return await _client.SendAsync(message, cancellationToken);
             }
@@ -60,20 +49,20 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
                 // If no blob exists try creating it
                 var message = new HttpRequestMessage(HttpMethod.Put, _fullUri)
                 {
+                    // Set Content-Length to 0 to create "Append Blob"
+                    Content = new ByteArrayContent(Array.Empty<byte>()),
                     Headers =
                     {
-                        // Include conditional header to avoid race during creation
-                        {"If-None-Match", "*"},
-                        {"x-ms-blob-type", "AppendBlob"}
-                    },
-                    // Set Content-Length to 0 to create "Append Blob"
-                    Content = new ByteArrayContent(Array.Empty<byte>())
-
+                        { "If-None-Match", "*" }
+                    }
                 };
+
+                AddCommonHeaders(message);
+
                 var createResponse =
                     await _client.SendAsync(message, cancellationToken);
 
-                // If result and not 200 or 412 throw, we don't know what to do with it
+                // If result and not 2** or 412 throw, we don't know what to do with it
                 if (!createResponse.IsSuccessStatusCode &&
                     createResponse.StatusCode != HttpStatusCode.PreconditionFailed)
                 {
@@ -85,6 +74,27 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
             }
 
             response.EnsureSuccessStatusCode();
+        }
+
+        private static void AddCommonHeaders(HttpRequestMessage message)
+        {
+            message.Headers.Add("x-ms-blob-type", "AppendBlob");
+            message.Headers.Add("x-ms-version", "2015-12-11");
+            message.Headers.Date = DateTimeOffset.UtcNow;
+        }
+
+        private static void AppendBlockQuery(UriBuilder uriBuilder)
+        {
+            // See https://msdn.microsoft.com/en-us/library/system.uribuilder.query.aspx for:
+            // Note: Do not append a string directly to Query property.
+            // If the length of Query is greater than 1, retrieve the property value
+            // as a string, remove the leading question mark, append the new query string,
+            // and set the property with the combined string.
+            string queryToAppend = "comp=appendblock";
+            if (uriBuilder.Query != null && uriBuilder.Query.Length > 1)
+                uriBuilder.Query = uriBuilder.Query.Substring(1) + "&" + queryToAppend;
+            else
+                uriBuilder.Query = queryToAppend;
         }
     }
 }
