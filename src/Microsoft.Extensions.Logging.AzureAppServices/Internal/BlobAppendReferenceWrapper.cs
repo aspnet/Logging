@@ -75,7 +75,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
         private static void AddCommonHeaders(HttpRequestMessage message)
         {
             message.Headers.Add("x-ms-blob-type", "AppendBlob");
-            message.Headers.Add("x-ms-version", "2015-12-11");
+            message.Headers.Add("x-ms-version", "2016-05-31");
             message.Headers.Date = DateTimeOffset.UtcNow;
         }
 
