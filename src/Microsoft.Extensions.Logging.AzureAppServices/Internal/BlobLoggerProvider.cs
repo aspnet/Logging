@@ -8,8 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
 {
@@ -35,13 +33,8 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
 
         private static Func<string, ICloudAppendBlob> GetDefaultBlobReferenceFactory(AzureBlobLoggerOptions options)
         {
-            CloudBlobContainer container = null;
             // Delay initialize container in case logger starts disabled
-            return name =>
-            {
-                container = container ?? new CloudBlobContainer(new Uri(options.ContainerUrl));
-                return new BlobAppendReferenceWrapper(container.GetAppendBlobReference(name));
-            };
+            return name => new BlobAppendReferenceWrapper(options.ContainerUrl, name);
         }
 
         /// <summary>
@@ -70,24 +63,17 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
 
                 var blob = _blobReferenceFactory(blobName);
 
-                Stream stream;
-                try
-                {
-                    stream = await blob.OpenWriteAsync(cancellationToken);
-                }
-                // Blob does not exist
-                catch (StorageException ex) when (ex.RequestInformation.HttpStatusCode == 404)
-                {
-                    await blob.CreateAsync(cancellationToken);
-                    stream = await blob.OpenWriteAsync(cancellationToken);
-                }
-
+                using (var stream = new MemoryStream())
                 using (var writer = new StreamWriter(stream))
                 {
                     foreach (var logEvent in eventGroup)
                     {
                         writer.Write(logEvent.Message);
                     }
+
+                    await writer.FlushAsync();
+                    stream.Position = 0;
+                    await blob.AppendAsync(stream, cancellationToken);
                 }
             }
         }

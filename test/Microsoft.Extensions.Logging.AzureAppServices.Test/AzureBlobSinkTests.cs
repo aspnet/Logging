@@ -7,7 +7,6 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
 using Moq;
 using Xunit;
 using Microsoft.Extensions.Logging.AzureAppServices.Internal;
@@ -23,7 +22,9 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
         {
             var blob = new Mock<ICloudAppendBlob>();
             var buffers = new List<byte[]>();
-            blob.Setup(b => b.OpenWriteAsync(It.IsAny<CancellationToken>())).Returns(() => Task.FromResult((Stream)new TestMemoryStream(buffers)));
+            blob.Setup(b => b.AppendAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+                .Callback((Stream s, CancellationToken ct) => buffers.Add(ReadToEnd(s)))
+                .Returns(Task.CompletedTask);
 
             var sink = new TestBlobSink(name => blob.Object);
             var logger = (BatchingLogger)sink.CreateLogger("Cat");
@@ -55,7 +56,9 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             var buffers = new List<byte[]>();
             var names = new List<string>();
 
-            blob.Setup(b => b.OpenWriteAsync(It.IsAny<CancellationToken>())).Returns(() => Task.FromResult((Stream)new TestMemoryStream(buffers)));
+            blob.Setup(b => b.AppendAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+                .Callback((Stream s, CancellationToken ct) => buffers.Add(ReadToEnd(s)))
+                .Returns(Task.CompletedTask);
 
             var sink = new TestBlobSink(name =>
             {
@@ -84,56 +87,12 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             Assert.Equal("appname/2016/05/04/05/42_filename", names[2]);
         }
 
-        [Fact]
-        public async Task CreatesBlobIfNotExists()
+        private byte[] ReadToEnd(Stream inputStream)
         {
-            var blob = new Mock<ICloudAppendBlob>();
-            var buffers = new List<byte[]>();
-            bool created = false;
-
-            blob.Setup(b => b.OpenWriteAsync(It.IsAny<CancellationToken>())).Returns(() =>
+            using (var memoryStream = new MemoryStream())
             {
-                if (!created)
-                {
-                    throw new StorageException(new RequestResult() { HttpStatusCode = 404 }, string.Empty, null);
-                }
-                return Task.FromResult((Stream)new TestMemoryStream(buffers));
-            });
-
-            blob.Setup(b => b.CreateAsync(It.IsAny<CancellationToken>())).Returns(() =>
-            {
-                created = true;
-                return Task.FromResult(0);
-            });
-
-            var sink = new TestBlobSink(name => blob.Object);
-            var logger = (BatchingLogger)sink.CreateLogger("Cat");
-
-            await sink.IntervalControl.Pause;
-
-            logger.Log(_timestampOne, LogLevel.Information, 0, "Text", null, (state, ex) => state);
-
-
-            sink.IntervalControl.Resume();
-            await sink.IntervalControl.Pause;
-
-            Assert.Equal(1, buffers.Count);
-            Assert.True(created);
-        }
-
-        private class TestMemoryStream : MemoryStream
-        {
-            public List<byte[]> Buffers { get; }
-
-            public TestMemoryStream(List<byte[]> buffers)
-            {
-                Buffers = buffers;
-            }
-
-            protected override void Dispose(bool disposing)
-            {
-                Buffers.Add(ToArray());
-                base.Dispose(disposing);
+                inputStream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
             }
         }
     }

@@ -31,7 +31,9 @@ namespace SampleApp
                         .AddFilter("Microsoft", LogLevel.Warning)
                         .AddFilter("System", LogLevel.Warning)
                         .AddFilter("SampleApp.Program", LogLevel.Debug)
-                        .AddConsole();
+                        .AddConsole()
+                        .AddAzureWebAppDiagnostics();
+
 #if NET461
                     builder.AddEventLog();
 #elif NETCOREAPP2_0
@@ -50,6 +52,7 @@ namespace SampleApp
 
         public static void Main(string[] args)
         {
+            Console.ReadLine();
             new Program().Execute(args);
         }
 
