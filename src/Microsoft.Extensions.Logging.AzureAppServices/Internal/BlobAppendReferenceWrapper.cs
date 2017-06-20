@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -62,7 +61,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
                 var createResponse =
                     await _client.SendAsync(message, cancellationToken);
 
-                // If result and not 2** or 412 throw, we don't know what to do with it
+                // If result is not 2** or 412 throw, we don't know what to do with it
                 if (!createResponse.IsSuccessStatusCode &&
                     createResponse.StatusCode != HttpStatusCode.PreconditionFailed)
                 {
