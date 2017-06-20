@@ -58,18 +58,15 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
 
                 AddCommonHeaders(message);
 
-                var createResponse =
-                    await _client.SendAsync(message, cancellationToken);
+                response = await _client.SendAsync(message, cancellationToken);
 
-                // If result is not 2** or 412 throw, we don't know what to do with it
-                if (!createResponse.IsSuccessStatusCode &&
-                    createResponse.StatusCode != HttpStatusCode.PreconditionFailed)
+                // If result is 2** or 412 try to append again
+                if (response.IsSuccessStatusCode ||
+                    response.StatusCode == HttpStatusCode.PreconditionFailed)
                 {
-                    createResponse.EnsureSuccessStatusCode();
+                    // Retry sending data after blob creation
+                    response = await AppendDataAsync();
                 }
-
-                // Retry sending data after blob creation
-                response = await AppendDataAsync();
             }
 
             response.EnsureSuccessStatusCode();
