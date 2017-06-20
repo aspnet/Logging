@@ -30,7 +30,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
         /// <inheritdoc />
         public async Task AppendAsync(ArraySegment<byte> data, CancellationToken cancellationToken)
         {
-            async Task<HttpResponseMessage> AppendDataAsync()
+            Task<HttpResponseMessage> AppendDataAsync()
             {
                 var message = new HttpRequestMessage(HttpMethod.Put, _appendUri)
                 {
@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
                 };
                 AddCommonHeaders(message);
 
-                return await _client.SendAsync(message, cancellationToken);
+                return _client.SendAsync(message, cancellationToken);
             }
 
             var response = await AppendDataAsync();
