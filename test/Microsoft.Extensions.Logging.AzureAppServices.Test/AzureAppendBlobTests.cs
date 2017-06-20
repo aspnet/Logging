@@ -181,7 +181,6 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
             {
                 return await _callback(request);
             }
-
         }
     }
 }

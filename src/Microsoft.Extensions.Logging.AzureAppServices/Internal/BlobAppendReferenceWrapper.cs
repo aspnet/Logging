@@ -89,7 +89,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
             // If the length of Query is greater than 1, retrieve the property value
             // as a string, remove the leading question mark, append the new query string,
             // and set the property with the combined string.
-            string queryToAppend = "comp=appendblock";
+            var queryToAppend = "comp=appendblock";
             if (uriBuilder.Query != null && uriBuilder.Query.Length > 1)
                 uriBuilder.Query = uriBuilder.Query.Substring(1) + "&" + queryToAppend;
             else
