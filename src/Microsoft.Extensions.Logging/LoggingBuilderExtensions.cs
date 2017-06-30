@@ -23,5 +23,11 @@ namespace Microsoft.Extensions.Logging
             builder.Services.AddSingleton(provider);
             return builder;
         }
+
+        public static ILoggingBuilder ClearProviders(this ILoggingBuilder builder)
+        {
+            builder.Services.RemoveAll<ILoggerProvider>();
+            return builder;
+        }
     }
 }
