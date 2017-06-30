@@ -23,6 +23,7 @@ namespace Microsoft.Extensions.Logging.Test
             Assert.True(callbackCalled);
         }
 
+        [Fact]
         public void ClearProviders_RemovesAllProvidersFromServiceCollection()
         {
             var services = new ServiceCollection();
