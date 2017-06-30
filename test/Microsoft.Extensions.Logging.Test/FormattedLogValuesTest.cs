@@ -61,6 +61,18 @@ namespace Microsoft.Extensions.Logging.Test
         }
 
         [Theory]
+        [InlineData("8,765", "{Number:#,#}")]
+        public void LogValues_With_CustomNumericFormat(string expected, string format)
+        {
+            var number = 8765.4321;
+            var logValues = new FormattedLogValues(format, new object[] { number, number });
+            Assert.Equal(expected, logValues.ToString());
+
+            // Original format is expected to be returned from GetValues.
+            Assert.Equal(format, logValues.First(v => v.Key == "{OriginalFormat}").Value);
+        }
+
+        [Theory]
         [InlineData("{{", "{{", null)]
         [InlineData("'{{'", "'{{'", null)]
         [InlineData("'{{}}'", "'{{}}'", null)]
