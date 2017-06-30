@@ -17,6 +17,7 @@ namespace Microsoft.Extensions.Logging.Test
         [InlineData("arg1 arg2", "{Start} {End}", new object[] { "arg1", "arg2" })]
         [InlineData("arg1     arg2", "{Start,-6} {End,6}", new object[] { "arg1", "arg2" })]
         [InlineData("0064", "{Hex:X4}", new object[] { 100 })]
+        [InlineData("8,765", "{Number:#,#}", new object[] {8765.4321})]
         public void LogValues_With_Basic_Types(string expected, string format, object[] args)
         {
             var logValues = new FormattedLogValues(format, args);
@@ -54,18 +55,6 @@ namespace Microsoft.Extensions.Logging.Test
         {
             var dateTime = new DateTime(2015, 1, 1, 1, 1, 1);
             var logValues = new FormattedLogValues(format, new object[] { dateTime, dateTime });
-            Assert.Equal(expected, logValues.ToString());
-
-            // Original format is expected to be returned from GetValues.
-            Assert.Equal(format, logValues.First(v => v.Key == "{OriginalFormat}").Value);
-        }
-
-        [Theory]
-        [InlineData("8,765", "{Number:#,#}")]
-        public void LogValues_With_CustomNumericFormat(string expected, string format)
-        {
-            var number = 8765.4321;
-            var logValues = new FormattedLogValues(format, new object[] { number, number });
             Assert.Equal(expected, logValues.ToString());
 
             // Original format is expected to be returned from GetValues.
