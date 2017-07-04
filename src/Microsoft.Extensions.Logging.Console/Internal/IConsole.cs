@@ -7,8 +7,8 @@ namespace Microsoft.Extensions.Logging.Console.Internal
 {
     public interface IConsole
     {
-        void Write(string message, ConsoleColor? background, ConsoleColor? foreground);
-        void WriteLine(string message, ConsoleColor? background, ConsoleColor? foreground);
+        void Write(string message, ConsoleColor? background, ConsoleColor? foreground, bool toErrorStream = false);
+        void WriteLine(string message, ConsoleColor? background, ConsoleColor? foreground, bool toErrorStream = false);
         void Flush();
     }
 }

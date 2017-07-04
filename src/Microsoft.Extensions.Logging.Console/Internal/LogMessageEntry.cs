@@ -12,5 +12,6 @@ namespace Microsoft.Extensions.Logging.Console.Internal
         public ConsoleColor? LevelForeground;
         public ConsoleColor? MessageColor;
         public string Message;
+        public bool ToErrorStream;
     }
 }
