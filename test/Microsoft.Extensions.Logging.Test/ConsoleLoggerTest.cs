@@ -430,6 +430,48 @@ namespace Microsoft.Extensions.Logging.Test
         }
 
         [Fact]
+        public void WriteCritical_LogsToErrorStream()
+        {
+            // Arrange
+            var t = SetUp(null);
+            var logger = t.Logger;
+            var sink = t.Sink;
+
+            // Act
+            logger.Log(LogLevel.Critical, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(2, sink.Writes.Count);
+            var write = sink.Writes[0];
+            Assert.Equal(ConsoleColor.Red, write.BackgroundColor);
+            Assert.Equal(ConsoleColor.White, write.ForegroundColor);
+            write = sink.Writes[1];
+            Assert.Null(write.Message);
+            Assert.NotNull(write.Error);
+        }
+
+        [Fact]
+        public void WriteError_LogsToErrorStream()
+        {
+            // Arrange
+            var t = SetUp(null);
+            var logger = t.Logger;
+            var sink = t.Sink;
+
+            // Act
+            logger.Log(LogLevel.Error, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(2, sink.Writes.Count);
+            var write = sink.Writes[0];
+            Assert.Equal(ConsoleColor.Red, write.BackgroundColor);
+            Assert.Equal(ConsoleColor.Black, write.ForegroundColor);
+            write = sink.Writes[1];
+            Assert.Null(write.Message);
+            Assert.NotNull(write.Error);
+        }
+
+        [Fact]
         public void NoLogScope_DoesNotWriteAnyScopeContentToOutput()
         {
             // Arrange

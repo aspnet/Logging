@@ -27,6 +27,24 @@ namespace Microsoft.Extensions.Logging
         }
 
         [Fact]
+        public void ToErrorStream_WritesToErrorInsteadOfOut()
+        {
+            // Arrange
+            var systemConsole = new TestAnsiSystemConsole();
+            var console = new AnsiLogConsole(systemConsole);
+            var message = "Request received";
+            var expectedMessage = message;
+
+            // Act
+            console.Write(message, background: null, foreground: null, toErrorStream: true);
+            console.Flush();
+
+            // Assert
+            Assert.Null(systemConsole.Message);
+            Assert.Equal(expectedMessage, systemConsole.Error);
+        }
+
+        [Fact]
         public void NotCallingFlush_DoesNotWriteData_ToSystemConsole()
         {
             // Arrange
