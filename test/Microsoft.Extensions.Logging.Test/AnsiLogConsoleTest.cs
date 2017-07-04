@@ -141,16 +141,32 @@ namespace Microsoft.Extensions.Logging
         private class TestAnsiSystemConsole : IAnsiSystemConsole
         {
             public string Message { get; private set; }
+            public string Error { get; private set; }
 
-            public void Write(string message)
+            public void Write(string message, bool toErrorStream = false)
             {
-                Message = message;
+                if (toErrorStream)
+                {
+                    Error = message;
+                }
+                else
+                {
+                    Message = message;
+                }
             }
 
-            public void WriteLine(string message)
+            public void WriteLine(string message, bool toErrorStream = false)
             {
-                Message = message;
-                Message += Environment.NewLine;
+                if (toErrorStream)
+                {
+                    Error = message;
+                    Error += Environment.NewLine;
+                }
+                else
+                {
+                    Message = message;
+                    Message += Environment.NewLine;
+                }
             }
         }
 

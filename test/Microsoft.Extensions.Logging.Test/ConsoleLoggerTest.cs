@@ -120,7 +120,7 @@ namespace Microsoft.Extensions.Logging.Test
 
             // Assert
             Assert.Equal(2, sink.Writes.Count);
-            Assert.Equal(expectedHeader + expectedMessage + expectedExceptionMessage, sink.Writes[1].Message);
+            Assert.Equal(expectedHeader + expectedMessage + expectedExceptionMessage, sink.Writes[1].Output);
         }
 
         [Fact]
@@ -887,7 +887,7 @@ namespace Microsoft.Extensions.Logging.Test
 
         private string GetMessage(List<ConsoleContext> contexts)
         {
-            return string.Join("", contexts.Select(c => c.Message));
+            return string.Join("", contexts.Select(c => c.Output));
         }
 
         private string CreateHeader(int eventId = 0)

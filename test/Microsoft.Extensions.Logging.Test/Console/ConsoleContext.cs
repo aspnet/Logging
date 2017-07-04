@@ -12,5 +12,18 @@ namespace Microsoft.Extensions.Logging.Test.Console
         public ConsoleColor? ForegroundColor { get; set; }
 
         public string Message { get; set; }
+
+        public string Error { get; set; }
+
+        public string Output
+        {
+            get
+            {
+                if (Message != null && Error == null) return Message;
+                if (Message == null && Error != null) return Error;
+
+                throw new InvalidOperationException("Only Message or Error must be set");
+            }
+        }
     }
 }
