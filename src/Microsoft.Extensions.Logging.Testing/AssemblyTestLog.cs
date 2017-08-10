@@ -33,9 +33,9 @@ namespace Microsoft.Extensions.Logging.Testing
             _assemblyName = assemblyName;
         }
 
-        public IDisposable StartTestLog(ITestOutputHelper output, string className, out ILoggerFactory loggerFactory, [CallerMemberName] string testName = null)
+        public IDisposable StartTestLog(ITestOutputHelper output, string className, out ILoggerFactory loggerFactory, LogLevel minLogLevel = LogLevel.Debug, [CallerMemberName] string testName = null)
         {
-            var factory = CreateLoggerFactory(output, className, testName);
+            var factory = CreateLoggerFactory(output, className, minLogLevel, testName);
             loggerFactory = factory;
             var logger = factory.CreateLogger("TestLifetime");
 
@@ -52,14 +52,15 @@ namespace Microsoft.Extensions.Logging.Testing
             });
         }
 
-        public ILoggerFactory CreateLoggerFactory(ITestOutputHelper output, string className, [CallerMemberName] string testName = null)
+        public ILoggerFactory CreateLoggerFactory(ITestOutputHelper output, string className, LogLevel minLogLevel = LogLevel.Debug, [CallerMemberName] string testName = null)
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(builder =>
             {
+                builder.SetMinimumLevel(minLogLevel);
                 if (output != null)
                 {
-                    builder.AddXunit(output, LogLevel.Debug);
+                    builder.AddXunit(output, minLogLevel);
                 }
             });
 
