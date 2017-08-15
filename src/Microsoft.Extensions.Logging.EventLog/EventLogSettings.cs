@@ -27,6 +27,11 @@ namespace Microsoft.Extensions.Logging.EventLog
         public string MachineName { get; set; }
 
         /// <summary>
+        /// Create the eventsoure and log if it doesn't exist. Requires running as admin.
+        /// </summary>
+        public bool AutoCreate { get; set; }
+
+        /// <summary>
         /// The function used to filter events based on the log level.
         /// </summary>
         public Func<string, LogLevel, bool> Filter { get; set; }
