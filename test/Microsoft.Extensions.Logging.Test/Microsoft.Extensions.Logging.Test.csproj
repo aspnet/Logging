@@ -3,14 +3,12 @@
   <Import Project="..\..\build\common.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net46</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netcoreapp2.0</TargetFrameworks>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Microsoft.Extensions.Logging\Microsoft.Extensions.Logging.csproj" />
+    <ProjectReference Include="..\..\src\Microsoft.Extensions.Logging.Configuration\Microsoft.Extensions.Logging.Configuration.csproj" />
     <ProjectReference Include="..\..\src\Microsoft.Extensions.Logging.Console\Microsoft.Extensions.Logging.Console.csproj" />
     <ProjectReference Include="..\..\src\Microsoft.Extensions.Logging.Debug\Microsoft.Extensions.Logging.Debug.csproj" />
     <ProjectReference Include="..\..\src\Microsoft.Extensions.Logging.Testing\Microsoft.Extensions.Logging.Testing.csproj" />
@@ -26,12 +24,8 @@
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <ProjectReference Include="..\..\src\Microsoft.Extensions.Logging.EventLog\Microsoft.Extensions.Logging.EventLog.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
 </Project>

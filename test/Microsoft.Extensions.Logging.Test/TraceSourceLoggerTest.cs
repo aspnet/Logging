@@ -1,8 +1,8 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-#if NET46
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Microsoft.Extensions.Logging.Test
@@ -16,10 +16,9 @@ namespace Microsoft.Extensions.Logging.Test
             var testSwitch = new SourceSwitch("TestSwitch", "Level will be set to warning for this test");
             testSwitch.Level = SourceLevels.Warning;
 
-            var factory = new LoggerFactory();
+            var factory = TestLoggerBuilder.Create(builder => builder.AddTraceSource(testSwitch));
 
             // Act
-            factory.AddTraceSource(testSwitch);
             var logger = factory.CreateLogger("Test");
 
             // Assert
@@ -46,11 +45,12 @@ namespace Microsoft.Extensions.Logging.Test
             var secondSwitch = new SourceSwitch("SecondSwitch", "Second Test Switch");
             secondSwitch.Level = second;
 
-            var factory = new LoggerFactory();
-
             // Act
-            factory.AddTraceSource(firstSwitch);
-            factory.AddTraceSource(secondSwitch);
+
+            var factory = TestLoggerBuilder.Create(builder => builder
+                .AddTraceSource(firstSwitch)
+                .AddTraceSource(secondSwitch));
+
             var logger = factory.CreateLogger("Test");
 
             // Assert
@@ -58,7 +58,4 @@ namespace Microsoft.Extensions.Logging.Test
         }
     }
 }
-#elif NETCOREAPP2_0
-#else
-#error Target framework needs to be updated
-#endif
+

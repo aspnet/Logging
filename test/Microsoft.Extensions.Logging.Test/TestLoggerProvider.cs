@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging.Testing;
 
 namespace Microsoft.Extensions.Logging.Test
 {
+#pragma warning disable CS0436 // Type conflicts with imported type
+    [ProviderAlias("TestLogger")]
+#pragma warning restore CS0436 // Type conflicts with imported type
     public class TestLoggerProvider : ILoggerProvider
     {
         private readonly Func<LogLevel, bool> _filter;
@@ -33,6 +36,13 @@ namespace Microsoft.Extensions.Logging.Test
         public void Dispose()
         {
             DisposeCalled = true;
+        }
+    }
+
+    public class TestLoggerProvider2 : TestLoggerProvider
+    {
+        public TestLoggerProvider2(TestSink testSink) : base(testSink, true)
+        {
         }
     }
 }
