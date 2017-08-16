@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.Logging.Testing
 
         public IDisposable StartLog(out ILoggerFactory loggerFactory, [CallerMemberName] string testName = null)
         {
-            return AssemblyTestLog.ForAssembly(GetType().GetTypeInfo().Assembly).StartTestLog(_output, GetType().FullName, out loggerFactory, LogLevel.Debug, testName);
+            return AssemblyTestLog.ForAssembly(GetType().GetTypeInfo().Assembly).StartTestLog(_output, GetType().FullName, out loggerFactory, testName);
         }
     }
 }
