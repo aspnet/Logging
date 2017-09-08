@@ -89,7 +89,7 @@ namespace Microsoft.Extensions.Logging.Analyzers
 
         private void AnalyzeFormatArgument(SyntaxNodeAnalysisContext syntaxContext, ExpressionSyntax formatExpression, int paramsCount, bool argsIsArray)
         {
-            var text = TryGetFormatText(formatExpression);
+            var text = TryGetFormatText(formatExpression, syntaxContext.SemanticModel);
             if (text == null)
             {
                 syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.MEL2ConcatenationInFormatString, formatExpression.GetLocation()));
@@ -122,7 +122,7 @@ namespace Microsoft.Extensions.Logging.Analyzers
             }
         }
 
-        private string TryGetFormatText(ExpressionSyntax argumentExpression)
+        private string TryGetFormatText(ExpressionSyntax argumentExpression, SemanticModel semanticModel)
         {
             switch (argumentExpression)
             {
@@ -146,10 +146,10 @@ namespace Microsoft.Extensions.Logging.Analyzers
                     // return placeholder from here because actual value is not required for analysis and is hard to get
                     return "NAMEOF";
                 case ParenthesizedExpressionSyntax parenthesized:
-                    return TryGetFormatText(parenthesized.Expression);
+                    return TryGetFormatText(parenthesized.Expression, semanticModel);
                 case BinaryExpressionSyntax binary when binary.OperatorToken.IsKind(SyntaxKind.PlusToken):
-                    var leftText = TryGetFormatText(binary.Left);
-                    var rightText = TryGetFormatText(binary.Right);
+                    var leftText = TryGetFormatText(binary.Left, semanticModel);
+                    var rightText = TryGetFormatText(binary.Right, semanticModel);
 
                     if (leftText != null && rightText != null)
                     {
@@ -158,6 +158,11 @@ namespace Microsoft.Extensions.Logging.Analyzers
 
                     return null;
                 default:
+                    var constant = semanticModel.GetConstantValue(argumentExpression);
+                    if (constant.HasValue && constant.Value is string constantString)
+                    {
+                        return constantString;
+                    }
                     return null;
             }
         }

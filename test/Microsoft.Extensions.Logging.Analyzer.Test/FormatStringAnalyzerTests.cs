@@ -10,13 +10,14 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
     {
         [Theory]
         [InlineData(@"logger.LogError(""{0}"", 1);", "MEL1")]
-        [InlineData(@"logger.LogError($""{string.Empty}"");", "MEL3")]
-        [InlineData(@"logger.LogError(""string"" + 2);", "MEL3")]
-        [InlineData(@"logger.LogError(""{string}"");", "MEL5")]
-        [InlineData(@"logger.LogError(message: ""{string}"");", "MEL5")]
-        [InlineData(@"logger.LogError(""{string}"", 1, 2);", "MEL5")]
-        [InlineData(@"logger.LogError(""{str"" + ""ing}"", 1, 2);", "MEL5")]
-        [InlineData(@"logger.LogError(""{"" + nameof(ILogger) + ""}"");", "MEL5")]
+        [InlineData(@"logger.LogError($""{string.Empty}"");", "MEL2")]
+        [InlineData(@"logger.LogError(""string"" + 2);", "MEL2")]
+        [InlineData(@"logger.LogError(""{string}"");", "MEL3")]
+        [InlineData(@"logger.LogError(message: ""{string}"");", "MEL3")]
+        [InlineData(@"logger.LogError(""{string}"", 1, 2);", "MEL3")]
+        [InlineData(@"logger.LogError(""{str"" + ""ing}"", 1, 2);", "MEL3")]
+        [InlineData(@"logger.LogError(""{"" + nameof(ILogger) + ""}"");", "MEL3")]
+        [InlineData(@"logger.LogError(""{"" + Const + ""}"");", "MEL3")]
 
         // Concat would be optimized by compiler
         [InlineData(@"logger.LogError(nameof(ILogger) + "" string"");", null)]
@@ -32,6 +33,7 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
 using Microsoft.Extensions.Logging;
 public class Program
 {{
+    public const string Const = ""const"";
     public static void Main()
     {{
         ILogger logger = null;
@@ -39,7 +41,7 @@ public class Program
     }}
 }}
 ";
-            var diagnostics = GetSortedDiagnostics(new[] { code }, new NumericsShouldNotBeUsedAsKeys());
+            var diagnostics = GetSortedDiagnostics(new[] { code }, new LogFormatAnalyzer());
             if (exprectedDiagnostics != null)
             {
                 var diagnostic = Assert.Single(diagnostics);
