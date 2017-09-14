@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging.Abstractions.Internal;
 
 namespace Microsoft.Extensions.Logging
 {
-    internal class Logger : ILogger
+    internal class Logger : ILogger, IMetricLogger
     {
         public LoggerInformation[] Loggers { get; set; }
 
@@ -136,6 +136,44 @@ namespace Microsoft.Extensions.Logging
             return scope;
         }
 
+        public void RecordMetric(Metric metric)
+        {
+            var loggers = Loggers;
+            if (loggers == null)
+            {
+                return;
+            }
+
+            List<Exception> exceptions = null;
+            foreach (var loggerInfo in loggers)
+            {
+                // REVIEW: What "level" should metrics be at?
+                if (!loggerInfo.IsEnabled(LogLevel.Information) || !(loggerInfo.Logger is IMetricLogger metricLogger))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    metricLogger.RecordMetric(metric);
+                }
+                catch (Exception ex)
+                {
+                    if (exceptions == null)
+                    {
+                        exceptions = new List<Exception>();
+                    }
+
+                    exceptions.Add(ex);
+                }
+            }
+
+            if (exceptions != null && exceptions.Count > 0)
+            {
+                throw new AggregateException(
+                    message: "An error occurred while writing to logger(s).", innerExceptions: exceptions);
+            }
+        }
 
         private class Scope : IDisposable
         {

@@ -2,9 +2,15 @@ namespace Microsoft.Extensions.Logging
 {
     public static class LoggerMetricsExtensions
     {
-        public static void LogMetric(this ILogger logger, LogLevel level, EventId metricId, double value)
+        public static void RecordMetric(this ILogger logger, string name, double value) => logger.RecordMetric(new Metric(name, value));
+
+        public static void RecordMetric(this ILogger logger, Metric metric)
         {
-            logger.Log(level, metricId, new Metric(value), exception: null, formatter: (metric, _) => $"Metric recorded: {metricId.Name ?? metricId.Id.ToString()}");
+            if(logger is IMetricLogger metricLogger)
+            {
+                metricLogger.RecordMetric(metric);
+            }
+            // Not a metric logger? Drop the metric on the floor!
         }
     }
 }

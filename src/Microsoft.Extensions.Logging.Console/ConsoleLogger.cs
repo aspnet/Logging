@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging.Console.Internal;
 
 namespace Microsoft.Extensions.Logging.Console
 {
-    public class ConsoleLogger : ILogger
+    public class ConsoleLogger : ILogger, IMetricLogger
     {
         private static readonly string _loglevelPadding = ": ";
         private static readonly string _messagePadding;
@@ -120,7 +120,6 @@ namespace Microsoft.Extensions.Logging.Console
 
         private void LogMetric(EventId metricId, Metric metric)
         {
-            Console.WriteLine($"METRIC: {metricId.Name} ({metricId.Id}) = {metric.Value}", null, ConsoleColor.Magenta);
         }
 
         public virtual void WriteMessage(LogLevel logLevel, string logName, int eventId, string message, Exception exception)
@@ -213,6 +212,11 @@ namespace Microsoft.Extensions.Logging.Console
             }
 
             return ConsoleLogScope.Push(Name, state);
+        }
+
+        public void RecordMetric(Metric metric)
+        {
+            Console.WriteLine($"METRIC: {metric.Name} = {metric.Value}", null, ConsoleColor.Magenta);
         }
 
         private static string GetLogLevelString(LogLevel logLevel)

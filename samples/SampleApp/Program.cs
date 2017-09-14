@@ -103,7 +103,7 @@ namespace SampleApp
             _logger.LogInformation("Stopping");
 
             stopwatch.Stop();
-            _logger.LogMetric(LogLevel.Information, new EventId(42, "Duration"), stopwatch.ElapsedMilliseconds);
+            _logger.RecordMetric("Duration", stopwatch.ElapsedMilliseconds);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.Logging
     /// provided <see cref="ILoggerFactory"/>.
     /// </summary>
     /// <typeparam name="T">The type.</typeparam>
-    public class Logger<T> : ILogger<T>
+    public class Logger<T> : ILogger<T>, IMetricLogger
     {
         private readonly ILogger _logger;
 
@@ -27,6 +27,11 @@ namespace Microsoft.Extensions.Logging
             }
 
             _logger = factory.CreateLogger(TypeNameHelper.GetTypeDisplayName(typeof(T)));
+        }
+
+        public void RecordMetric(Metric metric)
+        {
+            _logger.RecordMetric(metric);
         }
 
         IDisposable ILogger.BeginScope<TState>(TState state)
