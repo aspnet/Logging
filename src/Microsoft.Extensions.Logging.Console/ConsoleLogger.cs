@@ -97,17 +97,30 @@ namespace Microsoft.Extensions.Logging.Console
                 return;
             }
 
-            if (formatter == null)
+            // Check if the value is a metric
+            if (state is Metric metric)
             {
-                throw new ArgumentNullException(nameof(formatter));
+                LogMetric(eventId, metric);
             }
-
-            var message = formatter(state, exception);
-
-            if (!string.IsNullOrEmpty(message) || exception != null)
+            else
             {
-                WriteMessage(logLevel, Name, eventId.Id, message, exception);
+                if (formatter == null)
+                {
+                    throw new ArgumentNullException(nameof(formatter));
+                }
+
+                var message = formatter(state, exception);
+
+                if (!string.IsNullOrEmpty(message) || exception != null)
+                {
+                    WriteMessage(logLevel, Name, eventId.Id, message, exception);
+                }
             }
+        }
+
+        private void LogMetric(EventId metricId, Metric metric)
+        {
+            Console.WriteLine($"METRIC: {metricId.Name} ({metricId.Id}) = {metric.Value}", null, ConsoleColor.Magenta);
         }
 
         public virtual void WriteMessage(LogLevel logLevel, string logName, int eventId, string message, Exception exception)
