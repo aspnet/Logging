@@ -2,17 +2,17 @@
 
   <PropertyGroup>
     <Description>Analyzer package for Microsoft.Extensions.Logging.</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard1.3</TargetFramework>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <BuildOutputTargetFolder>analyzers/dotnet/cs/</BuildOutputTargetFolder>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Extensions.Logging.Abstractions\Microsoft.Extensions.Logging.Abstractions.csproj" />
+    <Compile Include="..\Microsoft.Extensions.Logging.Abstractions\Internal\LogValuesFormatter.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.3.0-beta1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

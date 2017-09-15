@@ -4,10 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.Extensions.DependencyModel;
+using Microsoft.Extensions.DependencyModel.Resolution;
+using Xunit;
 
 namespace Microsoft.Extensions.Logging.Analyzer.Test
 {
@@ -15,8 +19,6 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
     {
         internal static string DefaultFilePathPrefix = "Test";
         internal static string TestProjectName = "TestProject";
-
-        #region  Get Diagnostics
 
         /// <summary>
         /// Given classes in the form of strings, their language, and an IDiagnosticAnalyzer to apply to it, return the diagnostics found in the string after converting it to a document.
@@ -51,6 +53,9 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
                 var compilationWithAnalyzers = project.GetCompilationAsync().Result.WithAnalyzers(ImmutableArray.Create(analyzer));
 
                 var diags = compilationWithAnalyzers.GetAllDiagnosticsAsync().Result;
+
+                Assert.DoesNotContain(diags, d => d.Id == "AD0001");
+
                 foreach (var diag in diags)
                 {
                     if (diag.Location == Location.None || diag.Location.IsInMetadata)
@@ -87,9 +92,6 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
             return diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
         }
 
-        #endregion
-
-        #region Set up compilation and documents
         /// <summary>
         /// Given an array of strings as sources and a language, turn them into a project and return the documents and spans of it.
         /// </summary>
@@ -126,7 +128,7 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
 
             foreach (var defaultCompileLibrary in DependencyModel.DependencyContext.Load(typeof(DiagnosticVerifier).Assembly).CompileLibraries)
             {
-                foreach (var resolveReferencePath in defaultCompileLibrary.ResolveReferencePaths())
+                foreach (var resolveReferencePath in defaultCompileLibrary.ResolveReferencePaths(new AppLocalResolver()))
                 {
                     solution = solution.AddMetadataReference(projectId, MetadataReference.CreateFromFile(resolveReferencePath));
                 }
@@ -142,6 +144,31 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
             }
             return solution.GetProject(projectId);
         }
-        #endregion
+
+        // Required to resolve compilation assemblies inside unit tests
+        private class AppLocalResolver : ICompilationAssemblyResolver
+        {
+            public bool TryResolveAssemblyPaths(CompilationLibrary library, List<string> assemblies)
+            {
+                foreach (var assembly in library.Assemblies)
+                {
+                    var dll = Path.Combine(Directory.GetCurrentDirectory(), "refs", Path.GetFileName(assembly));
+                    if (File.Exists(dll))
+                    {
+                        assemblies.Add(dll);
+                        return true;
+                    }
+
+                    dll = Path.Combine(Directory.GetCurrentDirectory(), Path.GetFileName(assembly));
+                    if (File.Exists(dll))
+                    {
+                        assemblies.Add(dll);
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
     }
 }

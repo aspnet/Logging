@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.Logging.Analyzers
 
             context.RegisterCompilationStartAction(analysisContext =>
             {
-                var loggerExtensionsType = analysisContext.Compilation.GetTypeByMetadataName(typeof(LoggerExtensions).FullName);
+                var loggerExtensionsType = analysisContext.Compilation.GetTypeByMetadataName("Microsoft.Extensions.Logging.LoggerExtensions");
                 if (loggerExtensionsType == null)
                     return;
 
@@ -176,14 +176,14 @@ namespace Microsoft.Extensions.Logging.Analyzers
                 var parameter = methodSymbol.Parameters[i];
 
                 if (parameter.Type.SpecialType == SpecialType.System_String &&
-                    parameter.Name == "message" ||
-                    parameter.Name == "messageFormat")
+                    string.Equals(parameter.Name, "message", StringComparison.Ordinal) ||
+                    string.Equals(parameter.Name, "messageFormat", StringComparison.Ordinal))
                 {
                     message = parameter;
                 }
 
                 if (parameter.IsParams &&
-                    parameter.Name == "args")
+                    string.Equals(parameter.Name, "args", StringComparison.Ordinal))
                 {
                     arguments = parameter;
                 }
@@ -201,22 +201,19 @@ namespace Microsoft.Extensions.Logging.Analyzers
         private static IParameterSymbol DetermineParameter(
             ArgumentSyntax argument,
             SemanticModel semanticModel,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken)
         {
-            var argumentList = argument.Parent as BaseArgumentListSyntax;
-            if (argumentList == null)
+            if (!(argument.Parent is BaseArgumentListSyntax argumentList))
             {
                 return null;
             }
 
-            var invocableExpression = argumentList.Parent as ExpressionSyntax;
-            if (invocableExpression == null)
+            if (!(argumentList.Parent is ExpressionSyntax invocableExpression))
             {
                 return null;
             }
 
-            var symbol = semanticModel.GetSymbolInfo(invocableExpression, cancellationToken).Symbol as IMethodSymbol;
-            if (symbol == null)
+            if (!(semanticModel.GetSymbolInfo(invocableExpression, cancellationToken).Symbol is IMethodSymbol symbol))
             {
                 return null;
             }
