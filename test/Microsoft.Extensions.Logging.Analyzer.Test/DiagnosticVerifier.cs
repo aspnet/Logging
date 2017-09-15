@@ -101,7 +101,7 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
         private static Document[] GetDocuments(string[] sources)
         {
             var project = CreateProject(sources);
-            var documents = project.Documents.ToArray<Document>();
+            var documents = project.Documents.ToArray();
 
             if (sources.Length != documents.Length)
             {
@@ -126,7 +126,7 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
                 .CurrentSolution
                 .AddProject(projectId, TestProjectName, TestProjectName, LanguageNames.CSharp);
 
-            foreach (var defaultCompileLibrary in DependencyModel.DependencyContext.Load(typeof(DiagnosticVerifier).Assembly).CompileLibraries)
+            foreach (var defaultCompileLibrary in DependencyContext.Load(typeof(DiagnosticVerifier).Assembly).CompileLibraries)
             {
                 foreach (var resolveReferencePath in defaultCompileLibrary.ResolveReferencePaths(new AppLocalResolver()))
                 {

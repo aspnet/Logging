@@ -1,6 +1,9 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
+using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging.Analyzers;
 using Xunit;
 
@@ -9,35 +12,70 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
     public class FormatStringAnalyzerTests: DiagnosticVerifier
     {
         [Theory]
-        [InlineData(@"logger.LogError(""{0}"", 1);", "MEL1")]
-        [InlineData(@"logger.LogError($""{string.Empty}"");", "MEL2")]
-        [InlineData(@"logger.LogWarning(""string"" + 2);", "MEL2")]
-        [InlineData(@"logger.LogWarning(""{string}"");", "MEL3")]
-        [InlineData(@"logger.LogDebug(message: ""{string}"");", "MEL3")]
-        [InlineData(@"logger.LogDebug(""{string}"", 1, 2);", "MEL3")]
-        [InlineData(@"logger.LogTrace(""{str"" + ""ing}"", 1, 2);", "MEL3")]
-        [InlineData(@"logger.LogTrace(""{"" + nameof(ILogger) + ""}"");", "MEL3")]
-        [InlineData(@"logger.LogError(""{"" + Const + ""}"");", "MEL3")]
+        [MemberData(nameof(GenerateTemplateUsages), @"""{0}"", 1")]
+        public void DiagnosticIsProducedForNumericFormatArgument(string format)
+        {
+            var diagnostic = Assert.Single(GetDiagnostics(format));
+            Assert.Equal("MEL1", diagnostic.Id);
+        }
 
-        [InlineData(@"logger.LogError(1, null, ""{0}"", 1);", "MEL1")]
-        [InlineData(@"logger.LogError(1, null, $""{string.Empty}"");", "MEL2")]
-        [InlineData(@"logger.LogWarning(1, new System.Exception(), ""string"" + 2);", "MEL2")]
-        [InlineData(@"logger.LogWarning(1, new System.Exception(),""{string}"");", "MEL3")]
-        [InlineData(@"logger.LogDebug(1, null, message: ""{string}"");", "MEL3")]
-        [InlineData(@"logger.LogDebug(1, null, ""{string}"", 1, 2);", "MEL3")]
-        [InlineData(@"logger.LogTrace(1, new System.Exception(), ""{str"" + ""ing}"", 1, 2);", "MEL3")]
-        [InlineData(@"logger.LogTrace(1, new System.Exception(), ""{"" + nameof(ILogger) + ""}"");", "MEL3")]
-        [InlineData(@"logger.LogError(1, null, ""{"" + Const + ""}"");", "MEL3")]
 
+        [Theory]
+        [MemberData(nameof(GenerateTemplateUsages), @"$""{string.Empty}""")]
+        [MemberData(nameof(GenerateTemplateUsages), @"""string"" + 2")]
+        public void DiagnosticIsProducedForDynamicFormatArgument(string format)
+        {
+            var diagnostic = Assert.Single(GetDiagnostics(format));
+            Assert.Equal("MEL2", diagnostic.Id);
+        }
+
+        [Theory]
+        [MemberData(nameof(GenerateTemplateUsages), @"""{string}"", 1, 2")]
+        [MemberData(nameof(GenerateTemplateUsages), @"""{str"" + ""ing}"", 1, 2")]
+        [MemberData(nameof(GenerateTemplateUsages), @"""{"" + nameof(ILogger) + ""}""")]
+        [MemberData(nameof(GenerateTemplateUsages), @"""{"" + Const + ""}""")]
+        public void DiagnosticIsProducedForFormatArgumentCountMismatch(string format)
+        {
+            var diagnostic = Assert.Single(GetDiagnostics(format));
+            Assert.Equal("MEL3", diagnostic.Id);
+        }
+
+        [Theory]
         // Concat would be optimized by compiler
-        [InlineData(@"logger.LogError(nameof(ILogger) + "" string"");", null)]
-        [InlineData(@"logger.LogDebug("" string"" + "" string"");", null)]
-        [InlineData(@"logger.LogWarning($"" string"" + $"" string"");", null)]
-        [InlineData(@"logger.LogTrace(""{st"" + ""ring}"", 1);", null)]
+        [MemberData(nameof(GenerateTemplateUsages), @"nameof(ILogger) + "" string""")]
+        [MemberData(nameof(GenerateTemplateUsages), @""" string"" + "" string""")]
+        [MemberData(nameof(GenerateTemplateUsages), @"$"" string"" + $"" string""")]
+        [MemberData(nameof(GenerateTemplateUsages), @"""{st"" + ""ring}"", 1")]
 
         // we are unable to parse expressions
-        [InlineData(@"logger.LogError(""{string} {string}"", new object [] {1});", null)]
-        public void ProducesCorrectDiagnostics(string expression, string exprectedDiagnostics)
+        [MemberData(nameof(GenerateTemplateUsages), @"""{string} {string}"", new object [] {1}")]
+        public void DiagnosticNotIsProduced(string format)
+        {
+            Assert.Empty(GetDiagnostics(format));
+        }
+
+        public static IEnumerable<object[]> GenerateTemplateUsages(string templateAndArguments)
+        {
+            var methods = new[] {"LogTrace", "LogError", "LogWarning", "LogInformation", "LogDebug", "LogCritical" };
+            var formats = new[]
+            {
+                "",
+                "0, ",
+                "1, new System.Exception(), ",
+                "2, null, "
+            };
+            foreach (var method in methods)
+            {
+                foreach (var format in formats)
+                {
+                    yield return new[] { $"logger.{method}({format}{templateAndArguments});" };
+                }
+            }
+
+            yield return new[] { $"logger.BeginScope({templateAndArguments});" };
+        }
+
+        private static Diagnostic[] GetDiagnostics(string expression)
         {
             var code = $@"
 using Microsoft.Extensions.Logging;
@@ -51,16 +89,7 @@ public class Program
     }}
 }}
 ";
-            var diagnostics = GetSortedDiagnostics(new[] { code }, new LogFormatAnalyzer());
-            if (exprectedDiagnostics != null)
-            {
-                var diagnostic = Assert.Single(diagnostics);
-                Assert.Equal(exprectedDiagnostics, diagnostic.Id);
-            }
-            else
-            {
-                Assert.Empty(diagnostics);
-            }
+            return GetSortedDiagnostics(new[] {code}, new LogFormatAnalyzer());
         }
     }
 }

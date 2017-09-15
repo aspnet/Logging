@@ -35,14 +35,15 @@ namespace Microsoft.Extensions.Logging.Analyzers
             context.RegisterCompilationStartAction(analysisContext =>
             {
                 var loggerExtensionsType = analysisContext.Compilation.GetTypeByMetadataName("Microsoft.Extensions.Logging.LoggerExtensions");
-                if (loggerExtensionsType == null)
+                var logerType = analysisContext.Compilation.GetTypeByMetadataName("Microsoft.Extensions.Logging.ILogger");
+                if (loggerExtensionsType == null || logerType == null)
                     return;
 
-                analysisContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeInvocation(syntaxContext, loggerExtensionsType), SyntaxKind.InvocationExpression);
+                analysisContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeInvocation(syntaxContext, logerType, loggerExtensionsType), SyntaxKind.InvocationExpression);
             });
         }
 
-        private void AnalyzeInvocation(SyntaxNodeAnalysisContext syntaxContext, INamedTypeSymbol loggerExtensionsType)
+        private void AnalyzeInvocation(SyntaxNodeAnalysisContext syntaxContext, INamedTypeSymbol loggerType, INamedTypeSymbol loggerExtensionsType)
         {
             var invocation = (InvocationExpressionSyntax)syntaxContext.Node;
 
@@ -52,7 +53,8 @@ namespace Microsoft.Extensions.Logging.Analyzers
 
             var methodSymbol = (IMethodSymbol)symbolInfo.Symbol;
 
-            if (methodSymbol.MethodKind != MethodKind.ReducedExtension || methodSymbol.ContainingType != loggerExtensionsType)
+            if (methodSymbol.ContainingType != loggerExtensionsType &&
+                methodSymbol.ContainingType != loggerType)
                 return;
 
             if (FindLogParameters(methodSymbol, out var messageArgument, out var paramsArgument))
@@ -182,13 +184,21 @@ namespace Microsoft.Extensions.Logging.Analyzers
                     message = parameter;
                 }
 
+                // When calling logger.BeginScope("{Param}") generic overload would be selected
+                if (parameter.Type.SpecialType == SpecialType.System_String &&
+                    methodSymbol.Name.Equals("BeginScope") &&
+                    string.Equals(parameter.Name, "state", StringComparison.Ordinal))
+                {
+                    message = parameter;
+                }
+
                 if (parameter.IsParams &&
                     string.Equals(parameter.Name, "args", StringComparison.Ordinal))
                 {
                     arguments = parameter;
                 }
             }
-            return message != null && arguments != null;
+            return message != null;
         }
 
         private static bool IsNameOfInvocation(InvocationExpressionSyntax invocation)
