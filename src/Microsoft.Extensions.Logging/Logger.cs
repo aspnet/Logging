@@ -9,6 +9,9 @@ namespace Microsoft.Extensions.Logging
 {
     internal class Logger : ILogger, IMetricLogger
     {
+        private Dictionary<string, Metric> _metrics = new Dictionary<string, Metric>();
+        private object _sync = new object();
+
         public LoggerInformation[] Loggers { get; set; }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
@@ -138,71 +141,18 @@ namespace Microsoft.Extensions.Logging
 
         public IMetric DefineMetric(string name)
         {
-            // REVIEW: Cache these by name? As long as the loggers list doesn't change, they should be cachable.
-            // Users are only supposed to call this once per metric name, but if they do call it twice they'll get
-            // two completely different metrics with the same name, which would be bad.
-
-            var loggers = Loggers;
-
-            if(loggers == null)
+            if (!_metrics.TryGetValue(name, out var metric))
             {
-                return NullMetric.Instance;
-            }
-
-            if(loggers.Length == 1)
-            {
-                return loggers[0].Logger.DefineMetric(name);
-            }
-
-            // REVIEW: Unlike with Scope, we can't use a fixed-size array
-            // because the number of Metric-enabled loggers is not known up front (it could be though...)
-            var metrics = new List<IMetric>();
-            List<Exception> exceptions = null;
-            for (var index = 0; index < loggers.Length; index += 1)
-            {
-                try
+                lock (_sync)
                 {
-                    // REVIEW: Could use the extension method, but it likely means having an array with a number of NullMetric pointers
-                    // in it. That could add up...
-                    if(loggers[index].Logger is IMetricLogger metricLogger)
+                    if (!_metrics.TryGetValue(name, out metric))
                     {
-                        metrics.Add(metricLogger.DefineMetric(name));
+                        metric = new Metric(this, name);
+                        _metrics[name] = metric;
                     }
                 }
-                catch (Exception ex)
-                {
-                    if(exceptions == null && exceptions.Count > 0)
-                    {
-                        exceptions = new List<Exception>();
-                    }
-                    exceptions.Add(ex);
-                }
             }
-
-            if(exceptions?.Count == 0)
-            {
-                throw new AggregateException(message: "An error occurred while writing to logger(s).", innerExceptions: exceptions);
-            }
-
-            return new Metric(metrics);
-        }
-
-        private class Metric : IMetric
-        {
-            private List<IMetric> _metrics;
-
-            public Metric(List<IMetric> metrics)
-            {
-                _metrics = metrics;
-            }
-
-            public void RecordValue(double value)
-            {
-                for(var index = 0; index < _metrics.Count; index += 1)
-                {
-                    _metrics[index].RecordValue(value);
-                }
-            }
+            return metric;
         }
 
         private class Scope : IDisposable
@@ -262,6 +212,67 @@ namespace Microsoft.Extensions.Logging
                     }
 
                     _isDisposed = true;
+                }
+            }
+        }
+
+        private class Metric : IMetric
+        {
+            private readonly string _name;
+
+            private Logger _logger;
+            private IMetric[] _metrics;
+            private object _sync = new object();
+
+            public Metric(Logger logger, string name)
+            {
+                _logger = logger;
+                _name = name;
+            }
+
+            public void RecordValue(double value)
+            {
+                IMetric[] metrics;
+                lock (_sync)
+                {
+                    if (_metrics == null || _metrics.Length != _logger.Loggers.Length)
+                    {
+                        UpdateMetrics(_logger.Loggers);
+                    }
+                    metrics = _metrics;
+                }
+
+                for (var i = 0; i < metrics.Length; i += 1)
+                {
+                    // REVIEW: LogLevel for metrics?
+                    // REVIEW: Filtering by Metric Name?
+                    if (_logger.Loggers[i].IsEnabled(LogLevel.Critical))
+                    {
+                        metrics[i].RecordValue(value);
+                    }
+                }
+            }
+
+            private void UpdateMetrics(LoggerInformation[] loggers)
+            {
+                lock (_sync)
+                {
+                    if (_metrics == null)
+                    {
+                        _metrics = new IMetric[loggers.Length];
+                    }
+                    else if (_metrics.Length != loggers.Length)
+                    {
+                        Array.Resize(ref _metrics, loggers.Length);
+                    }
+
+                    for (var i = 0; i < loggers.Length; i += 1)
+                    {
+                        if (_metrics[i] == null)
+                        {
+                            _metrics[i] = loggers[i].Logger.DefineMetric(_name);
+                        }
+                    }
                 }
             }
         }

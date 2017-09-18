@@ -59,6 +59,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Extensions.Logging.Analyzers", "src\Microsoft.Extensions.Logging.Analyzers\Microsoft.Extensions.Logging.Analyzers.csproj", "{99DF369F-40A4-4088-8308-1C361B59DF4E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Extensions.Logging.Analyzer.Test", "test\Microsoft.Extensions.Logging.Analyzer.Test\Microsoft.Extensions.Logging.Analyzer.Test.csproj", "{C0391E46-FD04-4D52-BE40-1F21CE83E037}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetricsSample", "samples\MetricsSample\MetricsSample.csproj", "{1D30FF1D-33B6-45B0-9C5D-4D9044A4E49C}"
 EndProject
 Global
