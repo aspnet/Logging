@@ -3,7 +3,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Extensions.Logging
+namespace Microsoft.Extensions.Logging.Configuration
 {
     internal class LoggerProviderConfiguration<T> : ILoggerProviderConfiguration<T>
     {

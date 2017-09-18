@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Extensions.Logging
+namespace Microsoft.Extensions.Logging.Configuration
 {
     internal class LoggerProviderConfigurationFactory : ILoggerProviderConfigurationFactory
     {

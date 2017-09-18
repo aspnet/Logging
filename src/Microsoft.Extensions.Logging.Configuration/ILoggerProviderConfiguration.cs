@@ -3,7 +3,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Extensions.Logging
+namespace Microsoft.Extensions.Logging.Configuration
 {
     /// <summary>
     /// Allows access to configuration section associated with logger provider
