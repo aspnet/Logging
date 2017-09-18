@@ -1,6 +1,7 @@
-﻿using System;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -14,7 +15,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             var serviceProvider = BuildServiceProvider(Pair("Microsoft.Extensions.Logging.Test.TestLoggerProvider:Key", "Value"));
 
-            var providerConfiguration = serviceProvider.GetRequiredService<ILoggerProviderConfiguration>();
+            var providerConfiguration = serviceProvider.GetRequiredService<ILoggerProviderConfigurationFactory>();
             var configuration = providerConfiguration.GetConfiguration(typeof(TestLoggerProvider));
 
             Assert.Equal("Value", configuration["Key"]);
@@ -25,12 +26,11 @@ namespace Microsoft.Extensions.Logging.Test
         {
             var serviceProvider = BuildServiceProvider(Pair("TestLogger:Key", "Value"));
 
-            var providerConfiguration = serviceProvider.GetRequiredService<ILoggerProviderConfiguration>();
+            var providerConfiguration = serviceProvider.GetRequiredService<ILoggerProviderConfigurationFactory>();
             var configuration = providerConfiguration.GetConfiguration(typeof(TestLoggerProvider));
 
             Assert.Equal("Value", configuration["Key"]);
         }
-
 
         [Fact]
         public void ReturnsConfigurationSectionByFullNameGeneric()
@@ -51,7 +51,6 @@ namespace Microsoft.Extensions.Logging.Test
 
             Assert.Equal("Value", providerConfiguration.Configuration["Key"]);
         }
-
 
         [Fact]
         public void MergesSectionsPreferringAlias()

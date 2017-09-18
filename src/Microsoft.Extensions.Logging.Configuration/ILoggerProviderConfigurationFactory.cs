@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.Logging
@@ -8,12 +9,12 @@ namespace Microsoft.Extensions.Logging
     /// <summary>
     /// Allows access to configuration section associated with logger provider
     /// </summary>
-    /// <typeparam name="T">Type of logger provider to get configuration for</typeparam>
-    public interface ILoggerProviderConfiguration<T>
+    public interface ILoggerProviderConfigurationFactory
     {
         /// <summary>
-        /// Configuration section for requested logger provider
+        /// Return configuration section associated with logger provider
         /// </summary>
-        IConfiguration Configuration { get; }
+        /// <param name="providerType">The logger provider type</param>
+        IConfiguration GetConfiguration(Type providerType);
     }
 }

@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.Logging
         /// <returns>The builder.</returns>
         public static ILoggingBuilder AddConfiguration(this ILoggingBuilder builder, IConfiguration configuration)
         {
-            builder.Services.TryAddSingleton<ILoggerProviderConfiguration, LoggerProviderConfiguration>();
+            builder.Services.TryAddSingleton<ILoggerProviderConfigurationFactory, LoggerProviderConfigurationFactory>();
             builder.Services.TryAddSingleton(typeof(ILoggerProviderConfiguration<>), typeof(LoggerProviderConfiguration<>));
 
             builder.Services.AddSingleton<IConfigureOptions<LoggerFilterOptions>>(new LoggerFilterConfigureOptions(configuration));
