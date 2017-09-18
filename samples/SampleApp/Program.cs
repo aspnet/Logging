@@ -56,6 +56,7 @@ namespace SampleApp
 
         public void Execute(string[] args)
         {
+            var durationMetric = _logger.DefineMetric("Duration");
             var stopwatch = Stopwatch.StartNew();
             _logger.LogInformation("Starting");
 
@@ -103,7 +104,7 @@ namespace SampleApp
             _logger.LogInformation("Stopping");
 
             stopwatch.Stop();
-            _logger.RecordMetric("Duration", stopwatch.ElapsedMilliseconds);
+            durationMetric.RecordValue(stopwatch.Elapsed);
         }
     }
 }

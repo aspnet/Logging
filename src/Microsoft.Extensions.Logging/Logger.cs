@@ -136,42 +136,72 @@ namespace Microsoft.Extensions.Logging
             return scope;
         }
 
-        public void RecordMetric(Metric metric)
+        public IMetric DefineMetric(string name)
         {
+            // REVIEW: Cache these by name? As long as the loggers list doesn't change, they should be cachable.
+            // Users are only supposed to call this once per metric name, but if they do call it twice they'll get
+            // two completely different metrics with the same name, which would be bad.
+
             var loggers = Loggers;
-            if (loggers == null)
+
+            if(loggers == null)
             {
-                return;
+                return NullMetric.Instance;
             }
 
-            List<Exception> exceptions = null;
-            foreach (var loggerInfo in loggers)
+            if(loggers.Length == 1)
             {
-                // REVIEW: What "level" should metrics be at?
-                if (!loggerInfo.IsEnabled(LogLevel.Information) || !(loggerInfo.Logger is IMetricLogger metricLogger))
-                {
-                    continue;
-                }
+                return loggers[0].Logger.DefineMetric(name);
+            }
 
+            // REVIEW: Unlike with Scope, we can't use a fixed-size array
+            // because the number of Metric-enabled loggers is not known up front (it could be though...)
+            var metrics = new List<IMetric>();
+            List<Exception> exceptions = null;
+            for (var index = 0; index < loggers.Length; index += 1)
+            {
                 try
                 {
-                    metricLogger.RecordMetric(metric);
+                    // REVIEW: Could use the extension method, but it likely means having an array with a number of NullMetric pointers
+                    // in it. That could add up...
+                    if(loggers[index].Logger is IMetricLogger metricLogger)
+                    {
+                        metrics.Add(metricLogger.DefineMetric(name));
+                    }
                 }
                 catch (Exception ex)
                 {
-                    if (exceptions == null)
+                    if(exceptions == null && exceptions.Count > 0)
                     {
                         exceptions = new List<Exception>();
                     }
-
                     exceptions.Add(ex);
                 }
             }
 
-            if (exceptions != null && exceptions.Count > 0)
+            if(exceptions?.Count == 0)
             {
-                throw new AggregateException(
-                    message: "An error occurred while writing to logger(s).", innerExceptions: exceptions);
+                throw new AggregateException(message: "An error occurred while writing to logger(s).", innerExceptions: exceptions);
+            }
+
+            return new Metric(metrics);
+        }
+
+        private class Metric : IMetric
+        {
+            private List<IMetric> _metrics;
+
+            public Metric(List<IMetric> metrics)
+            {
+                _metrics = metrics;
+            }
+
+            public void RecordValue(double value)
+            {
+                for(var index = 0; index < _metrics.Count; index += 1)
+                {
+                    _metrics[index].RecordValue(value);
+                }
             }
         }
 
