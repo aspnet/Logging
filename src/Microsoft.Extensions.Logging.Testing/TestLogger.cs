@@ -5,7 +5,7 @@ using System;
 
 namespace Microsoft.Extensions.Logging.Testing
 {
-    public class TestLogger : ILogger
+    public class TestLogger : ILogger, IMetricLogger
     {
         private object _scope;
         private readonly ITestSink _sink;
@@ -61,6 +61,11 @@ namespace Microsoft.Extensions.Logging.Testing
         public bool IsEnabled(LogLevel logLevel)
         {
             return logLevel != LogLevel.None && _filter(logLevel);
+        }
+
+        public IMetric DefineMetric(string name)
+        {
+            return new TestMetric(_sink, name);
         }
 
         private class TestDisposable : IDisposable

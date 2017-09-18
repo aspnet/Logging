@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Extensions.Logging.Testing
@@ -13,7 +13,11 @@ namespace Microsoft.Extensions.Logging.Testing
 
         List<WriteContext> Writes { get; set; }
 
+        List<MetricContext> Metrics { get; set; }
+
         void Write(WriteContext context);
+
+        void Write(MetricContext context);
 
         void Begin(BeginScopeContext context);
     }

@@ -17,6 +17,7 @@ namespace Microsoft.Extensions.Logging.Testing
 
             Scopes = new List<BeginScopeContext>();
             Writes = new List<WriteContext>();
+            Metrics = new List<MetricContext>();
         }
 
         public Func<WriteContext, bool> WriteEnabled { get; set; }
@@ -27,12 +28,19 @@ namespace Microsoft.Extensions.Logging.Testing
 
         public List<WriteContext> Writes { get; set; }
 
+        public List<MetricContext> Metrics { get; set; }
+
         public void Write(WriteContext context)
         {
             if (WriteEnabled == null || WriteEnabled(context))
             {
                 Writes.Add(context);
             }
+        }
+
+        public void Write(MetricContext context)
+        {
+            Metrics.Add(context);
         }
 
         public void Begin(BeginScopeContext context)
