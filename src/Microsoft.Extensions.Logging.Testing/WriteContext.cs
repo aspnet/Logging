@@ -22,3 +22,4 @@ namespace Microsoft.Extensions.Logging.Testing
         public string LoggerName { get; set; }
     }
 }
+
