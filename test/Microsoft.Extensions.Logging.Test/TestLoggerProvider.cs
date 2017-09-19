@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.Logging.Test
 #pragma warning restore CS0436 // Type conflicts with imported type
     public class TestLoggerProvider : ILoggerProvider
     {
-        private readonly Func<LogLevel, bool> _filter;
+        protected readonly Func<LogLevel, bool> _filter;
 
         public TestLoggerProvider(TestSink testSink, bool isEnabled) :
             this(testSink, _ => isEnabled)
@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.Logging.Test
 
         public bool DisposeCalled { get; private set; }
 
-        public ILogger CreateLogger(string categoryName)
+        public virtual ILogger CreateLogger(string categoryName)
         {
             return new TestLogger(categoryName, Sink, _filter);
         }
@@ -43,6 +43,25 @@ namespace Microsoft.Extensions.Logging.Test
     {
         public TestLoggerProvider2(TestSink testSink) : base(testSink, true)
         {
+        }
+    }
+
+    // Need a logger that does not implement IMetricsLogger to test that functionality.
+    public class TestLoggerProviderWithoutMetrics : TestLoggerProvider
+    {
+        public TestLoggerProviderWithoutMetrics(TestSink testSink, bool isEnabled) :
+            base(testSink, isEnabled)
+        {
+        }
+
+        public TestLoggerProviderWithoutMetrics(TestSink testSink, Func<LogLevel, bool> filter)
+            : base(testSink, filter)
+        {
+        }
+
+        public override ILogger CreateLogger(string categoryName)
+        {
+            return new TestLoggerWithoutMetrics(categoryName, Sink, _filter);
         }
     }
 }
