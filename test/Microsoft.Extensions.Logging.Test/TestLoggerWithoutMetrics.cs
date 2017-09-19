@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging.Testing;
 namespace Microsoft.Extensions.Logging.Test
 {
     // Just wraps a TestLogger but does so in a type that doesn't implement IMetricsLogger
+    // Didn't put this in Microsoft.Extensions.Logging.Testing because it's not really necessary for general testing of logging,
+    // just for testing the logging infrastructure itself.
     public class TestLoggerWithoutMetrics : ILogger
     {
         private readonly TestLogger _innerLogger;
