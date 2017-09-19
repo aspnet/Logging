@@ -968,7 +968,7 @@ namespace Microsoft.Extensions.Logging.Test
                     return true;
                 }
 
-                throw new Exception("Failed to parse LogLevel");
+                throw new Exception($"Failed to parse LogLevel: {Switches[name]}");
             }
         }
 
