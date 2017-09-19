@@ -11,10 +11,11 @@ namespace Microsoft.Extensions.Logging
         private const string AliasAttibuteTypeFullName = "Microsoft.Extensions.Logging.ProviderAliasAttribute";
         private const string AliasAttibuteAliasProperty = "Alias";
 
-        public void Select(LoggerFilterOptions options, Type providerType, string category, out LogLevel? minLevel, out Func<string, string, LogLevel, bool> filter)
+        public void Select(LoggerFilterOptions options, Type providerType, string category, out LogLevel? minLevel, out Func<string, string, LogLevel, bool> filter, out bool metricsEnabled)
         {
             filter = null;
             minLevel = options.MinLevel;
+            metricsEnabled = true;
 
             // Filter rule selection:
             // 1. Select rules for current logger type, if there is none, select ones without logger type specified
@@ -39,6 +40,7 @@ namespace Microsoft.Extensions.Logging
             {
                 filter = current.Filter;
                 minLevel = current.LogLevel;
+                metricsEnabled = current.MetricsEnabled;
             }
         }
 

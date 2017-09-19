@@ -131,11 +131,13 @@ namespace Microsoft.Extensions.Logging
                     loggerInformation.ProviderType,
                     categoryName,
                     out var minLevel,
-                    out var filter);
+                    out var filter,
+                    out var metricsEnabled);
 
                 loggerInformation.Category = categoryName;
                 loggerInformation.MinLevel = minLevel;
                 loggerInformation.Filter = filter;
+                loggerInformation.MetricsEnabled = metricsEnabled;
             }
         }
 

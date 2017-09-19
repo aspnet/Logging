@@ -253,6 +253,27 @@ namespace Microsoft.Extensions.Logging
                 }
             }
 
+            public void RecordValue<T>(double value, T properties) where T : IEnumerable<KeyValuePair<string, object>>
+            {
+                IMetric[] metrics;
+                lock (_sync)
+                {
+                    if (_metrics == null || _metrics.Length != _logger.Loggers.Length)
+                    {
+                        UpdateMetrics(_logger.Loggers);
+                    }
+                    metrics = _metrics;
+                }
+
+                for (var i = 0; i < metrics.Length; i += 1)
+                {
+                    if (_logger.Loggers[i].MetricsEnabled)
+                    {
+                        metrics[i].RecordValue(value, properties);
+                    }
+                }
+            }
+
             private void UpdateMetrics(LoggerInformation[] loggers)
             {
                 lock (_sync)

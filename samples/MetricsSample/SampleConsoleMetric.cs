@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
 namespace MetricsSample
@@ -52,5 +53,9 @@ namespace MetricsSample
                 return new MetricAggregates(_count, _sum, _sumOfSquares, _max, _min);
             }
         }
+
+        // We don't care about the properties
+        public void RecordValue<T>(double value, T properties) where T : IEnumerable<KeyValuePair<string, object>> =>
+            RecordValue(value);
     }
 }

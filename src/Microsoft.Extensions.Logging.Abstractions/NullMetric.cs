@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Microsoft.Extensions.Logging
 {
     public class NullMetric : IMetric
@@ -10,6 +12,10 @@ namespace Microsoft.Extensions.Logging
         }
 
         public void RecordValue(double value)
+        {
+        }
+
+        public void RecordValue<T>(double value, T properties) where T : IEnumerable<KeyValuePair<string, object>>
         {
         }
     }
