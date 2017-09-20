@@ -11,6 +11,11 @@ namespace Microsoft.Extensions.Logging
     public class LoggerFilterRule
     {
         public LoggerFilterRule(string providerName, string categoryName, LogLevel? logLevel, Func<string, string, LogLevel, bool> filter)
+            : this(providerName, categoryName, logLevel, filter, metricsEnabled: true)
+        {
+        }
+
+        public LoggerFilterRule(string providerName, string categoryName, LogLevel? logLevel, Func<string, string, LogLevel, bool> filter, bool metricsEnabled)
         {
             ProviderName = providerName;
             CategoryName = categoryName;
@@ -38,9 +43,14 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         public Func<string, string, LogLevel, bool> Filter { get; }
 
+        /// <summary>
+        /// Gets a boolean indicating if metrics are enabled for this logger.
+        /// </summary>
+        public bool MetricsEnabled { get; }
+
         public override string ToString()
         {
-            return $"{nameof(ProviderName)}: '{ProviderName}', {nameof(CategoryName)}: '{CategoryName}', {nameof(LogLevel)}: '{LogLevel}', {nameof(Filter)}: '{Filter}'";
+            return $"{nameof(ProviderName)}: '{ProviderName}', {nameof(CategoryName)}: '{CategoryName}', {nameof(LogLevel)}: '{LogLevel}', {nameof(Filter)}: '{Filter}', {nameof(MetricsEnabled)}: {MetricsEnabled}";
         }
     }
 }

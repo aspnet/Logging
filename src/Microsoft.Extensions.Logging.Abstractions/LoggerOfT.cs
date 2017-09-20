@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.Logging
     /// provided <see cref="ILoggerFactory"/>.
     /// </summary>
     /// <typeparam name="T">The type.</typeparam>
-    public class Logger<T> : ILogger<T>
+    public class Logger<T> : ILogger<T>, IMetricLogger
     {
         private readonly ILogger _logger;
 
@@ -29,19 +29,9 @@ namespace Microsoft.Extensions.Logging
             _logger = factory.CreateLogger(TypeNameHelper.GetTypeDisplayName(typeof(T)));
         }
 
-        IDisposable ILogger.BeginScope<TState>(TState state)
-        {
-            return _logger.BeginScope(state);
-        }
-
-        bool ILogger.IsEnabled(LogLevel logLevel)
-        {
-            return _logger.IsEnabled(logLevel);
-        }
-
-        void ILogger.Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-        {
-            _logger.Log(logLevel, eventId, state, exception, formatter);
-        }
+        IMetric IMetricLogger.DefineMetric(string name) => _logger.DefineMetric(name);
+        IDisposable ILogger.BeginScope<TState>(TState state) => _logger.BeginScope(state);
+        bool ILogger.IsEnabled(LogLevel logLevel) => _logger.IsEnabled(logLevel);
+        void ILogger.Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter) => _logger.Log(logLevel, eventId, state, exception, formatter);
     }
 }

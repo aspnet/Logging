@@ -1,4 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
@@ -16,6 +16,8 @@ namespace Microsoft.Extensions.Logging
         public LogLevel? MinLevel { get; set; }
 
         public Func<string, string, LogLevel, bool> Filter { get; set; }
+
+        public bool MetricsEnabled { get; set; }
 
         public bool IsEnabled(LogLevel level)
         {

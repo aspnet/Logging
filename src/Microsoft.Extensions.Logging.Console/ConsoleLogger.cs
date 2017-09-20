@@ -300,3 +300,4 @@ namespace Microsoft.Extensions.Logging.Console
         }
     }
 }
+

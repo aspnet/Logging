@@ -7,8 +7,11 @@ using Microsoft.Extensions.Logging.Abstractions.Internal;
 
 namespace Microsoft.Extensions.Logging
 {
-    internal class Logger : ILogger
+    internal class Logger : ILogger, IMetricLogger
     {
+        private Dictionary<string, Metric> _metrics = new Dictionary<string, Metric>();
+        private object _sync = new object();
+
         public LoggerInformation[] Loggers { get; set; }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
@@ -136,6 +139,21 @@ namespace Microsoft.Extensions.Logging
             return scope;
         }
 
+        public IMetric DefineMetric(string name)
+        {
+            if (!_metrics.TryGetValue(name, out var metric))
+            {
+                lock (_sync)
+                {
+                    if (!_metrics.TryGetValue(name, out metric))
+                    {
+                        metric = new Metric(this, name);
+                        _metrics[name] = metric;
+                    }
+                }
+            }
+            return metric;
+        }
 
         private class Scope : IDisposable
         {
@@ -194,6 +212,88 @@ namespace Microsoft.Extensions.Logging
                     }
 
                     _isDisposed = true;
+                }
+            }
+        }
+
+        private class Metric : IMetric
+        {
+            private readonly string _name;
+
+            private Logger _logger;
+            private IMetric[] _metrics;
+            private object _sync = new object();
+
+            public Metric(Logger logger, string name)
+            {
+                _logger = logger;
+                _name = name;
+            }
+
+            public void RecordValue(double value)
+            {
+                IMetric[] metrics;
+                lock (_sync)
+                {
+                    if (_metrics == null || _metrics.Length != _logger.Loggers.Length)
+                    {
+                        UpdateMetrics(_logger.Loggers);
+                    }
+                    metrics = _metrics;
+                }
+
+                for (var i = 0; i < metrics.Length; i += 1)
+                {
+                    // REVIEW: LogLevel for metrics?
+                    // REVIEW: Filtering by Metric Name?
+                    if (_logger.Loggers[i].IsEnabled(LogLevel.Critical))
+                    {
+                        metrics[i].RecordValue(value);
+                    }
+                }
+            }
+
+            public void RecordValue<T>(double value, T properties) where T : IEnumerable<KeyValuePair<string, object>>
+            {
+                IMetric[] metrics;
+                lock (_sync)
+                {
+                    if (_metrics == null || _metrics.Length != _logger.Loggers.Length)
+                    {
+                        UpdateMetrics(_logger.Loggers);
+                    }
+                    metrics = _metrics;
+                }
+
+                for (var i = 0; i < metrics.Length; i += 1)
+                {
+                    if (_logger.Loggers[i].MetricsEnabled)
+                    {
+                        metrics[i].RecordValue(value, properties);
+                    }
+                }
+            }
+
+            private void UpdateMetrics(LoggerInformation[] loggers)
+            {
+                lock (_sync)
+                {
+                    if (_metrics == null)
+                    {
+                        _metrics = new IMetric[loggers.Length];
+                    }
+                    else if (_metrics.Length != loggers.Length)
+                    {
+                        Array.Resize(ref _metrics, loggers.Length);
+                    }
+
+                    for (var i = 0; i < loggers.Length; i += 1)
+                    {
+                        if (_metrics[i] == null)
+                        {
+                            _metrics[i] = loggers[i].Logger.DefineMetric(_name);
+                        }
+                    }
                 }
             }
         }
