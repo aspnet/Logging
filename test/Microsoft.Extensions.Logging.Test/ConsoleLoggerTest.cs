@@ -615,11 +615,12 @@ namespace Microsoft.Extensions.Logging.Test
         }
 
         [Fact]
-        public void CallingBeginScopeOnLogger_AlwaysReturnsNewDisposableInstance()
+        public void CallingBeginScopeOnLoggerWithScopes_AlwaysReturnsNewDisposableInstance()
         {
             // Arrange
             var t = SetUp(null);
             var logger = t.Logger;
+            logger.IncludeScopes = true;
             var sink = t.Sink;
 
             // Act
@@ -630,6 +631,26 @@ namespace Microsoft.Extensions.Logging.Test
             Assert.NotNull(disposable1);
             Assert.NotNull(disposable2);
             Assert.NotSame(disposable1, disposable2);
+        }
+
+        [Fact]
+        public void CallingBeginScopeOnLoggerWithoutScopes_AlwaysReturnsSameDisposableInstance()
+        {
+            // Arrange
+            var t = SetUp(null);
+            var logger = t.Logger;
+            logger.IncludeScopes = false;
+            var sink = t.Sink;
+
+            // Act
+            var disposable1 = logger.BeginScope("Scope1");
+            var disposable2 = logger.BeginScope("Scope2");
+
+            // Assert
+            Assert.NotNull(disposable1);
+            Assert.NotNull(disposable2);
+            Assert.Same(disposable1, disposable2);
+            Assert.Same(ConsoleLogger.NullDisposable.Instance, disposable2);
         }
 
         [Fact]

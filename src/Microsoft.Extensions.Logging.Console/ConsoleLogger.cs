@@ -306,7 +306,7 @@ namespace Microsoft.Extensions.Logging.Console
             }
         }
 
-        private class NullDisposable : IDisposable
+        internal class NullDisposable : IDisposable
         {
             public static readonly NullDisposable Instance = new NullDisposable();
 
