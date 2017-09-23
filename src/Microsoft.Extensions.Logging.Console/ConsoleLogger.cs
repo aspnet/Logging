@@ -199,7 +199,14 @@ namespace Microsoft.Extensions.Logging.Console
                 throw new ArgumentNullException(nameof(state));
             }
 
-            return ConsoleLogScope.Push(Name, state);
+            if (IncludeScopes)
+            {
+                return ConsoleLogScope.Push(Name, state);
+            }
+            else
+            {
+                return NullDisposable.Instance;
+            }
         }
 
         private static string GetLogLevelString(LogLevel logLevel)
@@ -296,6 +303,16 @@ namespace Microsoft.Extensions.Logging.Console
             public void WriteLine(string message)
             {
                 System.Console.WriteLine(message);
+            }
+        }
+
+        private class NullDisposable : IDisposable
+        {
+            public static readonly NullDisposable Instance = new NullDisposable();
+
+            public void Dispose()
+            {
+                // intentionally does nothing
             }
         }
     }
