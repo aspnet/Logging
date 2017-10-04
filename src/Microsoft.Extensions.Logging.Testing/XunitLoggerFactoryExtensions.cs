@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging.Testing;
 using Xunit.Abstractions;
 
@@ -13,13 +12,13 @@ namespace Microsoft.Extensions.Logging
     {
         public static ILoggingBuilder AddXunit(this ILoggingBuilder builder, ITestOutputHelper output)
         {
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider>(new XunitLoggerProvider(output)));
+            builder.Services.AddSingleton<ILoggerProvider>(new XunitLoggerProvider(output));
             return builder;
         }
 
         public static ILoggingBuilder AddXunit(this ILoggingBuilder builder, ITestOutputHelper output, LogLevel minLevel)
         {
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider>(new XunitLoggerProvider(output, minLevel)));
+            builder.Services.AddSingleton<ILoggerProvider>(new XunitLoggerProvider(output, minLevel));
             return builder;
         }
 
