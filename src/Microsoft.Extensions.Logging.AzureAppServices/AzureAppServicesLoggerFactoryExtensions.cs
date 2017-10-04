@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging.AzureAppServices;
 using Microsoft.Extensions.Logging.AzureAppServices.Internal;
 using Microsoft.Extensions.Options;
@@ -29,25 +30,25 @@ namespace Microsoft.Extensions.Logging
 
             var config = SiteConfigurationProvider.GetAzureLoggingConfiguration(context);
 
-            builder.Services.AddSingleton<IConfigureOptions<LoggerFilterOptions>>(CreateFileFilterConfigureOptions(config));
-            builder.Services.AddSingleton<IConfigureOptions<LoggerFilterOptions>>(CreateBlobFilterConfigureOptions(config));
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<LoggerFilterOptions>>(CreateFileFilterConfigureOptions(config)));
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<LoggerFilterOptions>>(CreateBlobFilterConfigureOptions(config)));
 
-            builder.Services.AddSingleton<IOptionsChangeTokenSource<LoggerFilterOptions>>(
-                new ConfigurationChangeTokenSource<LoggerFilterOptions>(config));
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<LoggerFilterOptions>>(
+                    new ConfigurationChangeTokenSource<LoggerFilterOptions>(config)));
 
-            builder.Services.AddSingleton<IConfigureOptions<AzureBlobLoggerOptions>>(new BlobLoggerConfigureOptions(config, context));
-            builder.Services.AddSingleton<IOptionsChangeTokenSource<AzureBlobLoggerOptions>>(
-                new ConfigurationChangeTokenSource<AzureBlobLoggerOptions>(config));
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<AzureBlobLoggerOptions>>(new BlobLoggerConfigureOptions(config, context)));
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<AzureBlobLoggerOptions>>(
+                new ConfigurationChangeTokenSource<AzureBlobLoggerOptions>(config)));
 
-            builder.Services.AddSingleton<IConfigureOptions<AzureFileLoggerOptions>>(new FileLoggerConfigureOptions(config, context));
-            builder.Services.AddSingleton<IOptionsChangeTokenSource<AzureFileLoggerOptions>>(
-                new ConfigurationChangeTokenSource<AzureFileLoggerOptions>(config));
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<AzureFileLoggerOptions>>(new FileLoggerConfigureOptions(config, context)));
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<AzureFileLoggerOptions>>(
+                new ConfigurationChangeTokenSource<AzureFileLoggerOptions>(config)));
 
-            builder.Services.AddSingleton<IWebAppContext>(context);
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IWebAppContext>(context));
 
             // Only add the provider if we're in Azure WebApp. That cannot change once the apps started
-            builder.Services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
-            builder.Services.AddSingleton<ILoggerProvider, BlobLoggerProvider>();
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, FileLoggerProvider>());
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, BlobLoggerProvider>());
 
             return builder;
         }
