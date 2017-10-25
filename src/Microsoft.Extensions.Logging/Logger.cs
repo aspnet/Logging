@@ -9,6 +9,13 @@ namespace Microsoft.Extensions.Logging
 {
     internal class Logger : ILogger
     {
+        private readonly LoggerFactory _loggerFactory;
+
+        public Logger(LoggerFactory loggerFactory)
+        {
+            _loggerFactory = loggerFactory;
+        }
+
         public LoggerInformation[] Loggers { get; set; }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
@@ -107,14 +114,33 @@ namespace Microsoft.Extensions.Logging
                 return loggers[0].Logger.BeginScope(state);
             }
 
-            var scope = new Scope(loggers.Length);
+            var scopeProvider = _loggerFactory.ScopeProvider;
+            var scopeCount = scopeProvider != null ? 1 : 0;
+
+            // TODO: do not do this every time
+            foreach (var loggerInformation in loggers)
+            {
+                if (!loggerInformation.ExternalScope)
+                {
+                    scopeCount++;
+                }
+            }
+
+            var scope = new Scope(scopeCount);
             List<Exception> exceptions = null;
             for (var index = 0; index < loggers.Length; index++)
             {
+                var loggerInformation = loggers[index];
+                if (loggerInformation.ExternalScope)
+                {
+                    continue;
+                }
+
                 try
                 {
-                    var disposable = loggers[index].Logger.BeginScope(state);
-                    scope.SetDisposable(index, disposable);
+                    var disposable = loggerInformation.Logger.BeginScope(state);
+                    scopeCount--;
+                    scope.SetDisposable(scopeCount, disposable);
                 }
                 catch (Exception ex)
                 {
@@ -127,6 +153,12 @@ namespace Microsoft.Extensions.Logging
                 }
             }
 
+            if (_loggerFactory.ScopeProvider != null)
+            {
+                scope.SetDisposable(0, _loggerFactory.ScopeProvider.Push(state));
+            }
+
+
             if (exceptions != null && exceptions.Count > 0)
             {
                 throw new AggregateException(
@@ -135,7 +167,6 @@ namespace Microsoft.Extensions.Logging
 
             return scope;
         }
-
 
         private class Scope : IDisposable
         {
@@ -155,17 +186,17 @@ namespace Microsoft.Extensions.Logging
 
             public void SetDisposable(int index, IDisposable disposable)
             {
-                if (index == 0)
+                switch (index)
                 {
-                    _disposable0 = disposable;
-                }
-                else if (index == 1)
-                {
-                    _disposable1 = disposable;
-                }
-                else
-                {
-                    _disposable[index - 2] = disposable;
+                    case 0:
+                        _disposable0 = disposable;
+                        break;
+                    case 1:
+                        _disposable1 = disposable;
+                        break;
+                    default:
+                        _disposable[index - 2] = disposable;
+                        break;
                 }
             }
 
@@ -173,14 +204,9 @@ namespace Microsoft.Extensions.Logging
             {
                 if (!_isDisposed)
                 {
-                    if (_disposable0 != null)
-                    {
-                        _disposable0.Dispose();
-                    }
-                    if (_disposable1 != null)
-                    {
-                        _disposable1.Dispose();
-                    }
+                    _disposable0?.Dispose();
+                    _disposable1?.Dispose();
+
                     if (_disposable != null)
                     {
                         var count = _disposable.Length;

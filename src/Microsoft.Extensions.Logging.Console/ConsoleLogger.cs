@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Console.Internal;
 
 namespace Microsoft.Extensions.Logging.Console
@@ -31,11 +32,16 @@ namespace Microsoft.Extensions.Logging.Console
         }
 
         public ConsoleLogger(string name, Func<string, LogLevel, bool> filter, bool includeScopes)
-            : this(name, filter, includeScopes, new ConsoleLoggerProcessor())
+            : this(name, filter, includeScopes ? new LoggerExternalScopeProvider() : null, new ConsoleLoggerProcessor())
         {
         }
 
-        internal ConsoleLogger(string name, Func<string, LogLevel, bool> filter, bool includeScopes, ConsoleLoggerProcessor loggerProcessor)
+        public ConsoleLogger(string name, Func<string, LogLevel, bool> filter, IExternalScopeProvider scopeProvider)
+            : this(name, filter, scopeProvider, new ConsoleLoggerProcessor())
+        {
+        }
+
+        internal ConsoleLogger(string name, Func<string, LogLevel, bool> filter, IExternalScopeProvider scopeProvider, ConsoleLoggerProcessor loggerProcessor)
         {
             if (name == null)
             {
@@ -44,8 +50,7 @@ namespace Microsoft.Extensions.Logging.Console
 
             Name = name;
             Filter = filter ?? ((category, logLevel) => true);
-            IncludeScopes = includeScopes;
-
+            ScopeProvider = scopeProvider;
             _queueProcessor = loggerProcessor;
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -86,9 +91,9 @@ namespace Microsoft.Extensions.Logging.Console
             }
         }
 
-        public bool IncludeScopes { get; set; }
-
         public string Name { get; }
+
+        public IExternalScopeProvider ScopeProvider { get; set; }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
@@ -135,11 +140,9 @@ namespace Microsoft.Extensions.Logging.Console
             logBuilder.Append("[");
             logBuilder.Append(eventId);
             logBuilder.AppendLine("]");
+
             // scope information
-            if (IncludeScopes)
-            {
-                GetScopeInformation(logBuilder);
-            }
+            GetScopeInformation(logBuilder);
 
             if (!string.IsNullOrEmpty(message))
             {
@@ -192,15 +195,7 @@ namespace Microsoft.Extensions.Logging.Console
             return Filter(Name, logLevel);
         }
 
-        public IDisposable BeginScope<TState>(TState state)
-        {
-            if (state == null)
-            {
-                throw new ArgumentNullException(nameof(state));
-            }
-
-            return ConsoleLogScope.Push(Name, state);
-        }
+        public IDisposable BeginScope<TState>(TState state) => ScopeProvider?.Push(state);
 
         private static string GetLogLevelString(LogLevel logLevel)
         {
@@ -248,28 +243,18 @@ namespace Microsoft.Extensions.Logging.Console
 
         private void GetScopeInformation(StringBuilder builder)
         {
-            var current = ConsoleLogScope.Current;
-            string scopeLog = string.Empty;
-            var length = builder.Length;
-
-            while (current != null)
+            var scopeProvider = ScopeProvider;
+            if (scopeProvider != null)
             {
-                if (length == builder.Length)
-                {
-                    scopeLog = $"=> {current}";
-                }
-                else
-                {
-                    scopeLog = $"=> {current} ";
-                }
+                var length = builder.Length;
 
-                builder.Insert(length, scopeLog);
-                current = current.Parent;
-            }
-            if (builder.Length > length)
-            {
-                builder.Insert(length, _messagePadding);
-                builder.AppendLine();
+                ScopeProvider?.CollectScope((scope, stringBuilder) => stringBuilder.Append("=> ").Append(scope), builder);
+
+                if (builder.Length > length)
+                {
+                    builder.Insert(length, _messagePadding);
+                    builder.AppendLine();
+                }
             }
         }
 
