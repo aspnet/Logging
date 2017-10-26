@@ -158,7 +158,6 @@ namespace Microsoft.Extensions.Logging
                 scope.SetDisposable(0, _loggerFactory.ScopeProvider.Push(state));
             }
 
-
             if (exceptions != null && exceptions.Count > 0)
             {
                 throw new AggregateException(

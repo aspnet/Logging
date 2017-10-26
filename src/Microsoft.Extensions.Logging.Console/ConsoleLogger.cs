@@ -251,7 +251,7 @@ namespace Microsoft.Extensions.Logging.Console
             {
                 var length = builder.Length;
 
-                ScopeProvider?.CollectScope((scope, stringBuilder) => stringBuilder.Append("=> ").Append(scope), builder);
+                scopeProvider.CollectScope((scope, stringBuilder) => stringBuilder.Append("=> ").Append(scope), builder);
 
                 if (builder.Length > length)
                 {

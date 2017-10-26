@@ -16,11 +16,11 @@ namespace Microsoft.Extensions.Logging
 
         public void CollectScope<T>(Action<object, T> callback, T state)
         {
-            var curent = _currentScope.Value;
-            while (curent != null)
+            var current = _currentScope.Value;
+            while (current != null)
             {
-                callback(curent.State, state);
-                curent = curent.Parent;
+                callback(current.State, state);
+                current = current.Parent;
             }
         }
 
