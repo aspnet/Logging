@@ -10,10 +10,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.Logging
 {
+    /// <summary>
+    /// Default implemenation of <see cref="IExternalScopeProvider"/>
+    /// </summary>
     public class LoggerExternalScopeProvider : IExternalScopeProvider
     {
         private readonly AsyncLocal<Scope> _currentScope = new AsyncLocal<Scope>();
 
+        /// <inheritdoc />
         public void CollectScope<T>(Action<object, T> callback, T state)
         {
             var current = _currentScope.Value;
@@ -24,6 +28,7 @@ namespace Microsoft.Extensions.Logging
             }
         }
 
+        /// <inheritdoc />
         public IDisposable Push(object state)
         {
             var parent = _currentScope.Value;
