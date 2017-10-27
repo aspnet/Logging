@@ -129,11 +129,6 @@ namespace Microsoft.Extensions.Logging
                 return NullScope.Instance;
             }
 
-            if (loggers.Length == 1)
-            {
-                return loggers[0].Logger.BeginScope(state);
-            }
-
             var scopeProvider = _loggerFactory.ScopeProvider;
             var scopeCount = _scopeCount;
 
