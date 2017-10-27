@@ -112,8 +112,8 @@ namespace Microsoft.Extensions.Logging.Test
                 new[]
                 {
                     "Message",
-                    "Scope2",
                     "Scope",
+                    "Scope2",
                     "Message2",
                 });
             Assert.NotNull(loggerProvider.ScopeProvider);
@@ -154,8 +154,8 @@ namespace Microsoft.Extensions.Logging.Test
                 new[]
                 {
                     "Message",
-                    "Scope2",
                     "Scope",
+                    "Scope2",
                     "Message2",
                 });
 
@@ -163,8 +163,8 @@ namespace Microsoft.Extensions.Logging.Test
                 new[]
                 {
                     "Message",
-                    "Scope2",
                     "Scope",
+                    "Scope2",
                     "Message2",
                 });
         }

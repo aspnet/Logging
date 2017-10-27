@@ -89,7 +89,7 @@ namespace Microsoft.Extensions.Logging
                 throw new ObjectDisposedException(nameof(LoggerFactory));
             }
 
-            AddProviderRegistration(provider, dispose: false);
+            AddProviderRegistration(provider, dispose: true);
 
             lock (_sync)
             {

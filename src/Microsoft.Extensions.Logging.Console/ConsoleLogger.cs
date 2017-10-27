@@ -5,6 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions.Internal;
 using Microsoft.Extensions.Logging.Console.Internal;
 
 namespace Microsoft.Extensions.Logging.Console
@@ -198,7 +199,7 @@ namespace Microsoft.Extensions.Logging.Console
             return Filter(Name, logLevel);
         }
 
-        public IDisposable BeginScope<TState>(TState state) => ScopeProvider?.Push(state);
+        public IDisposable BeginScope<TState>(TState state) => ScopeProvider?.Push(state) ?? NullScope.Instance;
 
         private static string GetLogLevelString(LogLevel logLevel)
         {
@@ -244,19 +245,24 @@ namespace Microsoft.Extensions.Logging.Console
             }
         }
 
-        private void GetScopeInformation(StringBuilder builder)
+        private void GetScopeInformation(StringBuilder stringBuilder)
         {
             var scopeProvider = ScopeProvider;
             if (scopeProvider != null)
             {
-                var length = builder.Length;
+                var initialLength = stringBuilder.Length;
 
-                scopeProvider.ForEachScope((scope, stringBuilder) => stringBuilder.Append("=> ").Append(scope).Append(' '), builder);
-
-                if (builder.Length > length)
+                scopeProvider.ForEachScope((scope, state) =>
                 {
-                    builder.Insert(length, _messagePadding);
-                    builder.AppendLine();
+                    var (builder, length) = state;
+                    var first = length == builder.Length;
+                    builder.Append(first ? "=> " : " => ").Append(scope);
+                }, (stringBuilder, initialLength));
+
+                if (stringBuilder.Length > initialLength)
+                {
+                    stringBuilder.Insert(initialLength, _messagePadding);
+                    stringBuilder.AppendLine();
                 }
             }
         }

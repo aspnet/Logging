@@ -20,12 +20,16 @@ namespace Microsoft.Extensions.Logging
         /// <inheritdoc />
         public void ForEachScope<TState>(Action<object, TState> callback, TState state)
         {
-            var current = _currentScope.Value;
-            while (current != null)
+            void Report(Scope current)
             {
+                if (current == null)
+                {
+                    return;
+                }
+                Report(current.Parent);
                 callback(current.State, state);
-                current = current.Parent;
             }
+            Report(_currentScope.Value);
         }
 
         /// <inheritdoc />

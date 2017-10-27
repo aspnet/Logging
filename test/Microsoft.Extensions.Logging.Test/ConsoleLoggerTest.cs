@@ -618,7 +618,7 @@ namespace Microsoft.Extensions.Logging.Test
         public void CallingBeginScopeOnLogger_AlwaysReturnsNewDisposableInstance()
         {
             // Arrange
-            var t = SetUp(null);
+            var t = SetUp(null, includeScopes: true);
             var logger = t.Logger;
             var sink = t.Sink;
 

@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.Logging
     public interface IExternalScopeProvider
     {
         /// <summary>
-        /// Executes callback for each currently active scope object from most to least recently added.
+        /// Executes callback for each currently active scope objects in order of creation.
         /// All callbacks are guaranteed to be called inline from this method.
         /// </summary>
         /// <param name="callback">The callback to be executed for every scope object</param>
