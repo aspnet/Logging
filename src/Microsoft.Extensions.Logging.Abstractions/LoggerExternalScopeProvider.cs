@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.Logging
         private readonly AsyncLocal<Scope> _currentScope = new AsyncLocal<Scope>();
 
         /// <inheritdoc />
-        public void CollectScope<T>(Action<object, T> callback, T state)
+        public void ForEachScope<TState>(Action<object, TState> callback, TState state)
         {
             var current = _currentScope.Value;
             while (current != null)
@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.Logging
             return newScope;
         }
 
-        private class Scope: IDisposable
+        private class Scope : IDisposable
         {
             private readonly LoggerExternalScopeProvider _provider;
 

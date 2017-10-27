@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.Logging
         {
             foreach (var provider in providers)
             {
-                AddProviderRegistration(provider, false);
+                AddProviderRegistration(provider, dispose: false);
             }
 
             _changeTokenRegistration = filterOption.OnChange(RefreshFilters);
@@ -89,7 +89,7 @@ namespace Microsoft.Extensions.Logging
                 throw new ObjectDisposedException(nameof(LoggerFactory));
             }
 
-            AddProviderRegistration(provider, false);
+            AddProviderRegistration(provider, dispose: false);
 
             lock (_sync)
             {

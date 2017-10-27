@@ -16,8 +16,8 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="callback">The callback to be executed for every scope object</param>
         /// <param name="state">The state object to be passed into the callback</param>
-        /// <typeparam name="T"></typeparam>
-        void CollectScope<T>(Action<object, T> callback, T state);
+        /// <typeparam name="TState"></typeparam>
+        void ForEachScope<TState>(Action<object, TState> callback, TState state);
 
         /// <summary>
         /// Adds scope object to the list

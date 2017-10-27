@@ -11,12 +11,32 @@ namespace Microsoft.Extensions.Logging
     {
         private readonly LoggerFactory _loggerFactory;
 
+        private LoggerInformation[] _loggers;
+
+        private int _scopeCount;
+
         public Logger(LoggerFactory loggerFactory)
         {
             _loggerFactory = loggerFactory;
         }
 
-        public LoggerInformation[] Loggers { get; set; }
+        public LoggerInformation[] Loggers
+        {
+            get { return _loggers; }
+            set
+            {
+                var scopeSize = 0;
+                foreach (var loggerInformation in value)
+                {
+                    if (!loggerInformation.ExternalScope)
+                    {
+                        scopeSize++;
+                    }
+                }
+                _scopeCount = scopeSize;
+                _loggers = value;
+            }
+        }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
@@ -115,15 +135,22 @@ namespace Microsoft.Extensions.Logging
             }
 
             var scopeProvider = _loggerFactory.ScopeProvider;
-            var scopeCount = scopeProvider != null ? 1 : 0;
+            var scopeCount = _scopeCount;
 
-            // TODO: do not do this every time
-            foreach (var loggerInformation in loggers)
+            if (scopeProvider != null)
             {
-                if (!loggerInformation.ExternalScope)
+                // if external scope is used for all providers
+                // we can return it's IDisposable directly
+                // without wrapping and saving on allocation
+                if (scopeCount == 0)
+                {
+                    return scopeProvider.Push(state);
+                }
+                else
                 {
                     scopeCount++;
                 }
+
             }
 
             var scope = new Scope(scopeCount);
@@ -138,9 +165,18 @@ namespace Microsoft.Extensions.Logging
 
                 try
                 {
-                    var disposable = loggerInformation.Logger.BeginScope(state);
                     scopeCount--;
-                    scope.SetDisposable(scopeCount, disposable);
+                    // _loggers and _scopeCount are not updated atomically
+                    // there might be a situation when count was updated with
+                    // lower value then we have loggers
+                    // This is small race that happens only on configuraiton reload
+                    // and we are protecting from it by checkig that there is enough space
+                    // in Scope
+                    if (scopeCount >= 0)
+                    {
+                        var disposable = loggerInformation.Logger.BeginScope(state);
+                        scope.SetDisposable(scopeCount, disposable);
+                    }
                 }
                 catch (Exception ex)
                 {
