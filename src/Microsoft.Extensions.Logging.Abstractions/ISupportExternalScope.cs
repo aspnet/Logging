@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.Logging
     /// <summary>
     /// Represents a <see cref="ILoggerProvider"/> that is able to consume external scope information.
     /// </summary>
-    public interface ISupportsExternalScope
+    public interface ISupportExternalScope
     {
         /// <summary>
         /// Sets external scope information source for logger provider.

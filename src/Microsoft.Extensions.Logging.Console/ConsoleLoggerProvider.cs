@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 namespace Microsoft.Extensions.Logging.Console
 {
     [ProviderAlias("Console")]
-    public class ConsoleLoggerProvider : ILoggerProvider, ISupportsExternalScope
+    public class ConsoleLoggerProvider : ILoggerProvider, ISupportExternalScope
     {
         private readonly ConcurrentDictionary<string, ConsoleLogger> _loggers = new ConcurrentDictionary<string, ConsoleLogger>();
 

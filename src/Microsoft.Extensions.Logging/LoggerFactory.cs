@@ -118,7 +118,7 @@ namespace Microsoft.Extensions.Logging
                 ShouldDispose = dispose
             });
 
-            if (provider is ISupportsExternalScope supportsExternalScope)
+            if (provider is ISupportExternalScope supportsExternalScope)
             {
                 if (ScopeProvider == null)
                 {
@@ -133,7 +133,7 @@ namespace Microsoft.Extensions.Logging
         {
             loggerInformation.Logger = provider.CreateLogger(categoryName);
             loggerInformation.ProviderType = provider.GetType();
-            loggerInformation.ExternalScope = provider is ISupportsExternalScope;
+            loggerInformation.ExternalScope = provider is ISupportExternalScope;
         }
 
         private LoggerInformation[] CreateLoggers(string categoryName)
