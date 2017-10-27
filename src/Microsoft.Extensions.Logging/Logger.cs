@@ -184,9 +184,9 @@ namespace Microsoft.Extensions.Logging
                 }
             }
 
-            if (_loggerFactory.ScopeProvider != null)
+            if (scopeProvider != null)
             {
-                scope.SetDisposable(0, _loggerFactory.ScopeProvider.Push(state));
+                scope.SetDisposable(0, scopeProvider.Push(state));
             }
 
             if (exceptions != null && exceptions.Count > 0)

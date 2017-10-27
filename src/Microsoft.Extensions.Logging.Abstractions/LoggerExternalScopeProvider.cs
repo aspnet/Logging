@@ -45,6 +45,7 @@ namespace Microsoft.Extensions.Logging
         private class Scope : IDisposable
         {
             private readonly LoggerExternalScopeProvider _provider;
+            private bool _isDisposed;
 
             internal Scope(LoggerExternalScopeProvider provider, object state, Scope parent)
             {
@@ -64,7 +65,11 @@ namespace Microsoft.Extensions.Logging
 
             public void Dispose()
             {
-                _provider._currentScope.Value = Parent;
+                if (!_isDisposed)
+                {
+                    _provider._currentScope.Value = Parent;
+                    _isDisposed = true;
+                }
             }
         }
     }

@@ -94,10 +94,10 @@ namespace Microsoft.Extensions.Logging.Console
 
         public string Name { get; }
 
-        public IExternalScopeProvider ScopeProvider { get; set; }
-
         [Obsolete("Changing this property has no effect. Use " + nameof(ConsoleLoggerOptions) + "." + nameof(ConsoleLoggerOptions.IncludeScopes) + " instead")]
         public bool IncludeScopes { get; set; }
+
+        internal IExternalScopeProvider ScopeProvider { get; set; }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
