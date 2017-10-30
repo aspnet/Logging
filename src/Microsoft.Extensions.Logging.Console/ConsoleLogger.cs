@@ -122,6 +122,7 @@ namespace Microsoft.Extensions.Logging.Console
 
             var logLevelColors = default(ConsoleColors);
             var logLevelString = string.Empty;
+            var toErrorStream = false;
 
             // Example:
             // INFO: ConsoleApp.Program[10]
@@ -129,6 +130,8 @@ namespace Microsoft.Extensions.Logging.Console
 
             logLevelColors = GetLogLevelConsoleColors(logLevel);
             logLevelString = GetLogLevelString(logLevel);
+            toErrorStream = GetToErrorStream(logLevel);
+
             // category and event id
             logBuilder.Append(_loglevelPadding);
             logBuilder.Append(logName);
@@ -170,7 +173,8 @@ namespace Microsoft.Extensions.Logging.Console
                     MessageColor = DefaultConsoleColor,
                     LevelString = hasLevel ? logLevelString : null,
                     LevelBackground = hasLevel ? logLevelColors.Background : null,
-                    LevelForeground = hasLevel ? logLevelColors.Foreground : null
+                    LevelForeground = hasLevel ? logLevelColors.Foreground : null,
+                    ToErrorStream = toErrorStream
                 });
             }
 
@@ -246,6 +250,11 @@ namespace Microsoft.Extensions.Logging.Console
             }
         }
 
+        private bool GetToErrorStream(LogLevel logLevel)
+        {
+            return logLevel == LogLevel.Critical || logLevel == LogLevel.Error;
+        }
+
         private void GetScopeInformation(StringBuilder builder)
         {
             var current = ConsoleLogScope.Current;
@@ -288,14 +297,20 @@ namespace Microsoft.Extensions.Logging.Console
 
         private class AnsiSystemConsole : IAnsiSystemConsole
         {
-            public void Write(string message)
+            public void Write(string message, bool toErrorStream = false)
             {
-                System.Console.Write(message);
+                if (toErrorStream)
+                    System.Console.Error.Write(message);
+                else
+                    System.Console.Out.Write(message);
             }
 
-            public void WriteLine(string message)
+            public void WriteLine(string message, bool toErrorStream = false)
             {
-                System.Console.WriteLine(message);
+                if (toErrorStream)
+                    System.Console.Error.WriteLine(message);
+                else
+                    System.Console.Out.WriteLine(message);
             }
         }
     }

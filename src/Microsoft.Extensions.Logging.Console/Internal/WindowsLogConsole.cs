@@ -25,17 +25,17 @@ namespace Microsoft.Extensions.Logging.Console.Internal
             System.Console.ResetColor();
         }
 
-        public void Write(string message, ConsoleColor? background, ConsoleColor? foreground)
+        public void Write(string message, ConsoleColor? background, ConsoleColor? foreground, bool toErrorStream = false)
         {
             SetColor(background, foreground);
-            System.Console.Out.Write(message);
+            GetTextWriter(toErrorStream).Write(message);
             ResetColor();
         }
 
-        public void WriteLine(string message, ConsoleColor? background, ConsoleColor? foreground)
+        public void WriteLine(string message, ConsoleColor? background, ConsoleColor? foreground, bool toErrorStream = false)
         {
             SetColor(background, foreground);
-            System.Console.Out.WriteLine(message);
+            GetTextWriter(toErrorStream).WriteLine(message);
             ResetColor();
         }
 
@@ -44,5 +44,7 @@ namespace Microsoft.Extensions.Logging.Console.Internal
             // No action required as for every write, data is sent directly to the console
             // output stream
         }
+
+        private static System.IO.TextWriter GetTextWriter(bool toErrorStream) => toErrorStream ? System.Console.Error : System.Console.Out;
     }
 }

@@ -11,51 +11,54 @@ namespace Microsoft.Extensions.Logging.Console.Internal
     /// </summary>
     public class AnsiLogConsole : IConsole
     {
-        private readonly StringBuilder _outputBuilder;
+        private readonly Output _output;
         private readonly IAnsiSystemConsole _systemConsole;
 
         public AnsiLogConsole(IAnsiSystemConsole systemConsole)
         {
-            _outputBuilder = new StringBuilder();
+            _output = new Output();
             _systemConsole = systemConsole;
         }
 
-        public void Write(string message, ConsoleColor? background, ConsoleColor? foreground)
+        public void Write(string message, ConsoleColor? background, ConsoleColor? foreground, bool toErrorStream = false)
         {
             // Order: backgroundcolor, foregroundcolor, Message, reset foregroundcolor, reset backgroundcolor
             if (background.HasValue)
             {
-                _outputBuilder.Append(GetBackgroundColorEscapeCode(background.Value));
+                _output.StringBuilder.Append(GetBackgroundColorEscapeCode(background.Value));
             }
 
             if (foreground.HasValue)
             {
-                _outputBuilder.Append(GetForegroundColorEscapeCode(foreground.Value));
+                _output.StringBuilder.Append(GetForegroundColorEscapeCode(foreground.Value));
             }
 
-            _outputBuilder.Append(message);
+            _output.StringBuilder.Append(message);
 
             if (foreground.HasValue)
             {
-                _outputBuilder.Append("\x1B[39m\x1B[22m"); // reset to default foreground color
+                _output.StringBuilder.Append("\x1B[39m\x1B[22m"); // reset to default foreground color
             }
 
             if (background.HasValue)
             {
-                _outputBuilder.Append("\x1B[49m"); // reset to the background color
+                _output.StringBuilder.Append("\x1B[49m"); // reset to the background color
             }
+
+            _output.ToErrorStream = toErrorStream;
         }
 
-        public void WriteLine(string message, ConsoleColor? background, ConsoleColor? foreground)
+        public void WriteLine(string message, ConsoleColor? background, ConsoleColor? foreground, bool toErrorStream = false)
         {
-            Write(message, background, foreground);
-            _outputBuilder.AppendLine();
+            Write(message, background, foreground, toErrorStream);
+            _output.StringBuilder.AppendLine();
+            _output.ToErrorStream = toErrorStream;
         }
 
         public void Flush()
         {
-            _systemConsole.Write(_outputBuilder.ToString());
-            _outputBuilder.Clear();
+            _systemConsole.Write(_output.StringBuilder.ToString(), _output.ToErrorStream);
+            _output.StringBuilder.Clear();
         }
 
         private static string GetForegroundColorEscapeCode(ConsoleColor color)
@@ -120,6 +123,12 @@ namespace Microsoft.Extensions.Logging.Console.Internal
                 default:
                     return "\x1B[49m"; // Use default background color
             }
+        }
+
+        private class Output
+        {
+            public StringBuilder StringBuilder { get; } = new StringBuilder();
+            public bool ToErrorStream { get; set; }
         }
     }
 }

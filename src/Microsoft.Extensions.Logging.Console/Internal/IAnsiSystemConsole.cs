@@ -5,8 +5,8 @@ namespace Microsoft.Extensions.Logging.Console.Internal
 {
     public interface IAnsiSystemConsole
     {
-        void Write(string message);
+        void Write(string message, bool toErrorStream = false);
 
-        void WriteLine(string message);
+        void WriteLine(string message, bool toErrorStream = false);
     }
 }

@@ -122,7 +122,7 @@ namespace Microsoft.Extensions.Logging.Test
 
             // Assert
             Assert.Equal(2, sink.Writes.Count);
-            Assert.Equal(expectedHeader + expectedMessage + expectedExceptionMessage, sink.Writes[1].Message);
+            Assert.Equal(expectedHeader + expectedMessage + expectedExceptionMessage, sink.Writes[1].Output);
         }
 
         [Fact]
@@ -429,6 +429,48 @@ namespace Microsoft.Extensions.Logging.Test
                 "System.Exception: Exception message" + Environment.NewLine +
                 "with a second line" + Environment.NewLine,
                 GetMessage(sink.Writes));
+        }
+
+        [Fact]
+        public void WriteCritical_LogsToErrorStream()
+        {
+            // Arrange
+            var t = SetUp(null);
+            var logger = t.Logger;
+            var sink = t.Sink;
+
+            // Act
+            logger.Log(LogLevel.Critical, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(2, sink.Writes.Count);
+            var write = sink.Writes[0];
+            Assert.Equal(ConsoleColor.Red, write.BackgroundColor);
+            Assert.Equal(ConsoleColor.White, write.ForegroundColor);
+            write = sink.Writes[1];
+            Assert.Null(write.Message);
+            Assert.NotNull(write.Error);
+        }
+
+        [Fact]
+        public void WriteError_LogsToErrorStream()
+        {
+            // Arrange
+            var t = SetUp(null);
+            var logger = t.Logger;
+            var sink = t.Sink;
+
+            // Act
+            logger.Log(LogLevel.Error, 0, _state, null, _defaultFormatter);
+
+            // Assert
+            Assert.Equal(2, sink.Writes.Count);
+            var write = sink.Writes[0];
+            Assert.Equal(ConsoleColor.Red, write.BackgroundColor);
+            Assert.Equal(ConsoleColor.Black, write.ForegroundColor);
+            write = sink.Writes[1];
+            Assert.Null(write.Message);
+            Assert.NotNull(write.Error);
         }
 
         [Fact]
@@ -956,7 +998,7 @@ namespace Microsoft.Extensions.Logging.Test
 
         private string GetMessage(List<ConsoleContext> contexts)
         {
-            return string.Join("", contexts.Select(c => c.Message));
+            return string.Join("", contexts.Select(c => c.Output));
         }
 
         private string CreateHeader(int eventId = 0)

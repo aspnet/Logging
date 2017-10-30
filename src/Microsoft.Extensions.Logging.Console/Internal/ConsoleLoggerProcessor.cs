@@ -45,10 +45,10 @@ namespace Microsoft.Extensions.Logging.Console.Internal
         {
             if (message.LevelString != null)
             {
-                Console.Write(message.LevelString, message.LevelBackground, message.LevelForeground);
+                Console.Write(message.LevelString, message.LevelBackground, message.LevelForeground, message.ToErrorStream);
             }
 
-            Console.Write(message.Message, message.MessageColor, message.MessageColor);
+            Console.Write(message.Message, message.MessageColor, message.MessageColor, message.ToErrorStream);
             Console.Flush();
         }
 

@@ -24,10 +24,18 @@ namespace Microsoft.Extensions.Logging.Test.Console
 
         public ConsoleColor? ForegroundColor { get; private set; }
 
-        public void Write(string message, ConsoleColor? background, ConsoleColor? foreground)
+        public void Write(string message, ConsoleColor? background, ConsoleColor? foreground, bool toErrorStream = false)
         {
             var consoleContext = new ConsoleContext();
-            consoleContext.Message = message;
+
+            if (toErrorStream)
+            {
+                consoleContext.Error = message;
+            }
+            else
+            {
+                consoleContext.Message = message;
+            }
 
             if (background.HasValue)
             {
@@ -44,9 +52,9 @@ namespace Microsoft.Extensions.Logging.Test.Console
             ResetColor();
         }
 
-        public void WriteLine(string message, ConsoleColor? background, ConsoleColor? foreground)
+        public void WriteLine(string message, ConsoleColor? background, ConsoleColor? foreground, bool toErrorStream = false)
         {
-            Write(message + Environment.NewLine, background, foreground);
+            Write(message + Environment.NewLine, background, foreground, toErrorStream);
         }
 
         public void Flush()
