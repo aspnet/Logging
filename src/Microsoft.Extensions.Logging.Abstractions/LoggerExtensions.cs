@@ -89,6 +89,106 @@ namespace Microsoft.Extensions.Logging
             logger.Log(LogLevel.Debug, 0, new FormattedLogValues(message, args), null, _messageFormatter);
         }
 
+        /// <summary>
+        /// Formats and writes a debug log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="exception">The exception to log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogDebug(0, exception, () => "Error while processing request from")</example>
+        public static void LogDebug(this ILogger logger, EventId eventId, Exception exception, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Debug))
+            {
+                logger.Log(LogLevel.Debug, eventId, messageGenerator(), exception, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a debug log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogDebug(0, () => "Processing request")</example>
+        public static void LogDebug(this ILogger logger, EventId eventId, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Debug))
+            {
+                logger.Log(LogLevel.Debug, eventId, messageGenerator(), null, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a debug log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="exception">The exception to log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogDebug(exception, () => "Error while processing request")</example>
+        public static void LogDebug(this ILogger logger, Exception exception, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Debug))
+            { 
+                logger.Log(LogLevel.Debug, 0, messageGenerator(), exception, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a debug log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogDebug(() => "Processing request")</example>
+        public static void LogDebug(this ILogger logger, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+            
+            if (logger.IsEnabled(LogLevel.Debug))
+            {
+                logger.Log(LogLevel.Debug, 0, messageGenerator(), null, _messageFormatter);
+            }            
+        }
+
         //------------------------------------------TRACE------------------------------------------//
 
         /// <summary>
@@ -161,6 +261,106 @@ namespace Microsoft.Extensions.Logging
             }
 
             logger.Log(LogLevel.Trace, 0, new FormattedLogValues(message, args), null, _messageFormatter);
+        }
+
+        /// <summary>
+        /// Formats and writes a trace log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="exception">The exception to log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogTrace(0, exception, () => "Error while processing request from")</example>
+        public static void LogTrace(this ILogger logger, EventId eventId, Exception exception, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.Log(LogLevel.Trace, eventId, messageGenerator(), exception, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a trace log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogTrace(0, () => "Processing request")</example>
+        public static void LogTrace(this ILogger logger, EventId eventId, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.Log(LogLevel.Trace, eventId, messageGenerator(), null, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a trace log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="exception">The exception to log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogTrace(exception, () => "Error while processing request")</example>
+        public static void LogTrace(this ILogger logger, Exception exception, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.Log(LogLevel.Trace, 0, messageGenerator(), exception, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a trace log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogTrace(() => "Processing request")</example>
+        public static void LogTrace(this ILogger logger, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                logger.Log(LogLevel.Trace, 0, messageGenerator(), null, _messageFormatter);
+            }
         }
 
         //------------------------------------------INFORMATION------------------------------------------//
@@ -237,6 +437,106 @@ namespace Microsoft.Extensions.Logging
             logger.Log(LogLevel.Information, 0, new FormattedLogValues(message, args), null, _messageFormatter);
         }
 
+        /// <summary>
+        /// Formats and writes a informational log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="exception">The exception to log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogInformation(0, exception, () => "Error while processing request from")</example>
+        public static void LogInformation(this ILogger logger, EventId eventId, Exception exception, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.Log(LogLevel.Information, eventId, messageGenerator(), exception, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a informational log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogInformation(0, () => "Processing request")</example>
+        public static void LogInformation(this ILogger logger, EventId eventId, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.Log(LogLevel.Information, eventId, messageGenerator(), null, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a informational log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="exception">The exception to log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogInformation(exception, () => "Error while processing request")</example>
+        public static void LogInformation(this ILogger logger, Exception exception, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.Log(LogLevel.Information, 0, messageGenerator(), exception, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a informational log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogInformation(() => "Processing request")</example>
+        public static void LogInformation(this ILogger logger, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.Log(LogLevel.Information, 0, messageGenerator(), null, _messageFormatter);
+            }
+        }
+
         //------------------------------------------WARNING------------------------------------------//
 
         /// <summary>
@@ -309,6 +609,106 @@ namespace Microsoft.Extensions.Logging
             }
 
             logger.Log(LogLevel.Warning, 0, new FormattedLogValues(message, args), null, _messageFormatter);
+        }
+
+        /// <summary>
+        /// Formats and writes a warning log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="exception">The exception to log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogWarning(0, exception, () => "Error while processing request from")</example>
+        public static void LogWarning(this ILogger logger, EventId eventId, Exception exception, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Warning))
+            {
+                logger.Log(LogLevel.Warning, eventId, messageGenerator(), exception, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a warning log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogWarning(0, () => "Processing request")</example>
+        public static void LogWarning(this ILogger logger, EventId eventId, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Warning))
+            {
+                logger.Log(LogLevel.Warning, eventId, messageGenerator(), null, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a warning log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="exception">The exception to log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogWarning(exception, () => "Error while processing request")</example>
+        public static void LogWarning(this ILogger logger, Exception exception, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Warning))
+            {
+                logger.Log(LogLevel.Warning, 0, messageGenerator(), exception, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a warning log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogWarning(() => "Processing request")</example>
+        public static void LogWarning(this ILogger logger, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Warning))
+            {
+                logger.Log(LogLevel.Warning, 0, messageGenerator(), null, _messageFormatter);
+            }
         }
 
         //------------------------------------------ERROR------------------------------------------//
@@ -385,6 +785,106 @@ namespace Microsoft.Extensions.Logging
             logger.Log(LogLevel.Error, 0, new FormattedLogValues(message, args), null, _messageFormatter);
         }
 
+        /// <summary>
+        /// Formats and writes a error log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="exception">The exception to log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogError(0, exception, () => "Error while processing request from")</example>
+        public static void LogError(this ILogger logger, EventId eventId, Exception exception, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Error))
+            {
+                logger.Log(LogLevel.Error, eventId, messageGenerator(), exception, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a error log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogError(0, () => "Processing request")</example>
+        public static void LogError(this ILogger logger, EventId eventId, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Error))
+            {
+                logger.Log(LogLevel.Error, eventId, messageGenerator(), null, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a error log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="exception">The exception to log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogError(exception, () => "Error while processing request")</example>
+        public static void LogError(this ILogger logger, Exception exception, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Error))
+            {
+                logger.Log(LogLevel.Error, 0, messageGenerator(), exception, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a error log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogError(() => "Processing request")</example>
+        public static void LogError(this ILogger logger, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Error))
+            {
+                logger.Log(LogLevel.Error, 0, messageGenerator(), null, _messageFormatter);
+            }
+        }
+
         //------------------------------------------CRITICAL------------------------------------------//
 
         /// <summary>
@@ -459,6 +959,105 @@ namespace Microsoft.Extensions.Logging
             logger.Log(LogLevel.Critical, 0, new FormattedLogValues(message, args), null, _messageFormatter);
         }
 
+        /// <summary>
+        /// Formats and writes a critical log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="exception">The exception to log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogCritical(0, exception, () => "Error while processing request from")</example>
+        public static void LogCritical(this ILogger logger, EventId eventId, Exception exception, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Critical))
+            {
+                logger.Log(LogLevel.Critical, eventId, messageGenerator(), exception, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a critical log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="eventId">The event id associated with the log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogCritical(0, () => "Processing request")</example>
+        public static void LogCritical(this ILogger logger, EventId eventId, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Critical))
+            {
+                logger.Log(LogLevel.Critical, eventId, messageGenerator(), null, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a critical log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="exception">The exception to log.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogCritical(exception, () => "Error while processing request")</example>
+        public static void LogCritical(this ILogger logger, Exception exception, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Critical))
+            {
+                logger.Log(LogLevel.Critical, 0, messageGenerator(), exception, _messageFormatter);
+            }
+        }
+
+        /// <summary>
+        /// Formats and writes a critical log message.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        /// <example>logger.LogCritical(() => "Processing request")</example>
+        public static void LogCritical(this ILogger logger, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(LogLevel.Critical))
+            {
+                logger.Log(LogLevel.Critical, 0, messageGenerator(), null, _messageFormatter);
+            }
+        }
 
         /// <summary>
         /// Formats and writes a log message on specified log level.
@@ -475,6 +1074,30 @@ namespace Microsoft.Extensions.Logging
             }
 
             logger.Log(logLevel, 0, new FormattedLogValues(message, args), null, _messageFormatter);
+        }
+
+        /// <summary>
+        /// Formats and writes a log message on specified log level.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger"/> to write to.</param>
+        /// <param name="logLevel">Entry will be written on this level.</param>
+        /// <param name="messageGenerator">A function returning message to be written. Function is not evaluated if logging level is not enabled</param>
+        public static void Log(this ILogger logger, LogLevel logLevel, Func<string> messageGenerator)
+        {
+            if (logger == null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (messageGenerator == null)
+            {
+                throw new ArgumentNullException(nameof(messageGenerator));
+            }
+
+            if (logger.IsEnabled(logLevel))
+            {
+                logger.Log(logLevel, 0, messageGenerator(), null, _messageFormatter);
+            }
         }
 
         //------------------------------------------Scope------------------------------------------//
