@@ -27,17 +27,18 @@ namespace Microsoft.Extensions.Logging
             {
                 return;
             }
-
+            
+            const string logLevelKey = "LogLevel";            
             foreach (var configurationSection in _configuration.GetChildren())
             {
-                if (configurationSection.Key == "LogLevel")
+                if (configurationSection.Key.Equals(logLevelKey, StringComparison.OrdinalIgnoreCase))
                 {
                     // Load global category defaults
                     LoadRules(options, configurationSection, null);
                 }
                 else
                 {
-                    var logLevelSection = configurationSection.GetSection("LogLevel");
+                    var logLevelSection = configurationSection.GetSection(logLevelKey);
                     if (logLevelSection != null)
                     {
                         // Load logger specific rules
@@ -55,7 +56,7 @@ namespace Microsoft.Extensions.Logging
                 if (TryGetSwitch(section.Value, out var level))
                 {
                     var category = section.Key;
-                    if (category == "Default")
+                    if (category.Equals("Default", StringComparison.OrdinalIgnoreCase))
                     {
                         category = null;
                     }
