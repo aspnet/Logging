@@ -9,6 +9,7 @@ namespace Microsoft.Extensions.Logging
 {
     internal class LoggerFilterConfigureOptions : IConfigureOptions<LoggerFilterOptions>
     {
+        private const string LOGLEVEL_KEY = "LogLevel";
         private readonly IConfiguration _configuration;
 
         public LoggerFilterConfigureOptions(IConfiguration configuration)
@@ -27,18 +28,17 @@ namespace Microsoft.Extensions.Logging
             {
                 return;
             }
-            
-            const string logLevelKey = "LogLevel";            
+
             foreach (var configurationSection in _configuration.GetChildren())
             {
-                if (configurationSection.Key.Equals(logLevelKey, StringComparison.OrdinalIgnoreCase))
+                if (configurationSection.Key.Equals(LOGLEVEL_KEY, StringComparison.OrdinalIgnoreCase))
                 {
                     // Load global category defaults
                     LoadRules(options, configurationSection, null);
                 }
                 else
                 {
-                    var logLevelSection = configurationSection.GetSection(logLevelKey);
+                    var logLevelSection = configurationSection.GetSection(LOGLEVEL_KEY);
                     if (logLevelSection != null)
                     {
                         // Load logger specific rules
