@@ -9,8 +9,8 @@ namespace Microsoft.Extensions.Logging
 {
     internal class LoggerFilterConfigureOptions : IConfigureOptions<LoggerFilterOptions>
     {
-        private const string LOGLEVEL_KEY = "LogLevel";
-        private const string DEFAULT_CATEGORY = "Default";
+        private const string LogLevelKey = "LogLevel";
+        private const string DefaultCategory = "Default";
         private readonly IConfiguration _configuration;
 
         public LoggerFilterConfigureOptions(IConfiguration configuration)
@@ -32,14 +32,14 @@ namespace Microsoft.Extensions.Logging
 
             foreach (var configurationSection in _configuration.GetChildren())
             {
-                if (configurationSection.Key.Equals(LOGLEVEL_KEY, StringComparison.OrdinalIgnoreCase))
+                if (configurationSection.Key.Equals(LogLevelKey, StringComparison.OrdinalIgnoreCase))
                 {
                     // Load global category defaults
                     LoadRules(options, configurationSection, null);
                 }
                 else
                 {
-                    var logLevelSection = configurationSection.GetSection(LOGLEVEL_KEY);
+                    var logLevelSection = configurationSection.GetSection(LogLevelKey);
                     if (logLevelSection != null)
                     {
                         // Load logger specific rules
@@ -57,7 +57,7 @@ namespace Microsoft.Extensions.Logging
                 if (TryGetSwitch(section.Value, out var level))
                 {
                     var category = section.Key;
-                    if (category.Equals(DEFAULT_CATEGORY, StringComparison.OrdinalIgnoreCase))
+                    if (category.Equals(DefaultCategory, StringComparison.OrdinalIgnoreCase))
                     {
                         category = null;
                     }
