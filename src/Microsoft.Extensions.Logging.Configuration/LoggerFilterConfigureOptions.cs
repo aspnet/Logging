@@ -10,6 +10,7 @@ namespace Microsoft.Extensions.Logging
     internal class LoggerFilterConfigureOptions : IConfigureOptions<LoggerFilterOptions>
     {
         private const string LOGLEVEL_KEY = "LogLevel";
+        private const string DEFAULT_CATEGORY = "Default";
         private readonly IConfiguration _configuration;
 
         public LoggerFilterConfigureOptions(IConfiguration configuration)
@@ -56,7 +57,7 @@ namespace Microsoft.Extensions.Logging
                 if (TryGetSwitch(section.Value, out var level))
                 {
                     var category = section.Key;
-                    if (category.Equals("Default", StringComparison.OrdinalIgnoreCase))
+                    if (category.Equals(DEFAULT_CATEGORY, StringComparison.OrdinalIgnoreCase))
                     {
                         category = null;
                     }
