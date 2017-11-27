@@ -410,12 +410,10 @@ namespace Microsoft.Extensions.Logging.Test
                                                             .Build())
                 )
                 .BuildServiceProvider();
-            var filterOptions = new LoggerFilterOptions();
-            var options = serviceProvider.GetRequiredService<IConfigureOptions<LoggerFilterOptions>>();
 
-            options.Configure(filterOptions);
+            var options = serviceProvider.GetRequiredService<IOptions<LoggerFilterOptions>>();
 
-            Assert.Equal(LogLevel.Error, filterOptions.Rules.Single().LogLevel);
+            Assert.Equal(LogLevel.Error, options.Value.Rules.Single().LogLevel);
         }
 
         [Fact]
@@ -428,12 +426,10 @@ namespace Microsoft.Extensions.Logging.Test
                                                             .Build())
                 )
                 .BuildServiceProvider();
-            var filterOptions = new LoggerFilterOptions();
-            var options = serviceProvider.GetRequiredService<IConfigureOptions<LoggerFilterOptions>>();
+            
+            var options = serviceProvider.GetRequiredService<IOptions<LoggerFilterOptions>>();
 
-            options.Configure(filterOptions);
-
-            Assert.Null(filterOptions.Rules.Single().CategoryName);
+            Assert.Null(options.Value.Rules.Single().CategoryName);
         }
 
         [Theory]
