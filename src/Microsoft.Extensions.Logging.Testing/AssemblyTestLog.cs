@@ -25,13 +25,15 @@ namespace Microsoft.Extensions.Logging.Testing
         private readonly ILogger _globalLogger;
         private readonly string _baseDirectory;
         private readonly string _assemblyName;
+        private readonly IServiceProvider _serviceProvider;
 
-        private AssemblyTestLog(ILoggerFactory globalLoggerFactory, ILogger globalLogger, string baseDirectory, string assemblyName)
+        private AssemblyTestLog(ILoggerFactory globalLoggerFactory, ILogger globalLogger, string baseDirectory, string assemblyName, IServiceProvider serviceProvider)
         {
             _globalLoggerFactory = globalLoggerFactory;
             _globalLogger = globalLogger;
             _baseDirectory = baseDirectory;
             _assemblyName = assemblyName;
+            _serviceProvider = serviceProvider;
         }
 
         public IDisposable StartTestLog(ITestOutputHelper output, string className, out ILoggerFactory loggerFactory, [CallerMemberName] string testName = null) =>
@@ -94,7 +96,8 @@ namespace Microsoft.Extensions.Logging.Testing
 
                 if(serilogLoggerProvider != null)
                 {
-                    builder.AddProvider(serilogLoggerProvider);
+                    // Use a factory so that the container will dispose it
+                    builder.Services.AddSingleton<ILoggerProvider>(_ => serilogLoggerProvider);
                 }
             });
 
@@ -117,15 +120,17 @@ namespace Microsoft.Extensions.Logging.Testing
                 builder.SetMinimumLevel(LogLevel.Trace);
                 if (serilogLoggerProvider != null)
                 {
-                    builder.AddProvider(serilogLoggerProvider);
+                    // Use a factory so that the container will dispose it
+                    builder.Services.AddSingleton<ILoggerProvider>(_ => serilogLoggerProvider);
                 }
             });
 
-            var loggerFactory = serviceCollection.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
             var logger = loggerFactory.CreateLogger("GlobalTestLog");
             logger.LogInformation($"Global Test Logging initialized. Set the '{OutputDirectoryEnvironmentVariableName}' Environment Variable in order to create log files on disk.");
-            return new AssemblyTestLog(loggerFactory, logger, baseDirectory, assemblyName);
+            return new AssemblyTestLog(loggerFactory, logger, baseDirectory, assemblyName, serviceProvider);
         }
 
         public static AssemblyTestLog ForAssembly(Assembly assembly)
@@ -164,6 +169,7 @@ namespace Microsoft.Extensions.Logging.Testing
 
         public void Dispose()
         {
+            (_serviceProvider as IDisposable)?.Dispose();
             _globalLoggerFactory.Dispose();
         }
 

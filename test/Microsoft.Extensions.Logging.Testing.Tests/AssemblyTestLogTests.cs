@@ -2,10 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -72,28 +74,26 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
                     }
 
                     logger.LogInformation("Finished test log in {baseDirectory}", tempDir);
+                }
 
-                    var globalLogPath = Path.Combine(tempDir, "FakeTestAssembly", "global.log");
-                    var testLog = Path.Combine(tempDir, "FakeTestAssembly", "FakeTestClass", $"FakeTestName.log");
+                var globalLogPath = Path.Combine(tempDir, "FakeTestAssembly", "global.log");
+                var testLog = Path.Combine(tempDir, "FakeTestAssembly", "FakeTestClass", $"FakeTestName.log");
 
-                    Assert.True(File.Exists(globalLogPath), $"Expected global log file {globalLogPath} to exist");
-                    Assert.True(File.Exists(testLog), $"Expected test log file {testLog} to exist");
+                Assert.True(File.Exists(globalLogPath), $"Expected global log file {globalLogPath} to exist");
+                Assert.True(File.Exists(testLog), $"Expected test log file {testLog} to exist");
 
-                    var globalLogContent = MakeConsistent(File.ReadAllText(globalLogPath));
-                    logger.LogInformation($"Global Log Content:{Environment.NewLine}{{content}}", globalLogContent);
-                    var testLogContent = MakeConsistent(File.ReadAllText(testLog));
-                    logger.LogInformation($"Test Log Content:{Environment.NewLine}{{content}}", testLogContent);
+                var globalLogContent = MakeConsistent(File.ReadAllText(globalLogPath));
+                var testLogContent = MakeConsistent(File.ReadAllText(testLog));
 
-                    Assert.Equal(@"[GlobalTestLog] [Information] Global Test Logging initialized. Set the 'ASPNETCORE_TEST_LOG_DIR' Environment Variable in order to create log files on disk.
+                Assert.Equal(@"[GlobalTestLog] [Information] Global Test Logging initialized. Set the 'ASPNETCORE_TEST_LOG_DIR' Environment Variable in order to create log files on disk.
 [GlobalTestLog] [Information] Starting test ""FakeTestName""
 [GlobalTestLog] [Information] Finished test ""FakeTestName"" in DURATION
 ", globalLogContent, ignoreLineEndingDifferences: true);
-                    Assert.Equal(@"[TestLifetime] [Information] Starting test ""FakeTestName""
+                Assert.Equal(@"[TestLifetime] [Information] Starting test ""FakeTestName""
 [TestLogger] [Information] Information!
-[TestLogger] [Trace] Trace!
+[TestLogger] [Verbose] Trace!
 [TestLifetime] [Information] Finished test ""FakeTestName"" in DURATION
 ", testLogContent, ignoreLineEndingDifferences: true);
-                }
             }
             finally
             {
