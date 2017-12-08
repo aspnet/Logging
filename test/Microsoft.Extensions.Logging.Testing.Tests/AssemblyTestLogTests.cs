@@ -2,12 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -39,12 +37,13 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
             {
                 var logger = loggerFactory.CreateLogger("TestLogger");
                 logger.LogInformation("Information!");
+
+                // Trace is disabled by default
                 logger.LogTrace("Trace!");
             }
 
             Assert.Equal(@"| TestLifetime Information: Starting test TestLogWritesToITestOutputHelper
 | TestLogger Information: Information!
-| TestLogger Trace: Trace!
 | TestLifetime Information: Finished test TestLogWritesToITestOutputHelper in DURATION
 ", MakeConsistent(output.Output), ignoreLineEndingDifferences: true);
         }
@@ -65,7 +64,7 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
                     {
                         logger.LogInformation("Created test log in {baseDirectory}", tempDir);
 
-                        using (testAssemblyLog.StartTestLog(output: null, className: "FakeTestAssembly.FakeTestClass", loggerFactory: out var testLoggerFactory, testName: "FakeTestName"))
+                        using (testAssemblyLog.StartTestLog(output: null, className: "FakeTestAssembly.FakeTestClass", loggerFactory: out var testLoggerFactory, minLogLevel: LogLevel.Trace, testName: "FakeTestName"))
                         {
                             var testLogger = testLoggerFactory.CreateLogger("TestLogger");
                             testLogger.LogInformation("Information!");

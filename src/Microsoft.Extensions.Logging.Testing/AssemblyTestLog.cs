@@ -7,10 +7,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Serilog;
-using Xunit.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using Serilog.Extensions.Logging;
+using Xunit.Abstractions;
 
 namespace Microsoft.Extensions.Logging.Testing
 {
@@ -37,7 +37,7 @@ namespace Microsoft.Extensions.Logging.Testing
         }
 
         public IDisposable StartTestLog(ITestOutputHelper output, string className, out ILoggerFactory loggerFactory, [CallerMemberName] string testName = null) =>
-            StartTestLog(output, className, out loggerFactory, LogLevel.Trace, testName);
+            StartTestLog(output, className, out loggerFactory, LogLevel.Debug, testName);
 
         public IDisposable StartTestLog(ITestOutputHelper output, string className, out ILoggerFactory loggerFactory, LogLevel minLogLevel, [CallerMemberName] string testName = null)
         {
@@ -47,6 +47,9 @@ namespace Microsoft.Extensions.Logging.Testing
             var logger = loggerFactory.CreateLogger("TestLifetime");
 
             var stopwatch = Stopwatch.StartNew();
+
+            var scope = logger.BeginScope("Test: {testName}", testName);
+
             _globalLogger.LogInformation("Starting test {testName}", testName);
             logger.LogInformation("Starting test {testName}", testName);
 
@@ -55,6 +58,7 @@ namespace Microsoft.Extensions.Logging.Testing
                 stopwatch.Stop();
                 _globalLogger.LogInformation("Finished test {testName} in {duration}s", testName, stopwatch.Elapsed.TotalSeconds);
                 logger.LogInformation("Finished test {testName} in {duration}s", testName, stopwatch.Elapsed.TotalSeconds);
+                scope.Dispose();
                 factory.Dispose();
                 (serviceProvider as IDisposable)?.Dispose();
             });
@@ -94,7 +98,7 @@ namespace Microsoft.Extensions.Logging.Testing
                     builder.AddXunit(output, minLogLevel);
                 }
 
-                if(serilogLoggerProvider != null)
+                if (serilogLoggerProvider != null)
                 {
                     // Use a factory so that the container will dispose it
                     builder.Services.AddSingleton<ILoggerProvider>(_ => serilogLoggerProvider);
@@ -117,7 +121,9 @@ namespace Microsoft.Extensions.Logging.Testing
 
             serviceCollection.AddLogging(builder =>
             {
+                // Global logging, when it's written, is expected to be outputted. So set the log level to minimum.
                 builder.SetMinimumLevel(LogLevel.Trace);
+
                 if (serilogLoggerProvider != null)
                 {
                     // Use a factory so that the container will dispose it
