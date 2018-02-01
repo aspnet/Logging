@@ -76,8 +76,8 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
                     logger.LogInformation("Finished test log in {baseDirectory}", tempDir);
                 }
 
-                var globalLogPath = Path.Combine(tempDir, "FakeTestAssembly", RuntimeInformation.FrameworkDescription, "global.log");
-                var testLog = Path.Combine(tempDir, "FakeTestAssembly", RuntimeInformation.FrameworkDescription, "FakeTestClass", $"FakeTestName.log");
+                var globalLogPath = Path.Combine(tempDir, "FakeTestAssembly", RuntimeInformation.FrameworkDescription.TrimStart('.'), "global.log");
+                var testLog = Path.Combine(tempDir, "FakeTestAssembly", RuntimeInformation.FrameworkDescription.TrimStart('.'), "FakeTestClass", $"FakeTestName.log");
 
                 Assert.True(File.Exists(globalLogPath), $"Expected global log file {globalLogPath} to exist");
                 Assert.True(File.Exists(testLog), $"Expected test log file {testLog} to exist");

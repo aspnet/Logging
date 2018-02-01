@@ -84,7 +84,7 @@ namespace Microsoft.Extensions.Logging.Testing
             SerilogLoggerProvider serilogLoggerProvider = null;
             if (!string.IsNullOrEmpty(_baseDirectory))
             {
-                var testOutputFile = Path.Combine(_baseDirectory, _assemblyName, RuntimeInformation.FrameworkDescription, className, $"{testName}.log");
+                var testOutputFile = Path.Combine(_baseDirectory, _assemblyName, RuntimeInformation.FrameworkDescription.TrimStart('.'), className, $"{testName}.log");
 
                 serilogLoggerProvider = ConfigureFileLogging(testOutputFile);
             }
@@ -114,7 +114,7 @@ namespace Microsoft.Extensions.Logging.Testing
             SerilogLoggerProvider serilogLoggerProvider = null;
             if (!string.IsNullOrEmpty(baseDirectory))
             {
-                var globalLogFileName = Path.Combine(baseDirectory, assemblyName, RuntimeInformation.FrameworkDescription, "global.log");
+                var globalLogFileName = Path.Combine(baseDirectory, assemblyName, RuntimeInformation.FrameworkDescription.TrimStart('.'), "global.log");
                 serilogLoggerProvider = ConfigureFileLogging(globalLogFileName);
             }
 
