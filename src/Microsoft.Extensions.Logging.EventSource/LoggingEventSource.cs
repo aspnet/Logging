@@ -6,29 +6,33 @@ using System.Diagnostics.Tracing;
 namespace Microsoft.Extensions.Logging.EventSource
 {
     /// <summary>
-    /// The LoggingEventSource is the bridge form all <see cref="ILogger"/>-based logging to EventSource/EventListener logging.
-    ///
-    /// You turn this logging on by enabling the EventSource called <c>Microsoft-Extensions-Logging</c>
-    ///
-    /// When you enabled the EventSource, the EventLevel you set is translated in the obvious way to the level
-    /// associated with the ILogger (thus Debug = verbose, Informational = Informational ... Critical = Critical)
-    ///
+    /// <para>
+    /// The LoggingEventSource is the bridge from all <see cref="ILogger"/>-based logging to EventSource/EventListener logging.
+    /// </para>
+    /// <para>
+    /// Turn on this logging by enabling the EventSource called 'Microsoft-Extensions-Logging'
+    /// </para>
+    /// <para>
+    /// When you enable the EventSource, the EventLevel you set is translated to the corresponding level
+    /// associated with the ILogger, so that Debug = Verbose, Informational = Informational, Critical = Critical, etc.
     /// This allows you to filter by event level in a straighforward way.
-    ///
-    /// For finer control you can specify an EventSource argument called 'FilterSpecs'
-    ///
-    /// The FilterSpecs argument is a semicolon-separated list of specifications, where each specification is
-    ///
+    /// </para>
+    /// <para>
+    /// For finer control you can specify an EventSource argument called 'FilterSpecs'. 
+    /// The FilterSpecs argument is a semicolon-separated list of specifications, where each specification is:
+    /// </para>
     /// <code>
-    ///     SPEC =                          // empty spec, same as *
-    ///          | NAME                     // Just a name the level is the default level
-    ///          | NAME : LEVEL             // specifies level for a particular logger (can have a * suffix).
+    ///     SPEC =                          // Empty spec; same as *
+    ///          | NAME                     // Just a name. The level is the default level.
+    ///          | NAME : LEVEL             // Specifies level for a particular logger (can have a * suffix).
     /// </code>
-    ///
+    /// <para>
     /// 'NAME' is the name of a ILogger (case matters), Name can have a * which acts as a wildcard
     /// *as a suffix*. Thus, 'Net*' will match any loggers that start with the string 'Net'.
-    ///
-    /// 'LEVEL' is a number or a LogLevel string. 
+    /// </para>
+    /// <para>
+    /// 'LEVEL' is a number or a LogLevel string:
+    /// </para>
     /// <code>
     ///     0 = Trace
     ///     1 = Debug
@@ -37,27 +41,26 @@ namespace Microsoft.Extensions.Logging.EventSource
     ///     4 = Error
     ///     5 = Critical
     /// </code>
-    /// 
+    /// <para>
     /// This specifies the level for the associated pattern. If the number is not specified, (first form
     /// of the specification) it is the default level for the EventSource.
-    ///
-    /// First match is used if a particular name matches more than one pattern.
-    ///
-    /// In addition the level and 'FilterSpec' argument, you can also set 'EventSource' Keywords. See the Keywords
-    /// definition below, but basically you get to decide if you wish to have:
-    ///
+    /// The First match is used if a particular name matches more than one pattern.
+    /// </para>
+    /// <para>
+    /// In addition the level and 'FilterSpec' argument, you can also set 'EventSource' Keywords. (See the Keywords
+    /// definition below.) Your options are:
+    /// </para>
+    /// <para>
     ///   * Keywords.Message - You get the event with the data in parsed form.
     ///   * Keywords.JsonMessage - you get an event with the data in parse form but as a JSON blob (not broken up by argument ...)
     ///   * Keywords.FormattedMessage - you get an event with the data formatted as a string
-    ///
-    /// It is expected that you will turn only one of these keywords on at a time, but you can turn them all on (and get
+    /// </para>
+    /// <para>
+    /// Typically, you will turn only one of these keywords on at a time. However, you can turn them all on and get
     /// the same data logged three different ways.
-    ///
+    /// </para>
     /// <example>
-    /// Example Usage
-    ///
     /// This example shows how to use an EventListener to get ILogging information
-    ///
     /// <code>
     /// class MyEventListener : EventListener {
     ///     protected override void OnEventSourceCreated(EventSource eventSource) {
