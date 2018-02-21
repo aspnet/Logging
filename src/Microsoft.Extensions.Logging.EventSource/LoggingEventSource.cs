@@ -6,33 +6,44 @@ using System.Diagnostics.Tracing;
 namespace Microsoft.Extensions.Logging.EventSource
 {
     /// <summary>
-    /// The LoggingEventSource is the bridge form all `ILogger`-based logging to EventSource/EventListener logging.
+    /// The LoggingEventSource is the bridge form all <see cref="ILogger"/>-based logging to EventSource/EventListener logging.
     ///
-    /// You turn this logging on by enabling the EventSource called `Microsoft-Extensions-Logging`
+    /// You turn this logging on by enabling the EventSource called <c>Microsoft-Extensions-Logging</c>
     ///
     /// When you enabled the EventSource, the EventLevel you set is translated in the obvious way to the level
     /// associated with the ILogger (thus Debug = verbose, Informational = Informational ... Critical = Critical)
     ///
     /// This allows you to filter by event level in a straighforward way.
     ///
-    /// For finer control you can specify an EventSource argument called `FilterSpecs`
+    /// For finer control you can specify an EventSource argument called 'FilterSpecs'
     ///
     /// The FilterSpecs argument is a semicolon-separated list of specifications, where each specification is
     ///
+    /// <code>
     ///     SPEC =                          // empty spec, same as *
     ///          | NAME                     // Just a name the level is the default level
     ///          | NAME : LEVEL             // specifies level for a particular logger (can have a * suffix).
+    /// </code>
     ///
-    /// **NAME** is the name of a ILogger (case matters), Name can have a * which acts as a wildcard
-    /// *as a suffix*. Thus, `Net*` will match any loggers that start with the string 'Net'.
+    /// 'NAME' is the name of a ILogger (case matters), Name can have a * which acts as a wildcard
+    /// *as a suffix*. Thus, 'Net*' will match any loggers that start with the string 'Net'.
     ///
-    /// **LEVEL** is a number or a LogLevel string. 0=Trace, 1=Debug, 2=Information, 3=Warning,  4=Error, Critical=5
+    /// 'LEVEL' is a number or a LogLevel string. 
+    /// <code>
+    ///     0 = Trace
+    ///     1 = Debug
+    ///     2 = Information
+    ///     3 = Warning
+    ///     4 = Error
+    ///     5 = Critical
+    /// </code>
+    /// 
     /// This specifies the level for the associated pattern. If the number is not specified, (first form
     /// of the specification) it is the default level for the EventSource.
     ///
     /// First match is used if a particular name matches more than one pattern.
     ///
-    /// In addition the level and `FilterSpec` argument, you can also set `EventSource` Keywords.  See the Keywords
+    /// In addition the level and 'FilterSpec' argument, you can also set 'EventSource' Keywords. See the Keywords
     /// definition below, but basically you get to decide if you wish to have:
     ///
     ///   * Keywords.Message - You get the event with the data in parsed form.
@@ -42,11 +53,12 @@ namespace Microsoft.Extensions.Logging.EventSource
     /// It is expected that you will turn only one of these keywords on at a time, but you can turn them all on (and get
     /// the same data logged three different ways.
     ///
+    /// <example>
     /// Example Usage
     ///
-    /// This example shows how to use an `EventListener` to get `ILogging` information
+    /// This example shows how to use an EventListener to get ILogging information
     ///
-    /// ```csharp
+    /// <code>
     /// class MyEventListener : EventListener {
     ///     protected override void OnEventSourceCreated(EventSource eventSource) {
     ///         if (eventSource.Name == "Microsoft-Extensions-Logging") {
@@ -64,7 +76,8 @@ namespace Microsoft.Extensions.Logging.EventSource
     ///             Console.WriteLine("Logger {0}: {1}", eventData.Payload[2], eventData.Payload[4]);
     ///     }
     /// }
-    /// ```
+    /// </code>
+    /// </example>
     /// </summary>
     [EventSource(Name = "Microsoft-Extensions-Logging")]
     internal class LoggingEventSource : System.Diagnostics.Tracing.EventSource
