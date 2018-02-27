@@ -5,7 +5,7 @@ using System;
 
 namespace Microsoft.Extensions.Logging.Testing
 {
-    public class TestLogger<T> : ILogger
+    public class TestLogger<T> : ILogger<T>
     {
         private readonly ILogger _logger;
 
