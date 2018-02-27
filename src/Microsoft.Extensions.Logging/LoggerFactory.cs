@@ -1,11 +1,11 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Microsoft.Extensions.Logging.Abstractions.Internal;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Logging
 {
@@ -58,6 +58,21 @@ namespace Microsoft.Extensions.Logging
                     ApplyRules(loggerInformation, categoryName, 0, loggerInformation.Length);
                 }
             }
+        }
+
+        public ILogger<T> CreateLogger<T>()
+        {
+            return new Logger<T>(this);
+        }
+
+        public ILogger CreateLogger(Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            return this.CreateLogger(TypeNameHelper.GetTypeDisplayName(type));
         }
 
         public ILogger CreateLogger(string categoryName)
@@ -129,7 +144,7 @@ namespace Microsoft.Extensions.Logging
             }
         }
 
-        private void SetLoggerInformation(ref LoggerInformation loggerInformation, ILoggerProvider provider,  string categoryName)
+        private void SetLoggerInformation(ref LoggerInformation loggerInformation, ILoggerProvider provider, string categoryName)
         {
             loggerInformation.Logger = provider.CreateLogger(categoryName);
             loggerInformation.ProviderType = provider.GetType();

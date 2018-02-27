@@ -21,6 +21,16 @@ namespace Microsoft.Extensions.Logging.Testing
             return new TestLogger(name, _sink, _enabled);
         }
 
+        public ILogger<T> CreateLogger<T>()
+        {
+            return new TestLogger<T>(this);
+        }
+
+        public ILogger CreateLogger(Type type)
+        {
+            return new TestLogger(type.FullName, _sink, _enabled);
+        }
+
         public void AddProvider(ILoggerProvider provider)
         {
         }
