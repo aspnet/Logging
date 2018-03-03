@@ -18,24 +18,36 @@ namespace Microsoft.Extensions.Logging.Internal
         private const string NullValue = "(null)";
         private static readonly object[] EmptyArray = new object[0];
         private static readonly char[] FormatDelimiters = {',', ':'};
-        private readonly string _format;
+        private readonly Lazy<string> _format;
         private readonly List<string> _valueNames = new List<string>();
 
         public LogValuesFormatter(string format)
         {
             OriginalFormat = format;
+            _format = new Lazy<string>(() => FormatInput(format), true);
+        }
 
+        public string OriginalFormat { get; private set; }
+        public List<string> ValueNames => _valueNames;
+
+        private string FormatInput(string format)
+        {
             var sb = new StringBuilder();
             var scanIndex = 0;
             var endIndex = format.Length;
+            char openBrace = '{', closingBrace = '}';
+
+            //There should be an open and a closed brace, absence of which, results in unwanted processing.
+            if((!format.Contains(openBrace) && !format.Contains(closingBrace))
+                || (scanIndex == endIndex) || format.Length < 3) //{} => Nothing to process, min length should be greater than 2. Ex: "{0}"
+            {
+                return format;
+            }
 
             while (scanIndex < endIndex)
             {
-                var openBraceIndex = FindBraceIndex(format, '{', scanIndex, endIndex);
-                var closeBraceIndex = FindBraceIndex(format, '}', openBraceIndex, endIndex);
-
-                // Format item syntax : { index[,alignment][ :formatString] }.
-                var formatDelimiterIndex = FindIndexOfAny(format, FormatDelimiters, openBraceIndex, closeBraceIndex);
+                var openBraceIndex = FindBraceIndex(format, openBrace, scanIndex, endIndex);
+                var closeBraceIndex = FindBraceIndex(format, closingBrace, openBraceIndex, endIndex);
 
                 if (closeBraceIndex == endIndex)
                 {
@@ -46,6 +58,8 @@ namespace Microsoft.Extensions.Logging.Internal
                 {
                     sb.Append(format, scanIndex, openBraceIndex - scanIndex + 1);
                     sb.Append(_valueNames.Count.ToString(CultureInfo.InvariantCulture));
+                    // Format item syntax : { index[,alignment][ :formatString] }.
+                    var formatDelimiterIndex = FindIndexOfAny(format, FormatDelimiters, openBraceIndex, closeBraceIndex);
                     _valueNames.Add(format.Substring(openBraceIndex + 1, formatDelimiterIndex - openBraceIndex - 1));
                     sb.Append(format, formatDelimiterIndex, closeBraceIndex - formatDelimiterIndex + 1);
 
@@ -53,11 +67,8 @@ namespace Microsoft.Extensions.Logging.Internal
                 }
             }
 
-            _format = sb.ToString();
+            return sb.ToString();
         }
-
-        public string OriginalFormat { get; private set; }
-        public List<string> ValueNames => _valueNames;
 
         private static int FindBraceIndex(string format, char brace, int startIndex, int endIndex)
         {
@@ -142,7 +153,7 @@ namespace Microsoft.Extensions.Logging.Internal
                 }
             }
 
-            return string.Format(CultureInfo.InvariantCulture, _format, values ?? EmptyArray);
+            return string.Format(CultureInfo.InvariantCulture, _format.Value, values ?? EmptyArray);
         }
 
         public KeyValuePair<string, object> GetValue(object[] values, int index)
