@@ -18,13 +18,12 @@ namespace Microsoft.Extensions.Logging.Internal
         private const string NullValue = "(null)";
         private static readonly object[] EmptyArray = new object[0];
         private static readonly char[] FormatDelimiters = {',', ':'};
-        private readonly Lazy<string> _format;
+        private string _format;
         private readonly List<string> _valueNames = new List<string>();
 
         public LogValuesFormatter(string format)
         {
             OriginalFormat = format;
-            _format = new Lazy<string>(() => FormatInput(format), true);
         }
 
         public string OriginalFormat { get; private set; }
@@ -32,6 +31,10 @@ namespace Microsoft.Extensions.Logging.Internal
 
         private string FormatInput(string format)
         {
+            if(!string.IsNullOrEmpty(_format))
+            {
+                return _format;
+            }
             var sb = new StringBuilder();
             var scanIndex = 0;
             var endIndex = format.Length;
@@ -66,8 +69,8 @@ namespace Microsoft.Extensions.Logging.Internal
                     scanIndex = closeBraceIndex + 1;
                 }
             }
-
-            return sb.ToString();
+            _format = sb.ToString();
+            return _format;
         }
 
         private static int FindBraceIndex(string format, char brace, int startIndex, int endIndex)
@@ -153,7 +156,7 @@ namespace Microsoft.Extensions.Logging.Internal
                 }
             }
 
-            return string.Format(CultureInfo.InvariantCulture, _format.Value, values ?? EmptyArray);
+            return string.Format(CultureInfo.InvariantCulture, FormatInput(OriginalFormat), values ?? EmptyArray);
         }
 
         public KeyValuePair<string, object> GetValue(object[] values, int index)
