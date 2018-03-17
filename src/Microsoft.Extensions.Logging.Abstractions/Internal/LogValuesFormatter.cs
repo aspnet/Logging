@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.Logging.Internal
         private static readonly object[] EmptyArray = new object[0];
         private static readonly char[] FormatDelimiters = {',', ':'};
         private string _format;
-        private readonly List<string> _valueNames = new List<string>();
+        private List<string> _valueNames = new List<string>();
 
         public LogValuesFormatter(string format)
         {
@@ -27,7 +27,14 @@ namespace Microsoft.Extensions.Logging.Internal
         }
 
         public string OriginalFormat { get; private set; }
-        public List<string> ValueNames => _valueNames;
+        public List<string> ValueNames
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_format)) FormatInput(OriginalFormat); //construct the valuenames from the input
+                return _valueNames;
+            }
+        }
 
         private string FormatInput(string format)
         {
