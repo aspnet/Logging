@@ -1,4 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
@@ -49,7 +49,12 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
             var diagnostics = new List<Diagnostic>();
             foreach (var project in projects)
             {
-                var compilationWithAnalyzers = project.GetCompilationAsync().Result.WithAnalyzers(ImmutableArray.Create(analyzer));
+                var compilation = project.GetCompilationAsync().Result;
+
+                // Enable diagnostics produced by the analyzer, even if they are off by default
+                var compilationWithAnalyzers = compilation
+                    .WithOptions(compilation.Options.WithSpecificDiagnosticOptions(analyzer.SupportedDiagnostics.Select(d => new KeyValuePair<string, ReportDiagnostic>(d.Id, ReportDiagnostic.Info))))
+                    .WithAnalyzers(ImmutableArray.Create(analyzer));
 
                 var diags = compilationWithAnalyzers.GetAllDiagnosticsAsync().Result;
 

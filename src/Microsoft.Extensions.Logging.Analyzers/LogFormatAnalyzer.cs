@@ -1,4 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
@@ -37,7 +37,9 @@ namespace Microsoft.Extensions.Logging.Analyzers
                 var loggerExtensionsType = analysisContext.Compilation.GetTypeByMetadataName("Microsoft.Extensions.Logging.LoggerExtensions");
                 var logerType = analysisContext.Compilation.GetTypeByMetadataName("Microsoft.Extensions.Logging.ILogger");
                 if (loggerExtensionsType == null || logerType == null)
+                {
                     return;
+                }
 
                 analysisContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeInvocation(syntaxContext, logerType, loggerExtensionsType), SyntaxKind.InvocationExpression);
             });
@@ -49,13 +51,17 @@ namespace Microsoft.Extensions.Logging.Analyzers
 
             var symbolInfo = ModelExtensions.GetSymbolInfo(syntaxContext.SemanticModel, invocation, syntaxContext.CancellationToken);
             if (symbolInfo.Symbol?.Kind != SymbolKind.Method)
+            {
                 return;
+            }
 
             var methodSymbol = (IMethodSymbol)symbolInfo.Symbol;
 
             if (methodSymbol.ContainingType != loggerExtensionsType &&
                 methodSymbol.ContainingType != loggerType)
+            {
                 return;
+            }
 
             if (FindLogParameters(methodSymbol, out var messageArgument, out var paramsArgument))
             {

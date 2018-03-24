@@ -1,4 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
@@ -9,14 +9,14 @@ using Xunit;
 
 namespace Microsoft.Extensions.Logging.Analyzer.Test
 {
-    public class FormatStringAnalyzerTests: DiagnosticVerifier
+    public class FormatStringAnalyzerTests : DiagnosticVerifier
     {
         [Theory]
         [MemberData(nameof(GenerateTemplateUsages), @"""{0}"", 1")]
         public void DiagnosticIsProducedForNumericFormatArgument(string format)
         {
             var diagnostic = Assert.Single(GetDiagnostics(format));
-            Assert.Equal("MEL1", diagnostic.Id);
+            Assert.Equal("MEL0001", diagnostic.Id);
         }
 
 
@@ -26,7 +26,7 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
         public void DiagnosticIsProducedForDynamicFormatArgument(string format)
         {
             var diagnostic = Assert.Single(GetDiagnostics(format));
-            Assert.Equal("MEL2", diagnostic.Id);
+            Assert.Equal("MEL0002", diagnostic.Id);
         }
 
         [Theory]
@@ -37,7 +37,7 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
         public void DiagnosticIsProducedForFormatArgumentCountMismatch(string format)
         {
             var diagnostic = Assert.Single(GetDiagnostics(format));
-            Assert.Equal("MEL3", diagnostic.Id);
+            Assert.Equal("MEL0003", diagnostic.Id);
         }
 
         [Theory]
@@ -56,7 +56,7 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
 
         public static IEnumerable<object[]> GenerateTemplateUsages(string templateAndArguments)
         {
-            var methods = new[] {"LogTrace", "LogError", "LogWarning", "LogInformation", "LogDebug", "LogCritical" };
+            var methods = new[] { "LogTrace", "LogError", "LogWarning", "LogInformation", "LogDebug", "LogCritical" };
             var formats = new[]
             {
                 "",
@@ -89,7 +89,7 @@ public class Program
     }}
 }}
 ";
-            return GetSortedDiagnostics(new[] {code}, new LogFormatAnalyzer());
+            return GetSortedDiagnostics(new[] { code }, new LogFormatAnalyzer());
         }
     }
 }

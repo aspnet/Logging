@@ -8,15 +8,19 @@ namespace Microsoft.Extensions.Logging.Analyzers
     internal class Descriptors
     {
         public static DiagnosticDescriptor MEL1NumericsInFormatString = new DiagnosticDescriptor(
-            "MEL1", "Numerics should not be used in logging format string",
+            "MEL0001", "Numerics should not be used in logging format string",
             "Numerics should not be used in logging format string", "Usage", DiagnosticSeverity.Info, true);
 
         public static DiagnosticDescriptor MEL2ConcatenationInFormatString = new DiagnosticDescriptor(
-            "MEL2", "Logging format string should not be dynamically generated",
+            "MEL0002", "Logging format string should not be dynamically generated",
             "Logging format string should not be dynamically generated", "Usage", DiagnosticSeverity.Info, true);
 
         public static DiagnosticDescriptor MEL3FormatParameterCountMismatch = new DiagnosticDescriptor(
-            "MEL3", "Logging format string parameter count mismatch",
+            "MEL0003", "Logging format string parameter count mismatch",
             "Logging format string parameter count mismatch", "Usage", DiagnosticSeverity.Warning, true);
+
+        public static DiagnosticDescriptor MEL4UseCompiledLogMessages = new DiagnosticDescriptor(
+            "MEL0004", "Use compiled log messages",
+            "For improved performance, use pre-compiled log messages instead of calling '{0}' with a string message.", "Performance", DiagnosticSeverity.Info, false);
     }
 }
