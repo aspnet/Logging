@@ -17,9 +17,9 @@ namespace Microsoft.Extensions.Logging.Internal
     {
         private const string NullValue = "(null)";
         private static readonly object[] EmptyArray = new object[0];
-        private static readonly char[] FormatDelimiters = {',', ':'};
+        private static readonly char[] FormatDelimiters = { ',', ':' };
         private string _format;
-        private List<string> _valueNames = new List<string>();
+        private List<string> _valueNames;
 
         public LogValuesFormatter(string format)
         {
@@ -32,28 +32,28 @@ namespace Microsoft.Extensions.Logging.Internal
             get
             {
                 if (string.IsNullOrEmpty(_format)) FormatInput(OriginalFormat); //construct the valuenames from the input
-                return _valueNames;
+                return _valueNames ?? new List<string>(0);
             }
         }
 
         private string FormatInput(string format)
         {
-            if(!string.IsNullOrEmpty(_format))
+            if (!string.IsNullOrEmpty(_format))
             {
                 return _format;
             }
-            var sb = new StringBuilder();
             var scanIndex = 0;
             var endIndex = format.Length;
             char openBrace = '{', closingBrace = '}';
 
-            //There should be an open and a closed brace, absence of which, results in unwanted processing.
-            if((!format.Contains(openBrace) && !format.Contains(closingBrace))
-                || (scanIndex == endIndex) || format.Length < 3) //{} => Nothing to process, min length should be greater than 2. Ex: "{0}"
+            //{} => Nothing to process, min length should be greater than 2. Ex: "{0}"
+            if ((scanIndex == endIndex) || format.Length < 3) 
             {
+                _format = format;
                 return format;
             }
-
+            var sb = new StringBuilder();
+            _valueNames = new List<string>();
             while (scanIndex < endIndex)
             {
                 var openBraceIndex = FindBraceIndex(format, openBrace, scanIndex, endIndex);
@@ -168,12 +168,12 @@ namespace Microsoft.Extensions.Logging.Internal
 
         public KeyValuePair<string, object> GetValue(object[] values, int index)
         {
-            if (index < 0 || index > _valueNames.Count)
+            if (index < 0 || index > _valueNames?.Count)
             {
                 throw new IndexOutOfRangeException(nameof(index));
             }
 
-            if (_valueNames.Count > index)
+            if (_valueNames?.Count > index)
             {
                 return new KeyValuePair<string, object>(_valueNames[index], values[index]);
             }
@@ -184,9 +184,13 @@ namespace Microsoft.Extensions.Logging.Internal
         public IEnumerable<KeyValuePair<string, object>> GetValues(object[] values)
         {
             var valueArray = new KeyValuePair<string, object>[values.Length + 1];
-            for (var index = 0; index != _valueNames.Count; ++index)
+
+            if (_valueNames != null)
             {
-                valueArray[index] = new KeyValuePair<string, object>(_valueNames[index], values[index]);
+                for (var index = 0; index != _valueNames.Count; ++index)
+                {
+                    valueArray[index] = new KeyValuePair<string, object>(_valueNames[index], values[index]);
+                } 
             }
 
             valueArray[valueArray.Length - 1] = new KeyValuePair<string, object>("{OriginalFormat}", OriginalFormat);
