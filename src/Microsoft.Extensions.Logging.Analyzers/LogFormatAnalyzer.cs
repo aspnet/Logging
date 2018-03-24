@@ -22,7 +22,8 @@ namespace Microsoft.Extensions.Logging.Analyzers
             {
                 Descriptors.MEL1NumericsInFormatString,
                 Descriptors.MEL2ConcatenationInFormatString,
-                Descriptors.MEL3FormatParameterCountMismatch
+                Descriptors.MEL3FormatParameterCountMismatch,
+                Descriptors.MEL5UsePascalCasedLogMessageTokens,
             });
         }
 
@@ -119,7 +120,10 @@ namespace Microsoft.Extensions.Logging.Analyzers
                 if (int.TryParse(valueName, out _))
                 {
                     syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.MEL1NumericsInFormatString, formatExpression.GetLocation()));
-                    break;
+                }
+                else if (char.IsLower(valueName[0]))
+                {
+                    syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.MEL5UsePascalCasedLogMessageTokens, formatExpression.GetLocation()));
                 }
             }
 

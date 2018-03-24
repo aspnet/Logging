@@ -19,9 +19,22 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
         [InlineData("BeginScope", @"""This is a test {Message}"", ""Foo""")]
         public void DiagnosticIsProducedForInvocationsOfAllLoggerExtensions(string method, string args)
         {
-            var diagnostic = Assert.Single(GetDiagnostics(method, args));
+            var diagnostic = Assert.Single(GetDiagnostics(method, args, "MEL0004"));
             Assert.Equal("MEL0004", diagnostic.Id);
             Assert.Equal($"For improved performance, use pre-compiled log messages instead of calling '{method}' with a string message.", diagnostic.GetMessage());
+        }
+
+        [Theory]
+        [InlineData("LogTrace", @"""This is a test {Message}"", ""Foo""")]
+        [InlineData("LogDebug", @"""This is a test {Message}"", ""Foo""")]
+        [InlineData("LogInformation", @"""This is a test {Message}"", ""Foo""")]
+        [InlineData("LogWarning", @"""This is a test {Message}"", ""Foo""")]
+        [InlineData("LogError", @"""This is a test {Message}"", ""Foo""")]
+        [InlineData("LogCritical", @"""This is a test {Message}"", ""Foo""")]
+        [InlineData("BeginScope", @"""This is a test {Message}"", ""Foo""")]
+        public void DiagnosticNotIsProducedWhenItIsNotEnabled(string method, string args)
+        {
+            Assert.Empty(GetDiagnostics(method, args));
         }
 
         [Theory]
@@ -33,7 +46,7 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
             Assert.Empty(GetDiagnostics(method, args));
         }
 
-        private static Diagnostic[] GetDiagnostics(string method, string args)
+        private static Diagnostic[] GetDiagnostics(string method, string args, params string[] additionalEnabledDiagnostics)
         {
             var code = $@"
 using Microsoft.Extensions.Logging;
@@ -47,7 +60,7 @@ public class Program
     }}
 }}
 ";
-            return GetSortedDiagnostics(new[] { code }, new UseCompiledLogMessagesAnalyzer());
+            return GetSortedDiagnostics(new[] { code }, new UseCompiledLogMessagesAnalyzer(), additionalEnabledDiagnostics);
         }
     }
 }

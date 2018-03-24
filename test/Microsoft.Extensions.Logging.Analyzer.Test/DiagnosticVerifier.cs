@@ -25,10 +25,11 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
         /// </summary>
         /// <param name="sources">Classes in the form of strings</param>
         /// <param name="analyzer">The analyzer to be run on the sources</param>
+        /// <param name="additionalEnabledDiagnostics">Additional diagnostics to enable at Info level</param>
         /// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-        protected static Diagnostic[] GetSortedDiagnostics(string[] sources, DiagnosticAnalyzer analyzer)
+        protected static Diagnostic[] GetSortedDiagnostics(string[] sources, DiagnosticAnalyzer analyzer, string[] additionalEnabledDiagnostics)
         {
-            return GetSortedDiagnosticsFromDocuments(analyzer, GetDocuments(sources));
+            return GetSortedDiagnosticsFromDocuments(analyzer, GetDocuments(sources), additionalEnabledDiagnostics);
         }
 
         /// <summary>
@@ -37,8 +38,9 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
         /// </summary>
         /// <param name="analyzer">The analyzer to run on the documents</param>
         /// <param name="documents">The Documents that the analyzer will be run on</param>
+        /// <param name="additionalEnabledDiagnostics">Additional diagnostics to enable at Info level</param>
         /// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-        protected static Diagnostic[] GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer analyzer, Document[] documents)
+        protected static Diagnostic[] GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer analyzer, Document[] documents, string[] additionalEnabledDiagnostics)
         {
             var projects = new HashSet<Project>();
             foreach (var document in documents)
@@ -51,9 +53,17 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
             {
                 var compilation = project.GetCompilationAsync().Result;
 
-                // Enable diagnostics produced by the analyzer, even if they are off by default
+                // Enable any additional diagnostics
+                var options = compilation.Options;
+                if (additionalEnabledDiagnostics.Length > 0)
+                {
+                    options = compilation.Options
+                        .WithSpecificDiagnosticOptions(
+                            additionalEnabledDiagnostics.ToDictionary(s => s, s => ReportDiagnostic.Info));
+                }
+
                 var compilationWithAnalyzers = compilation
-                    .WithOptions(compilation.Options.WithSpecificDiagnosticOptions(analyzer.SupportedDiagnostics.Select(d => new KeyValuePair<string, ReportDiagnostic>(d.Id, ReportDiagnostic.Info))))
+                    .WithOptions(options)
                     .WithAnalyzers(ImmutableArray.Create(analyzer));
 
                 var diags = compilationWithAnalyzers.GetAllDiagnosticsAsync().Result;

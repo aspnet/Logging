@@ -19,6 +19,13 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
             Assert.Equal("MEL0001", diagnostic.Id);
         }
 
+        [Theory]
+        [MemberData(nameof(GenerateTemplateUsages), @"""{camelCase}"", 1")]
+        public void DiagnosticIsProducedForCamelCasedFormatArgument(string format)
+        {
+            var diagnostic = Assert.Single(GetDiagnostics(format, "MEL0005"));
+            Assert.Equal("MEL0005", diagnostic.Id);
+        }
 
         [Theory]
         [MemberData(nameof(GenerateTemplateUsages), @"$""{string.Empty}""")]
@@ -49,6 +56,9 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
 
         // we are unable to parse expressions
         [MemberData(nameof(GenerateTemplateUsages), @"""{string} {string}"", new object [] {1}")]
+
+        // MEL0005 is not enabled.
+        [MemberData(nameof(GenerateTemplateUsages), @"""{camelCase}"", 1")]
         public void DiagnosticNotIsProduced(string format)
         {
             Assert.Empty(GetDiagnostics(format));
@@ -75,7 +85,7 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
             yield return new[] { $"logger.BeginScope({templateAndArguments});" };
         }
 
-        private static Diagnostic[] GetDiagnostics(string expression)
+        private static Diagnostic[] GetDiagnostics(string expression, params string[] additionalEnabledDiagnostics)
         {
             var code = $@"
 using Microsoft.Extensions.Logging;
@@ -89,7 +99,7 @@ public class Program
     }}
 }}
 ";
-            return GetSortedDiagnostics(new[] { code }, new LogFormatAnalyzer());
+            return GetSortedDiagnostics(new[] { code }, new LogFormatAnalyzer(), additionalEnabledDiagnostics);
         }
     }
 }

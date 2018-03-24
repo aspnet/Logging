@@ -22,5 +22,9 @@ namespace Microsoft.Extensions.Logging.Analyzers
         public static DiagnosticDescriptor MEL4UseCompiledLogMessages = new DiagnosticDescriptor(
             "MEL0004", "Use compiled log messages",
             "For improved performance, use pre-compiled log messages instead of calling '{0}' with a string message.", "Performance", DiagnosticSeverity.Info, false);
+
+        public static DiagnosticDescriptor MEL5UsePascalCasedLogMessageTokens = new DiagnosticDescriptor(
+            "MEL0005", "Use PascalCase for log message tokens",
+            "For consistency with logs emitted from other components, use 'PascalCase' for log message tokens.", "Naming", DiagnosticSeverity.Info, false);
     }
 }
