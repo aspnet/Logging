@@ -47,7 +47,7 @@ namespace Microsoft.Extensions.Logging.Internal
             char openBrace = '{', closingBrace = '}';
 
             //{} => Nothing to process, min length should be greater than 2. Ex: "{0}"
-            if ((scanIndex == endIndex) || format.Length < 3) 
+            if (format.Length < 3) 
             {
                 _format = format;
                 return format;
