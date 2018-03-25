@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
     public class FormatStringAnalyzerTests : DiagnosticVerifier
     {
         [Theory]
-        [MemberData(nameof(GenerateTemplateUsages), @"""{0}""", "1", true)]
+        [MemberData(nameof(GenerateTemplateAndDefineUsages), @"""{0}""", "1")]
         public void MEL0001IsProducedForNumericFormatArgument(string format)
         {
             // Enable MEL0005 because it shouldn't trigger on numeric arguments and we want to verify that.
@@ -22,8 +22,8 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
         }
 
         [Theory]
-        [MemberData(nameof(GenerateTemplateUsages), @"$""{string.Empty}""", "", true)]
-        [MemberData(nameof(GenerateTemplateUsages), @"""string"" + 2", "", true)]
+        [MemberData(nameof(GenerateTemplateAndDefineUsages), @"$""{string.Empty}""", "")]
+        [MemberData(nameof(GenerateTemplateAndDefineUsages), @"""string"" + 2", "")]
         public void MEL0002IsProducedForDynamicFormatArgument(string format)
         {
             var diagnostic = Assert.Single(GetDiagnostics(format));
@@ -31,10 +31,10 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
         }
 
         [Theory]
-        [MemberData(nameof(GenerateTemplateUsages), @"""{string}""", "1, 2", false)]
-        [MemberData(nameof(GenerateTemplateUsages), @"""{str"" + ""ing}""", "1, 2", false)]
-        [MemberData(nameof(GenerateTemplateUsages), @"""{"" + nameof(ILogger) + ""}""", "", false)]
-        [MemberData(nameof(GenerateTemplateUsages), @"""{"" + Const + ""}""", "", false)]
+        [MemberData(nameof(GenerateTemplateUsages), @"""{string}""", "1, 2")]
+        [MemberData(nameof(GenerateTemplateUsages), @"""{str"" + ""ing}""", "1, 2")]
+        [MemberData(nameof(GenerateTemplateUsages), @"""{"" + nameof(ILogger) + ""}""", "")]
+        [MemberData(nameof(GenerateTemplateUsages), @"""{"" + Const + ""}""", "")]
         public void MEL0003IsProducedForFormatArgumentCountMismatch(string format)
         {
             var diagnostic = Assert.Single(GetDiagnostics(format));
@@ -42,8 +42,14 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
         }
 
         [Theory]
+        [InlineData(@"LoggerMessage.Define(LogLevel.Information, 42, ""{One} {Two} {Three}"");")]
         [InlineData(@"LoggerMessage.Define<int>(LogLevel.Information, 42, ""{One} {Two} {Three}"");")]
+        [InlineData(@"LoggerMessage.Define<int, int>(LogLevel.Information, 42, ""{One} {Two} {Three}"");")]
+        [InlineData(@"LoggerMessage.Define<int, int, int>(LogLevel.Information, 42, ""{One} {Two}"");")]
         [InlineData(@"LoggerMessage.Define<int, int, int, int>(LogLevel.Information, 42, ""{One} {Two} {Three}"");")]
+        [InlineData(@"LoggerMessage.DefineScope<int>(""{One} {Two} {Three}"");")]
+        [InlineData(@"LoggerMessage.DefineScope<int, int>(""{One} {Two} {Three}"");")]
+        [InlineData(@"LoggerMessage.DefineScope<int, int, int>(""{One} {Two}"");")]
         public void MEL0003IsProducedForDefineMessageTypeParameterMismatch(string invocation)
         {
             var diagnostic = Assert.Single(GetDiagnostics(invocation));
@@ -66,7 +72,7 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
         }
 
         [Theory]
-        [MemberData(nameof(GenerateTemplateUsages), @"""{camelCase}""", "1", true)]
+        [MemberData(nameof(GenerateTemplateAndDefineUsages), @"""{camelCase}""", "1")]
         public void MEL0005IsProducedForCamelCasedFormatArgument(string format)
         {
             var diagnostic = Assert.Single(GetDiagnostics(format, "MEL0005"));
@@ -75,22 +81,27 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
 
         [Theory]
         // Concat would be optimized by compiler
-        [MemberData(nameof(GenerateTemplateUsages), @"nameof(ILogger) + "" string""", "", true)]
-        [MemberData(nameof(GenerateTemplateUsages), @""" string"" + "" string""", "", true)]
-        [MemberData(nameof(GenerateTemplateUsages), @"$"" string"" + $"" string""", "", true)]
-        [MemberData(nameof(GenerateTemplateUsages), @"""{st"" + ""ring}""", "1", true)]
+        [MemberData(nameof(GenerateTemplateAndDefineUsages), @"nameof(ILogger) + "" string""", "")]
+        [MemberData(nameof(GenerateTemplateAndDefineUsages), @""" string"" + "" string""", "")]
+        [MemberData(nameof(GenerateTemplateAndDefineUsages), @"$"" string"" + $"" string""", "")]
+        [MemberData(nameof(GenerateTemplateAndDefineUsages), @"""{st"" + ""ring}""", "1")]
 
         // we are unable to parse expressions
-        [MemberData(nameof(GenerateTemplateUsages), @"""{string} {string}""", "new object[] { 1 }", true)]
+        [MemberData(nameof(GenerateTemplateAndDefineUsages), @"""{string} {string}""", "new object[] { 1 }")]
 
         // MEL0005 is not enabled by default.
-        [MemberData(nameof(GenerateTemplateUsages), @"""{camelCase}""", "1", true)]
+        [MemberData(nameof(GenerateTemplateAndDefineUsages), @"""{camelCase}""", "1")]
         public void TemplateDiagnosticsAreNotProduced(string format)
         {
             Assert.Empty(GetDiagnostics(format));
         }
 
-        public static IEnumerable<object[]> GenerateTemplateUsages(string template, string arguments, bool includeDefineMessage)
+        public static IEnumerable<object[]> GenerateTemplateAndDefineUsages(string template, string arguments)
+        {
+            return GenerateTemplateUsages(template, arguments).Concat(GenerateDefineUsages(template, arguments));
+        }
+
+        public static IEnumerable<object[]> GenerateTemplateUsages(string template, string arguments)
         {
             var templateAndArguments = template;
             if (!string.IsNullOrEmpty(arguments))
@@ -114,14 +125,14 @@ namespace Microsoft.Extensions.Logging.Analyzer.Test
             }
 
             yield return new[] { $"logger.BeginScope({templateAndArguments});" };
+        }
 
+        public static IEnumerable<object[]> GenerateDefineUsages(string template, string arguments)
+        {
             // This is super rudimentary, but it works
-            if (includeDefineMessage)
-            {
-                var braceCount = template.Count(c => c == '{');
-                yield return new[] { $"LoggerMessage.{GenerateGenericInvocation(braceCount, "DefineScope")}({template});" };
-                yield return new[] { $"LoggerMessage.{GenerateGenericInvocation(braceCount, "Define")}(LogLevel.Information, 42, {template});" };
-            }
+            var braceCount = template.Count(c => c == '{');
+            yield return new[] { $"LoggerMessage.{GenerateGenericInvocation(braceCount, "DefineScope")}({template});" };
+            yield return new[] { $"LoggerMessage.{GenerateGenericInvocation(braceCount, "Define")}(LogLevel.Information, 42, {template});" };
         }
 
         private static string GenerateGenericInvocation(int i, string method)
