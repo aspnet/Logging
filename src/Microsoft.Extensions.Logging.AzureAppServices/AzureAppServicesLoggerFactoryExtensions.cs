@@ -38,8 +38,8 @@ namespace Microsoft.Extensions.Logging
             var config = SiteConfigurationProvider.GetAzureLoggingConfiguration(context);
             var services = builder.Services;
 
-            var addedFileLogger = TryAddEnumerableSucceeded(services, Singleton<ILoggerProvider, FileLoggerProvider>());
-            var addedBlobLogger = TryAddEnumerableSucceeded(services, Singleton<ILoggerProvider, BlobLoggerProvider>());
+            var addedFileLogger = TryAddEnumerable(services, Singleton<ILoggerProvider, FileLoggerProvider>());
+            var addedBlobLogger = TryAddEnumerable(services, Singleton<ILoggerProvider, BlobLoggerProvider>());
 
             if (addedFileLogger || addedBlobLogger)
             {
@@ -51,23 +51,23 @@ namespace Microsoft.Extensions.Logging
             if (addedFileLogger)
             {
                 services.AddSingleton<IConfigureOptions<LoggerFilterOptions>>(CreateFileFilterConfigureOptions(config));
-                services.AddSingleton<IConfigureOptions<AzureBlobLoggerOptions>>(new BlobLoggerConfigureOptions(config, context));
-                services.AddSingleton<IOptionsChangeTokenSource<AzureBlobLoggerOptions>>(
-                    new ConfigurationChangeTokenSource<AzureBlobLoggerOptions>(config));
-            }
-
-            if (addedBlobLogger)
-            {
-                services.AddSingleton<IConfigureOptions<LoggerFilterOptions>>(CreateBlobFilterConfigureOptions(config));
                 services.AddSingleton<IConfigureOptions<AzureFileLoggerOptions>>(new FileLoggerConfigureOptions(config, context));
                 services.AddSingleton<IOptionsChangeTokenSource<AzureFileLoggerOptions>>(
                     new ConfigurationChangeTokenSource<AzureFileLoggerOptions>(config));
             }
 
+            if (addedBlobLogger)
+            {
+                services.AddSingleton<IConfigureOptions<LoggerFilterOptions>>(CreateBlobFilterConfigureOptions(config));
+                services.AddSingleton<IConfigureOptions<AzureBlobLoggerOptions>>(new BlobLoggerConfigureOptions(config, context));
+                services.AddSingleton<IOptionsChangeTokenSource<AzureBlobLoggerOptions>>(
+                    new ConfigurationChangeTokenSource<AzureBlobLoggerOptions>(config));
+            }
+
             return builder;
         }
 
-        private static bool TryAddEnumerableSucceeded(IServiceCollection collection, ServiceDescriptor descriptor)
+        private static bool TryAddEnumerable(IServiceCollection collection, ServiceDescriptor descriptor)
         {
             var beforeCount = collection.Count;
             collection.TryAddEnumerable(descriptor);
