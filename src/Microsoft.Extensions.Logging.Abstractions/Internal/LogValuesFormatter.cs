@@ -20,6 +20,7 @@ namespace Microsoft.Extensions.Logging.Internal
         private static readonly char[] FormatDelimiters = { ',', ':' };
         private string _format;
         private List<string> _valueNames;
+        private List<string> _emptyValueNames = new List<string>(0);
 
         public LogValuesFormatter(string format)
         {
@@ -31,14 +32,14 @@ namespace Microsoft.Extensions.Logging.Internal
         {
             get
             {
-                if (string.IsNullOrEmpty(_format)) FormatInput(OriginalFormat); //construct the valuenames from the input
-                return _valueNames ?? new List<string>(0);
+                if (_format == null) FormatInput(OriginalFormat); //construct the valuenames from the input
+                return _valueNames ?? _emptyValueNames;
             }
         }
 
         private string FormatInput(string format)
         {
-            if (!string.IsNullOrEmpty(_format))
+            if (_format != null)
             {
                 return _format;
             }
@@ -168,6 +169,7 @@ namespace Microsoft.Extensions.Logging.Internal
 
         public KeyValuePair<string, object> GetValue(object[] values, int index)
         {
+            if (_format == null) FormatInput(OriginalFormat);
             if (index < 0 || index > _valueNames?.Count)
             {
                 throw new IndexOutOfRangeException(nameof(index));
@@ -185,6 +187,7 @@ namespace Microsoft.Extensions.Logging.Internal
         {
             var valueArray = new KeyValuePair<string, object>[values.Length + 1];
 
+            if (_format == null) FormatInput(OriginalFormat);
             if (_valueNames != null)
             {
                 for (var index = 0; index != _valueNames.Count; ++index)
