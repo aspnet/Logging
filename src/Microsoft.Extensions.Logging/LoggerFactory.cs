@@ -111,11 +111,7 @@ namespace Microsoft.Extensions.Logging
 
         private void AddProviderRegistration(ILoggerProvider provider, bool dispose)
         {
-            _providerRegistrations.Add(new ProviderRegistration
-            {
-                Provider = provider,
-                ShouldDispose = dispose
-            });
+            _providerRegistrations.Add(new ProviderRegistration(provider, shouldDispose: dispose));
 
             if (provider is ISupportExternalScope supportsExternalScope)
             {
@@ -128,7 +124,7 @@ namespace Microsoft.Extensions.Logging
             }
         }
 
-        private void SetLoggerInformation(ref LoggerInformation loggerInformation, ILoggerProvider provider,  string categoryName)
+        private void SetLoggerInformation(ref LoggerInformation loggerInformation, ILoggerProvider provider, string categoryName)
         {
             loggerInformation.Logger = provider.CreateLogger(categoryName);
             loggerInformation.ProviderType = provider.GetType();
@@ -196,10 +192,16 @@ namespace Microsoft.Extensions.Logging
             }
         }
 
-        private struct ProviderRegistration
+        private readonly struct ProviderRegistration
         {
-            public ILoggerProvider Provider;
-            public bool ShouldDispose;
+            public readonly ILoggerProvider Provider;
+            public readonly bool ShouldDispose;
+
+            public ProviderRegistration(ILoggerProvider provider, bool shouldDispose)
+            {
+                Provider = provider;
+                ShouldDispose = shouldDispose;
+            }
         }
     }
 }
