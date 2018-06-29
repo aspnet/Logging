@@ -17,25 +17,48 @@ namespace Microsoft.Extensions.Logging.Internal
     {
         private const string NullValue = "(null)";
         private static readonly object[] EmptyArray = new object[0];
-        private static readonly char[] FormatDelimiters = {',', ':'};
-        private readonly string _format;
-        private readonly List<string> _valueNames = new List<string>();
+        private static readonly char[] FormatDelimiters = { ',', ':' };
+        private string _format;
+        private List<string> _valueNames;
+        private List<string> _emptyValueNames = new List<string>(0);
 
         public LogValuesFormatter(string format)
         {
             OriginalFormat = format;
+        }
 
-            var sb = new StringBuilder();
+        public string OriginalFormat { get; private set; }
+        public List<string> ValueNames
+        {
+            get
+            {
+                if (_format == null) FormatInput(OriginalFormat); //construct the valuenames from the input
+                return _valueNames ?? _emptyValueNames;
+            }
+        }
+
+        private string FormatInput(string format)
+        {
+            if (_format != null)
+            {
+                return _format;
+            }
             var scanIndex = 0;
             var endIndex = format.Length;
+            char openBrace = '{', closingBrace = '}';
 
+            //{} => Nothing to process, min length should be greater than 2. Ex: "{0}"
+            if (format.Length < 3) 
+            {
+                _format = format;
+                return format;
+            }
+            var sb = new StringBuilder();
+            _valueNames = new List<string>();
             while (scanIndex < endIndex)
             {
-                var openBraceIndex = FindBraceIndex(format, '{', scanIndex, endIndex);
-                var closeBraceIndex = FindBraceIndex(format, '}', openBraceIndex, endIndex);
-
-                // Format item syntax : { index[,alignment][ :formatString] }.
-                var formatDelimiterIndex = FindIndexOfAny(format, FormatDelimiters, openBraceIndex, closeBraceIndex);
+                var openBraceIndex = FindBraceIndex(format, openBrace, scanIndex, endIndex);
+                var closeBraceIndex = FindBraceIndex(format, closingBrace, openBraceIndex, endIndex);
 
                 if (closeBraceIndex == endIndex)
                 {
@@ -46,18 +69,17 @@ namespace Microsoft.Extensions.Logging.Internal
                 {
                     sb.Append(format, scanIndex, openBraceIndex - scanIndex + 1);
                     sb.Append(_valueNames.Count.ToString(CultureInfo.InvariantCulture));
+                    // Format item syntax : { index[,alignment][ :formatString] }.
+                    var formatDelimiterIndex = FindIndexOfAny(format, FormatDelimiters, openBraceIndex, closeBraceIndex);
                     _valueNames.Add(format.Substring(openBraceIndex + 1, formatDelimiterIndex - openBraceIndex - 1));
                     sb.Append(format, formatDelimiterIndex, closeBraceIndex - formatDelimiterIndex + 1);
 
                     scanIndex = closeBraceIndex + 1;
                 }
             }
-
             _format = sb.ToString();
+            return _format;
         }
-
-        public string OriginalFormat { get; private set; }
-        public List<string> ValueNames => _valueNames;
 
         private static int FindBraceIndex(string format, char brace, int startIndex, int endIndex)
         {
@@ -142,17 +164,18 @@ namespace Microsoft.Extensions.Logging.Internal
                 }
             }
 
-            return string.Format(CultureInfo.InvariantCulture, _format, values ?? EmptyArray);
+            return string.Format(CultureInfo.InvariantCulture, FormatInput(OriginalFormat), values ?? EmptyArray);
         }
 
         public KeyValuePair<string, object> GetValue(object[] values, int index)
         {
-            if (index < 0 || index > _valueNames.Count)
+            if (_format == null) FormatInput(OriginalFormat);
+            if (index < 0 || index > _valueNames?.Count)
             {
                 throw new IndexOutOfRangeException(nameof(index));
             }
 
-            if (_valueNames.Count > index)
+            if (_valueNames?.Count > index)
             {
                 return new KeyValuePair<string, object>(_valueNames[index], values[index]);
             }
@@ -163,9 +186,14 @@ namespace Microsoft.Extensions.Logging.Internal
         public IEnumerable<KeyValuePair<string, object>> GetValues(object[] values)
         {
             var valueArray = new KeyValuePair<string, object>[values.Length + 1];
-            for (var index = 0; index != _valueNames.Count; ++index)
+
+            if (_format == null) FormatInput(OriginalFormat);
+            if (_valueNames != null)
             {
-                valueArray[index] = new KeyValuePair<string, object>(_valueNames[index], values[index]);
+                for (var index = 0; index != _valueNames.Count; ++index)
+                {
+                    valueArray[index] = new KeyValuePair<string, object>(_valueNames[index], values[index]);
+                } 
             }
 
             valueArray[valueArray.Length - 1] = new KeyValuePair<string, object>("{OriginalFormat}", OriginalFormat);
