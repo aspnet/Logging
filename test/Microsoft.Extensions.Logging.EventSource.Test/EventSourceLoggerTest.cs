@@ -13,15 +13,36 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Extensions.Logging.Test
 {
-    public class EventSourceLoggerTest
+    public abstract class EventSourceLoggerTest
     {
+        public class EventSourceLoggerFactoryTest: EventSourceLoggerTest
+        {
+            protected override ILoggerFactory CreateLoggerFactory()
+            {
+
+                var factory = new LoggerFactory();
+                factory.AddEventSourceLogger();
+                return factory;
+            }
+        }
+
+        public class EventSourceLoggerBuilderTest : EventSourceLoggerTest
+        {
+            protected override ILoggerFactory CreateLoggerFactory()
+            {
+                return TestLoggerBuilder.Create(builder => builder
+                    .AddEventSourceLogger());
+            }
+        }
+
+        protected abstract ILoggerFactory CreateLoggerFactory();
+
         [Fact]
-        public static void IsEnabledReturnsCorrectValue()
+        public void IsEnabledReturnsCorrectValue()
         {
             using (var testListener = new TestEventListener())
             {
-                var factory = new LoggerFactory();
-                factory.AddEventSourceLogger();
+                var loggerFactory = CreateLoggerFactory();
 
                 var listenerSettings = new TestEventListener.ListenerSettings();
                 listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
@@ -29,7 +50,7 @@ namespace Microsoft.Extensions.Logging.Test
                 listenerSettings.Level = EventLevel.Warning;
                 testListener.EnableEvents(listenerSettings);
 
-                var logger = factory.CreateLogger("Logger1");
+                var logger = loggerFactory.CreateLogger("Logger1");
 
                 Assert.False(logger.IsEnabled(LogLevel.None));
                 Assert.True(logger.IsEnabled(LogLevel.Critical));
@@ -314,6 +335,40 @@ namespace Microsoft.Extensions.Logging.Test
         }
 
         [Fact]
+        public void Logs_AsExpected_AfterSettingsReload()
+        {
+            using (var testListener = new TestEventListener())
+            {
+                var factory = CreateLoggerFactory();
+
+                var listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
+                listenerSettings.FilterSpec = "Logger2:Error";
+                listenerSettings.Level = EventLevel.Error;
+                testListener.EnableEvents(listenerSettings);
+
+                LogStuff(factory);
+
+                VerifyEvents(testListener,
+                    "E5JS");
+
+                listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
+                listenerSettings.FilterSpec = "Logger1:Error";
+                listenerSettings.Level = EventLevel.Error;
+                testListener.EnableEvents(listenerSettings);
+
+                LogStuff(factory);
+
+                VerifyEvents(testListener,
+                    "E5JS",
+                    "OuterScopeJsonStart",
+                    "E4JS",
+                    "OuterScopeJsonStop");
+            }
+        }
+
+        [Fact]
         public void Logs_AsExpected_WithComplexLoggerSpec()
         {
             using (var testListener = new TestEventListener())
@@ -334,13 +389,6 @@ namespace Microsoft.Extensions.Logging.Test
                     "E5JS",
                     "OuterScopeJsonStop");
             }
-        }
-
-        private static ILoggerFactory CreateLoggerFactory()
-        {
-            return TestLoggerBuilder.Create(builder => builder
-                    .AddEventSourceLogger()
-                    .SetMinimumLevel(LogLevel.Trace));
         }
 
         private void LogStuff(ILoggerFactory factory)
