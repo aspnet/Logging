@@ -25,12 +25,10 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            var loggingEventSource = LoggingEventSource.Instance;
-
-            var loggerProvider = new EventSourceLoggerProvider(loggingEventSource, false);
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider>(loggerProvider));
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<LoggerFilterOptions>>(new EvenLogFiltersConfigureOptions(loggingEventSource)));
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<LoggerFilterOptions>>(new EvenLogFiltersConfigureOptionsChangeSource(loggingEventSource)));
+            builder.Services.TryAddSingleton(LoggingEventSource.Instance);
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, EventSourceLoggerProvider>());
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<LoggerFilterOptions>, EventLogFiltersConfigureOptions>());
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<LoggerFilterOptions>, EventLogFiltersConfigureOptionsChangeSource>());
             return builder;
         }
 
@@ -45,7 +43,7 @@ namespace Microsoft.Extensions.Logging
                 throw new ArgumentNullException(nameof(factory));
             }
 
-            factory.AddProvider(new EventSourceLoggerProvider(LoggingEventSource.Instance, true));
+            factory.AddProvider(new EventSourceLoggerProvider(LoggingEventSource.Instance, handleFilters: true));
 
             return factory;
         }

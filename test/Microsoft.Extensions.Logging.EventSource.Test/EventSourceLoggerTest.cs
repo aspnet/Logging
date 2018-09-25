@@ -13,29 +13,47 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Extensions.Logging.Test
 {
-    public abstract class EventSourceLoggerTest
+    public abstract class EventSourceLoggerTest: IDisposable
     {
         public class EventSourceLoggerFactoryTest: EventSourceLoggerTest
         {
+            private LoggerFactory _factory;
+
             protected override ILoggerFactory CreateLoggerFactory()
             {
+                _factory = new LoggerFactory();
+                _factory.AddEventSourceLogger();
+                return _factory;
+            }
 
-                var factory = new LoggerFactory();
-                factory.AddEventSourceLogger();
-                return factory;
+            public override void Dispose()
+            {
+                _factory.Dispose();
             }
         }
 
         public class EventSourceLoggerBuilderTest : EventSourceLoggerTest
         {
+            private ServiceProvider _serviceProvider;
+
             protected override ILoggerFactory CreateLoggerFactory()
             {
-                return TestLoggerBuilder.Create(builder => builder
-                    .AddEventSourceLogger());
+                _serviceProvider = new ServiceCollection()
+                    .AddLogging(builder => builder.AddEventSourceLogger())
+                    .BuildServiceProvider();
+
+                return _serviceProvider.GetRequiredService<ILoggerFactory>();
+            }
+
+            public override void Dispose()
+            {
+                _serviceProvider?.Dispose();
             }
         }
 
         protected abstract ILoggerFactory CreateLoggerFactory();
+
+        public abstract void Dispose();
 
         [Fact]
         public void IsEnabledReturnsCorrectValue()
@@ -100,15 +118,7 @@ namespace Microsoft.Extensions.Logging.Test
         {
             using (var testListener = new TestEventListener())
             {
-                // No call to factory.AddEventSourceLogger();
-                var factory = TestLoggerBuilder.Create(builder => builder
-                    .SetMinimumLevel(LogLevel.Trace));
-
-                var listenerSettings = new TestEventListener.ListenerSettings();
-                listenerSettings.Keywords = EventKeywords.None;
-                listenerSettings.FilterSpec = null;
-                listenerSettings.Level = default(EventLevel);
-                testListener.EnableEvents(listenerSettings);
+                var factory = CreateLoggerFactory();
 
                 LogStuff(factory);
 
@@ -388,6 +398,29 @@ namespace Microsoft.Extensions.Logging.Test
                     "E4JS",
                     "E5JS",
                     "OuterScopeJsonStop");
+            }
+        }
+
+        [Fact]
+        public void Logs_Nothing_AfterDispose()
+        {
+            using (var testListener = new TestEventListener())
+            {
+                var factory = CreateLoggerFactory();
+
+                var listenerSettings = new TestEventListener.ListenerSettings();
+                listenerSettings.Keywords = LoggingEventSource.Keywords.JsonMessage;
+                listenerSettings.FilterSpec = null;
+                listenerSettings.Level = EventLevel.Verbose;
+                testListener.EnableEvents(listenerSettings);
+
+                var logger = factory.CreateLogger("Logger1");
+
+                Dispose();
+
+                logger.LogDebug(new EventId(1), "Logger1 Event1 Debug {intParam}", 1);
+
+                VerifyEvents(testListener);
             }
         }
 

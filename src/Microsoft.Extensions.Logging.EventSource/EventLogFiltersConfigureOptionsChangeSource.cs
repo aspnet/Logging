@@ -3,24 +3,21 @@
 
 using Microsoft.Extensions.Logging.EventSource;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Extensions.Logging
 {
-    internal class EvenLogFiltersConfigureOptions : IConfigureOptions<LoggerFilterOptions>
+    internal class EventLogFiltersConfigureOptionsChangeSource: IOptionsChangeTokenSource<LoggerFilterOptions>
     {
         private readonly LoggingEventSource _eventSource;
 
-        public EvenLogFiltersConfigureOptions(LoggingEventSource eventSource)
+        public EventLogFiltersConfigureOptionsChangeSource(LoggingEventSource eventSource)
         {
             _eventSource = eventSource;
         }
 
-        public void Configure(LoggerFilterOptions options)
-        {
-            foreach (var rule in _eventSource.GetFilterRules())
-            {
-                options.Rules.Add(rule);
-            }
-        }
+        public IChangeToken GetChangeToken() => _eventSource.GetFilterChangeToken();
+
+        public string Name { get; }
     }
 }

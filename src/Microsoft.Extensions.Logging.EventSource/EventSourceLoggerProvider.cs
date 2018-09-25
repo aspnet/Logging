@@ -25,6 +25,11 @@ namespace Microsoft.Extensions.Logging.EventSource
 
         private IDisposable _filterChangeToken;
 
+        public EventSourceLoggerProvider(LoggingEventSource eventSource) : this(eventSource, handleFilters: false)
+        {
+
+        }
+
         public EventSourceLoggerProvider(LoggingEventSource eventSource, bool handleFilters)
         {
             if (eventSource == null)
@@ -59,8 +64,13 @@ namespace Microsoft.Extensions.Logging.EventSource
 
         public void Dispose()
         {
-            _filterChangeToken.Dispose();
-            SetFilterSpec(null); // Turn off any logging
+            _filterChangeToken?.Dispose();
+
+            // Turn off any logging
+            for (var logger = _loggers; logger != null; logger = logger.Next)
+            {
+                logger.Level = LogLevel.None;
+            }
         }
 
         // Sets the filtering for a particular logger provider
