@@ -199,8 +199,8 @@ namespace Microsoft.Extensions.Logging.EventSource
         [NonEvent]
         internal IChangeToken GetFilterChangeToken()
         {
-            var tcs = LazyInitializer.EnsureInitialized(ref _cancellationTokenSource, () => new CancellationTokenSource());
-            return new CancellationChangeToken(tcs.Token);
+            var cts = LazyInitializer.EnsureInitialized(ref _cancellationTokenSource, () => new CancellationTokenSource());
+            return new CancellationChangeToken(cts.Token);
         }
 
         [NonEvent]
@@ -326,13 +326,13 @@ namespace Microsoft.Extensions.Logging.EventSource
         {
             var allMessageKeywords = Keywords.Message | Keywords.FormattedMessage | Keywords.JsonMessage;
 
+            if (IsEnabled(EventLevel.Verbose, allMessageKeywords))
+            {
+                return LogLevel.Debug;
+            }
+
             if (IsEnabled(EventLevel.Informational, allMessageKeywords))
             {
-                if (IsEnabled(EventLevel.Verbose, allMessageKeywords))
-                {
-                    return LogLevel.Debug;
-                }
-
                 return LogLevel.Information;
             }
 

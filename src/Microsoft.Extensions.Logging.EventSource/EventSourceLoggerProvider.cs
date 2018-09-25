@@ -92,9 +92,8 @@ namespace Microsoft.Extensions.Logging.EventSource
                 return LogLevel.Trace;
             }
 
-            var rules = _rules;
             var level = LogLevel.None;
-            foreach (var rule in rules)
+            foreach (var rule in _rules)
             {
                 Debug.Assert(rule.LogLevel.HasValue);
                 Debug.Assert(rule.ProviderName == GetType().FullName);
