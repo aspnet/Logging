@@ -52,6 +52,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
 
         /// <summary>
         /// Gets or sets a string representing the name of the file used to store the logging information.
+        /// The current date, in the format YYYYMMDD will be added after the given filename.
         /// Defaults to <c>diagnostics-</c>.
         /// </summary>
         public string FileName
