@@ -145,7 +145,10 @@ namespace Microsoft.Extensions.Logging
                 {
                     scopeCount++;
                 }
-
+            }
+            else if (loggers.Length == 1 && loggers[0].CreateScopes)
+            {
+                return loggers[0].Logger.BeginScope(state);
             }
 
             var scope = new Scope(scopeCount);
@@ -251,6 +254,11 @@ namespace Microsoft.Extensions.Logging
 
                     _isDisposed = true;
                 }
+            }
+
+            public override string ToString()
+            {
+                return (!_isDisposed ? _disposable0?.ToString() : null) ?? base.ToString();
             }
         }
     }

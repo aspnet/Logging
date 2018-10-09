@@ -133,6 +133,18 @@ namespace Microsoft.Extensions.Logging.Test
         }
 
         [Fact]
+        public void BeginScope_ReturnsInternalSourceTokenDirectly()
+        {
+            var loggerProvider = new InternalScopeLoggerProvider();
+            var loggerFactory = new LoggerFactory(new[] { loggerProvider });
+
+            var logger = loggerFactory.CreateLogger("Logger");
+
+            var scope = logger.BeginScope("Scope");
+            Assert.StartsWith(loggerProvider.InternalScopeProvider.GetType().FullName, scope.GetType().FullName);
+        }
+
+        [Fact]
         public void BeginScope_ReturnsCompositeToken_ForMultipleLoggers()
         {
             var loggerProvider = new ExternalScopeLoggerProvider();
@@ -171,7 +183,7 @@ namespace Microsoft.Extensions.Logging.Test
 
         private class InternalScopeLoggerProvider : ILoggerProvider, ILogger
         {
-            private IExternalScopeProvider _scopeProvider = new LoggerExternalScopeProvider();
+            internal IExternalScopeProvider InternalScopeProvider = new LoggerExternalScopeProvider();
             public List<string> LogText { get; set; } = new List<string>();
 
             public void Dispose()
@@ -186,7 +198,7 @@ namespace Microsoft.Extensions.Logging.Test
             public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
             {
                 LogText.Add(formatter(state, exception));
-                _scopeProvider.ForEachScope((scope, builder) => builder.Add(scope.ToString()), LogText);
+                InternalScopeProvider.ForEachScope((scope, builder) => builder.Add(scope.ToString()), LogText);
             }
 
             public bool IsEnabled(LogLevel logLevel)
@@ -196,7 +208,7 @@ namespace Microsoft.Extensions.Logging.Test
 
             public IDisposable BeginScope<TState>(TState state)
             {
-                return _scopeProvider.Push(state);
+                return InternalScopeProvider.Push(state);
             }
         }
 
