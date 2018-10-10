@@ -11,50 +11,62 @@ using Microsoft.Extensions.Primitives;
 namespace Microsoft.Extensions.Logging.EventSource
 {
     /// <summary>
-    /// The LoggingEventSource is the bridge form all ILogger based logging to EventSource/EventListener logging.
-    ///
-    /// You turn this logging on by enabling the EvenSource called
-    ///
-    ///      Microsoft-Extensions-Logging
-    ///
-    /// When you enabled the EventSource, the EventLevel you set is translated in the obvious way to the level
-    /// associated with the ILogger (thus Debug = verbose, Informational = Informational ... Critical == Critical)
-    ///
+    /// <para>
+    /// The LoggingEventSource is the bridge from all <see cref="ILogger"/>-based logging to EventSource/EventListener logging.
+    /// </para>
+    /// <para>
+    /// Turn on this logging by enabling the EventSource called 'Microsoft-Extensions-Logging'
+    /// </para>
+    /// <para>
+    /// When you enable the EventSource, the EventLevel you set is translated to the corresponding level
+    /// associated with the ILogger, so that Debug = Verbose, Informational = Informational, Critical = Critical, etc.
     /// This allows you to filter by event level in a straighforward way.
-    ///
-    /// For finer control you can specify a EventSource Argument called
-    ///
-    /// FilterSpecs
-    ///
-    /// The FilterSpecs argument is a semicolon separated list of specifications.   Where each specification is
-    ///
-    /// SPEC =                          // empty spec, same as *
-    ///      | NAME                     // Just a name the level is the default level
-    ///      | NAME : LEVEL            // specifies level for a particular logger (can have a * suffix).
-    ///
-    /// Where Name is the name of a ILoggger (case matters), Name can have a * which acts as a wildcard
-    /// AS A SUFFIX.   Thus Net* will match any loggers that start with the 'Net'.
-    ///
-    /// The LEVEL is a number or a LogLevel string. 0=Trace, 1=Debug, 2=Information, 3=Warning,  4=Error, Critical=5
-    /// This speicifies the level for the associated pattern.  If the number is not specified, (first form
+    /// </para>
+    /// <para>
+    /// For finer control you can specify an EventSource argument called 'FilterSpecs'. 
+    /// The FilterSpecs argument is a semicolon-separated list of specifications, where each specification is:
+    /// </para>
+    /// <code>
+    ///     SPEC =                          // Empty spec; same as *
+    ///          | NAME                     // Just a name. The level is the default level.
+    ///          | NAME : LEVEL             // Specifies level for a particular logger (can have a * suffix).
+    /// </code>
+    /// <para>
+    /// 'NAME' is the name of a ILogger (case matters), Name can have a * which acts as a wildcard
+    /// *as a suffix*. Thus, 'Net*' will match any loggers that start with the string 'Net'.
+    /// </para>
+    /// <para>
+    /// 'LEVEL' is a number or a LogLevel string:
+    /// </para>
+    /// <code>
+    ///     0 = Trace
+    ///     1 = Debug
+    ///     2 = Information
+    ///     3 = Warning
+    ///     4 = Error
+    ///     5 = Critical
+    /// </code>
+    /// <para>
+    /// This specifies the level for the associated pattern. If the number is not specified, (first form
     /// of the specification) it is the default level for the EventSource.
-    ///
-    /// First match is used if a partciular name matches more than one pattern.
-    ///
-    /// In addition the level and FilterSpec argument, you can also set EventSource Keywords.  See the Keywords
-    /// definition below, but basically you get to decide if you wish to have
-    ///
+    /// The First match is used if a particular name matches more than one pattern.
+    /// </para>
+    /// <para>
+    /// In addition the level and 'FilterSpec' argument, you can also set 'EventSource' Keywords. (See the Keywords
+    /// definition below.) Your options are:
+    /// </para>
+    /// <para>
     ///   * Keywords.Message - You get the event with the data in parsed form.
     ///   * Keywords.JsonMessage - you get an event with the data in parse form but as a JSON blob (not broken up by argument ...)
     ///   * Keywords.FormattedMessage - you get an event with the data formatted as a string
-    ///
-    /// It is expected that you will turn only one of these keywords on at a time, but you can turn them all on (and get
+    /// </para>
+    /// <para>
+    /// Typically, you will turn only one of these keywords on at a time. However, you can turn them all on and get
     /// the same data logged three different ways.
-    ///
-    /// Example Usage
-    ///
+    /// </para>
+    /// <example>
     /// This example shows how to use an EventListener to get ILogging information
-    ///
+    /// <code>
     /// class MyEventListener : EventListener {
     ///     protected override void OnEventSourceCreated(EventSource eventSource) {
     ///         if (eventSource.Name == "Microsoft-Extensions-Logging") {
@@ -72,36 +84,38 @@ namespace Microsoft.Extensions.Logging.EventSource
     ///             Console.WriteLine("Logger {0}: {1}", eventData.Payload[2], eventData.Payload[4]);
     ///     }
     /// }
+    /// </code>
+    /// </example>
     /// </summary>
     [EventSource(Name = "Microsoft-Extensions-Logging")]
     internal class LoggingEventSource : System.Diagnostics.Tracing.EventSource
     {
         /// <summary>
-        /// This is public from an EventSource consumer point of view, but since these defintions
+        /// This is public from an `EventSource` consumer point of view. These definitions
         /// are not needed outside this class
         /// </summary>
         public class Keywords
         {
             /// <summary>
-            /// Meta events are evnets about the LoggingEventSource itself (that is they did not come from ILogger
+            /// Meta events are events about the `LoggingEventSource` itself (that is, they did not come from `ILogger`)
             /// </summary>
             public const EventKeywords Meta = (EventKeywords)1;
             /// <summary>
-            /// Turns on the 'Message' event when ILogger.Log() is called.   It gives the information in a programatic (not formatted) way
+            /// Turns on the `Message` event when `ILogger.Log()` is called.   It gives the information in a programmatic (not formatted) way
             /// </summary>
             public const EventKeywords Message = (EventKeywords)2;
             /// <summary>
-            /// Turns on the 'FormatMessage' event when ILogger.Log() is called.  It gives the formatted string version of the information.
+            /// Turns on the `FormatMessage` event when `ILogger.Log()` is called.  It gives the formatted string version of the information.
             /// </summary>
             public const EventKeywords FormattedMessage = (EventKeywords)4;
             /// <summary>
-            /// Turns on the 'MessageJson' event when ILogger.Log() is called.   It gives  JSON representation of the Arguments.
+            /// Turns on the `MessageJson` event when `ILogger.Log()` is called.   It gives  JSON representation of the arguments.
             /// </summary>
             public const EventKeywords JsonMessage = (EventKeywords)8;
         }
 
         /// <summary>
-        ///  The one and only instance of the LoggingEventSource.
+        ///  The one and only instance of the `LoggingEventSource`.
         /// </summary>
         internal static readonly LoggingEventSource Instance = new LoggingEventSource();
 
@@ -114,8 +128,8 @@ namespace Microsoft.Extensions.Logging.EventSource
         }
 
         /// <summary>
-        /// FormattedMessage() is called when ILogger.Log() is called. and the FormattedMessage keyword is active
-        /// This only gives you the human reasable formatted message.
+        /// `FormattedMessage()` is called when `ILogger.Log()` is called, and the `FormattedMessage` keyword is active.
+        /// This only gives you the human readable formatted message.
         /// </summary>
         [Event(1, Keywords = Keywords.FormattedMessage, Level = EventLevel.LogAlways)]
         internal void FormattedMessage(LogLevel Level, int FactoryID, string LoggerName, string EventId, string FormattedMessage)
@@ -124,8 +138,8 @@ namespace Microsoft.Extensions.Logging.EventSource
         }
 
         /// <summary>
-        /// Message() is called when ILogger.Log() is called. and the Message keyword is active
-        /// This gives you the logged information in a programatic format (arguments are key-value pairs)
+        /// `Message()` is called when `ILogger.Log()` is called. and the `Message` keyword is active.
+        /// This gives you the logged information in a programmatic format (arguments are key-value pairs)
         /// </summary>
         [Event(2, Keywords = Keywords.Message, Level = EventLevel.LogAlways)]
         internal void Message(LogLevel Level, int FactoryID, string LoggerName, string EventId, ExceptionInfo Exception, IEnumerable<KeyValuePair<string, string>> Arguments)
@@ -134,7 +148,7 @@ namespace Microsoft.Extensions.Logging.EventSource
         }
 
         /// <summary>
-        /// ActivityStart is called when ILogger.BeginScope() is called
+        /// `ActivityStart` is called when `ILogger.BeginScope()` is called
         /// </summary>
         [Event(3, Keywords = Keywords.Message | Keywords.FormattedMessage, Level = EventLevel.LogAlways, ActivityOptions = EventActivityOptions.Recursive)]
         internal void ActivityStart(int ID, int FactoryID, string LoggerName, IEnumerable<KeyValuePair<string, string>> Arguments)
@@ -185,7 +199,7 @@ namespace Microsoft.Extensions.Logging.EventSource
         }
 
         /// <summary>
-        /// Set the filtering specifcation.  null means turn off all loggers.   Empty string is turn on all providers.
+        /// Set the filtering specifcation. Use `null` to turn off all loggers. Use an empty string to turn on all providers.
         /// </summary>
         /// <param name="filterSpec"></param>
         [NonEvent]
