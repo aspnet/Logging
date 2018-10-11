@@ -74,7 +74,7 @@ namespace Microsoft.Extensions.Logging.EventSource
     /// }
     /// </summary>
     [EventSource(Name = "Microsoft-Extensions-Logging")]
-    internal class LoggingEventSource : System.Diagnostics.Tracing.EventSource
+    public sealed class LoggingEventSource : System.Diagnostics.Tracing.EventSource
     {
         /// <summary>
         /// This is public from an EventSource consumer point of view, but since these defintions
@@ -350,7 +350,7 @@ namespace Microsoft.Extensions.Logging.EventSource
         }
 
         [NonEvent]
-        public LoggerFilterRule[] GetFilterRules()
+        internal LoggerFilterRule[] GetFilterRules()
         {
             return _filterSpec;
         }
