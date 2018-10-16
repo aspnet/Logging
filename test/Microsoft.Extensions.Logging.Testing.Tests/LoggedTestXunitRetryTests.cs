@@ -49,6 +49,15 @@ namespace Microsoft.Extensions.Logging.Testing.Tests
             Assert.Equal(3, RetryContext.Limit);
         }
 
+        [ConditionalFact]
+        [OSSkipCondition(OperatingSystems.Linux | OperatingSystems.MacOSX)]
+        [MinimumOSVersion(OperatingSystems.Windows, WindowsVersions.Win10)]
+        [RetryTest(nameof(RetryAllPredicate), "sample reason", OperatingSystems.Windows, 3, WindowsVersions.Win10)]
+        public void RetryCountOverridenWhenOSAndVersionMatches()
+        {
+            Assert.Equal(3, RetryContext.Limit);
+        }
+
         [Fact]
         [RetryTest(nameof(RetryInvalidOperationExceptionPredicate), "sample reason")]
         public void RetryIfPredicateIsTrue()

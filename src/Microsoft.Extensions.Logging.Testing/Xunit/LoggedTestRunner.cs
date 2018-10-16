@@ -102,29 +102,52 @@ namespace Microsoft.Extensions.Logging.Testing
             var os = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? OperatingSystems.MacOSX
                 : RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? OperatingSystems.Windows
                 : OperatingSystems.Linux;
+            var osVersion = GetCurrentOSVersion();
 
             var attributeCandidate = methodInfo.GetCustomAttribute<RetryTestAttribute>();
 
             if (attributeCandidate != null && (attributeCandidate.OperatingSystems & os) != 0)
             {
-                return attributeCandidate;
+                if (!attributeCandidate.Versions.Any() || attributeCandidate.Versions.Any(ver => osVersion.StartsWith(ver)))
+                {
+                    return attributeCandidate;
+                }
             }
 
             attributeCandidate = methodInfo.DeclaringType.GetCustomAttribute<RetryTestAttribute>();
 
             if (attributeCandidate != null && (attributeCandidate.OperatingSystems & os) != 0)
             {
-                return attributeCandidate;
+                if (!attributeCandidate.Versions.Any() || attributeCandidate.Versions.Any(ver => osVersion.StartsWith(ver)))
+                {
+                    return attributeCandidate;
+                }
             }
 
             attributeCandidate = methodInfo.DeclaringType.Assembly.GetCustomAttribute<RetryTestAttribute>();
 
             if (attributeCandidate != null && (attributeCandidate.OperatingSystems & os) != 0)
             {
-                return attributeCandidate;
+                if (!attributeCandidate.Versions.Any() || attributeCandidate.Versions.Any(ver => osVersion.StartsWith(ver)))
+                {
+                    return attributeCandidate;
+                }
             }
 
             return null;
+        }
+
+        private string GetCurrentOSVersion()
+        {
+            // currently not used on other OS's
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return Environment.OSVersion.Version.ToString();
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
     }
 }

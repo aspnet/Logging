@@ -36,7 +36,8 @@ namespace Microsoft.Extensions.Logging.Testing
         /// <param name="retryPredicateName">The predicate of the format Func&lt;Exception,bool&gt; that is used to determine if the test should be retried</param>
         /// <param name="retryReason">The reason for retrying the test</param>
         /// <param name="retryLimit">The number of retries to attempt before failing the test, for most purposes this this should be kept at 2 to avoid excessive retries.</param>
-        public RetryTestAttribute(string retryPredicateName, string retryReason, OperatingSystems operatingSystems, int retryLimit = 2)
+        /// <param name="versions">Versions of the OS on which retries are enabled</param>
+        public RetryTestAttribute(string retryPredicateName, string retryReason, OperatingSystems operatingSystems, int retryLimit = 2, params string[] versions)
         {
             if (string.IsNullOrEmpty(retryPredicateName))
             {
@@ -55,6 +56,7 @@ namespace Microsoft.Extensions.Logging.Testing
             RetryPredicateName = retryPredicateName;
             RetryReason = retryReason;
             RetryLimit = retryLimit;
+            Versions = versions;
         }
 
         public string RetryPredicateName { get; }
@@ -64,5 +66,7 @@ namespace Microsoft.Extensions.Logging.Testing
         public int RetryLimit { get; }
 
         public OperatingSystems OperatingSystems { get; }
+
+        public string[] Versions { get; }
     }
 }
