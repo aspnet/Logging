@@ -52,6 +52,7 @@ namespace Microsoft.Extensions.Logging.Console
             Name = name;
             Filter = filter ?? ((category, logLevel) => true);
             ScopeProvider = scopeProvider;
+            LogAsErrorLevel = LogLevel.None;
             _queueProcessor = loggerProcessor;
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

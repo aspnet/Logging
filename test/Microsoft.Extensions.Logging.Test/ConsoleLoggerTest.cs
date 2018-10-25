@@ -36,7 +36,7 @@ namespace Microsoft.Extensions.Logging.Test
             var errorConsole = new TestConsole(errorSink);
             var logger = new ConsoleLogger(_loggerName, filter, includeScopes ? new LoggerExternalScopeProvider() : null, new TestLoggerProcessor());
             logger.Console = console;
-            logger.StdErrorConsole = errorConsole;
+            logger.ErrorConsole = errorConsole;
             logger.DisableColors = disableColors;
             return (logger, sink, errorSink);
         }

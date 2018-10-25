@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.Logging.Console.Internal
         private readonly Thread _outputThread;
 
         public IConsole Console;
-        public IConsole StdErrorConsole;
+        public IConsole ErrorConsole;
 
         public ConsoleLoggerProcessor()
         {
@@ -47,7 +47,7 @@ namespace Microsoft.Extensions.Logging.Console.Internal
         // for testing
         internal virtual void WriteMessage(LogMessageEntry message)
         {
-            var console = message.LogAsError ? StdErrorConsole : Console;
+            var console = message.LogAsError ? ErrorConsole : Console;
 
             if (message.TimeStamp != null)
             {
