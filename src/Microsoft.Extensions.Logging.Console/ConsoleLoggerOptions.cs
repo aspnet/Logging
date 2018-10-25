@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.Logging.Console
     {
         public bool IncludeScopes { get; set; }
         public bool DisableColors { get; set; }
-
+        public LogLevel LogAsErrorLevel { get; set; } = LogLevel.None;
         /// <summary>
         /// Gets or sets format string used to format timestamp in logging messages. Defaults to <c>null</c>
         /// </summary>
