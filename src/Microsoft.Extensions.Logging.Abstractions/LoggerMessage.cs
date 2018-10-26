@@ -102,11 +102,16 @@ namespace Microsoft.Extensions.Logging
         {
             var formatter = CreateLogValuesFormatter(formatString, expectedNamedParameterCount: 1);
 
+            void Log(ILogger logger, T1 arg1, Exception exception)
+            {
+                logger.Log(logLevel, eventId, new LogValues<T1>(formatter, arg1), exception, LogValues<T1>.Callback);
+            }
+
             return (logger, arg1, exception) =>
             {
                 if (logger.IsEnabled(logLevel))
                 {
-                    logger.Log(logLevel, eventId, new LogValues<T1>(formatter, arg1), exception, LogValues<T1>.Callback);
+                    Log(logger, arg1, exception);
                 }
             };
         }
@@ -124,11 +129,16 @@ namespace Microsoft.Extensions.Logging
         {
             var formatter = CreateLogValuesFormatter(formatString, expectedNamedParameterCount: 2);
 
+            void Log(ILogger logger, T1 arg1, T2 arg2, Exception exception)
+            {
+                logger.Log(logLevel, eventId, new LogValues<T1, T2>(formatter, arg1, arg2), exception, LogValues<T1, T2>.Callback);
+            }
+
             return (logger, arg1, arg2, exception) =>
             {
                 if (logger.IsEnabled(logLevel))
                 {
-                    logger.Log(logLevel, eventId, new LogValues<T1, T2>(formatter, arg1, arg2), exception, LogValues<T1, T2>.Callback);
+                    Log(logger, arg1, arg2, exception);
                 }
             };
         }
@@ -147,11 +157,16 @@ namespace Microsoft.Extensions.Logging
         {
             var formatter = CreateLogValuesFormatter(formatString, expectedNamedParameterCount: 3);
 
+            void Log(ILogger logger, T1 arg1, T2 arg2, T3 arg3, Exception exception)
+            {
+                logger.Log(logLevel, eventId, new LogValues<T1, T2, T3>(formatter, arg1, arg2, arg3), exception, LogValues<T1, T2, T3>.Callback);
+            }
+
             return (logger, arg1, arg2, arg3, exception) =>
             {
                 if (logger.IsEnabled(logLevel))
                 {
-                    logger.Log(logLevel, eventId, new LogValues<T1, T2, T3>(formatter, arg1, arg2, arg3), exception, LogValues<T1, T2, T3>.Callback);
+                    Log(logger, arg1, arg2, arg3, exception);
                 }
             };
         }
@@ -171,11 +186,16 @@ namespace Microsoft.Extensions.Logging
         {
             var formatter = CreateLogValuesFormatter(formatString, expectedNamedParameterCount: 4);
 
+            void Log(ILogger logger, T1 arg1, T2 arg2, T3 arg3, T4 arg4, Exception exception)
+            {
+                logger.Log(logLevel, eventId, new LogValues<T1, T2, T3, T4>(formatter, arg1, arg2, arg3, arg4), exception, LogValues<T1, T2, T3, T4>.Callback);
+            }
+
             return (logger, arg1, arg2, arg3, arg4, exception) =>
             {
                 if (logger.IsEnabled(logLevel))
                 {
-                    logger.Log(logLevel, eventId, new LogValues<T1, T2, T3, T4>(formatter, arg1, arg2, arg3, arg4), exception, LogValues<T1, T2, T3, T4>.Callback);
+                    Log(logger, arg1, arg2, arg3, arg4, exception);
                 }
             };
         }
