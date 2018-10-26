@@ -15,11 +15,11 @@ namespace Microsoft.Extensions.Logging.Performance
             TwoArgumentErrorMessage(_logger, 1, "string", Exception);
         }
 
-        //[Benchmark(Baseline = true)]
-        //public void NoArguments()
-        //{
-        //    NoArgumentErrorMessage(_logger, Exception);
-        //}
+        [Benchmark(Baseline = true)]
+        public void NoArguments()
+        {
+            NoArgumentErrorMessage(_logger, Exception);
+        }
 
         [GlobalSetup]
         public void Setup()

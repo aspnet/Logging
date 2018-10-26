@@ -11,11 +11,8 @@ namespace Microsoft.Extensions.Logging.Performance
     {
         private ILogger _logger;
 
-        //[Params(true, false)]
+        [Params(true, false)]
         public bool HasISupportLoggingScopeLogger { get; set; } = false;
-
-        //[Params(true, false)]
-        public bool CaptureScopes { get; set; } = false;
 
         // Baseline as this is the fastest way to do nothing
         [Benchmark(Baseline = true)]
@@ -61,8 +58,6 @@ namespace Microsoft.Extensions.Logging.Performance
             {
                 services.AddSingleton<ILoggerProvider, LoggerProvider<NoopLogger>>();
             }
-
-            services.Configure<LoggerFilterOptions>(options => options.CaptureScopes = CaptureScopes);
 
             _logger = services.BuildServiceProvider().GetService<ILoggerFactory>().CreateLogger("Logger");
         }
