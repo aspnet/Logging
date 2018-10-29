@@ -10,8 +10,9 @@ namespace Microsoft.Extensions.Logging.Performance
         protected static readonly Action<ILogger, Exception> NoArgumentTraceMessage = LoggerMessage.Define(LogLevel.Trace, 0, "Message");
         protected static readonly Action<ILogger, Exception> NoArgumentErrorMessage = LoggerMessage.Define(LogLevel.Error, 0, "Message");
 
-        protected static readonly Action<ILogger,  int, string, Exception> TwoArgumentTraceMessage = LoggerMessage.Define<int, string>(LogLevel.Trace, 0, "Message {Argument1} {Argument2}");
-        protected static readonly Action<ILogger,  int, string, Exception> TwoArgumentErrorMessage = LoggerMessage.Define<int, string>(LogLevel.Error, 0, "Message {Argument1} {Argument2}");
+        protected static readonly Action<ILogger, int, string, Exception> TwoArgumentTraceMessage = LoggerMessage.Define<int, string>(LogLevel.Trace, 0, "Message {Argument1} {Argument2}");
+        protected static readonly Action<ILogger, int, string, Exception> TwoArgumentErrorMessage = LoggerMessage.Define<int, string>(LogLevel.Error, 0, "Message {Argument1} {Argument2}");
+
         protected static Exception Exception = ((Func<Exception>)(() => {
             try
             {

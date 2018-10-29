@@ -459,7 +459,7 @@ namespace Microsoft.Extensions.Logging
 
         private readonly struct LogValues<T0, T1, T2, T3> : IReadOnlyList<KeyValuePair<string, object>>
         {
-            public static readonly Func<LogValues<T0, T1, T2, T3>, Exception, string> Callback = (state, exception) => state._formatter.Format(state.ToArray());
+            public static readonly Func<LogValues<T0, T1, T2, T3>, Exception, string> Callback = (state, exception) => state.ToString();
 
             private readonly LogValuesFormatter _formatter;
             private readonly T0 _value0;
@@ -520,7 +520,7 @@ namespace Microsoft.Extensions.Logging
 
         private readonly struct LogValues<T0, T1, T2, T3, T4> : IReadOnlyList<KeyValuePair<string, object>>
         {
-            public static readonly Func<LogValues<T0, T1, T2, T3, T4>, Exception, string> Callback = (state, exception) => state._formatter.Format(state.ToArray());
+            public static readonly Func<LogValues<T0, T1, T2, T3, T4>, Exception, string> Callback = (state, exception) => state.ToString();
 
             private readonly LogValuesFormatter _formatter;
             private readonly T0 _value0;
@@ -585,7 +585,7 @@ namespace Microsoft.Extensions.Logging
 
         private readonly struct LogValues<T0, T1, T2, T3, T4, T5> : IReadOnlyList<KeyValuePair<string, object>>
         {
-            public static readonly Func<LogValues<T0, T1, T2, T3, T4, T5>, Exception, string> Callback = (state, exception) => state._formatter.Format(state.ToArray());
+            public static readonly Func<LogValues<T0, T1, T2, T3, T4, T5>, Exception, string> Callback = (state, exception) => state.ToString();
 
             private readonly LogValuesFormatter _formatter;
             private readonly T0 _value0;

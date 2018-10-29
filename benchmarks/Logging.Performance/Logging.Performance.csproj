@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-    <RootNamespace>Microsoft.Extensions.DependencyInjection.Performance</RootNamespace>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <RootNamespace>Microsoft.Extensions.Logging.Performance</RootNamespace>
     <OutputType>Exe</OutputType>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
