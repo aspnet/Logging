@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.Logging.Testing
         public void AddTestLogging(IServiceCollection services) => services.AddSingleton(LoggerFactory);
 
         // For back compat
-        public IDisposable StartLog(out ILoggerFactory loggerFactory, [CallerMemberName] string testName = null) => StartLog(out loggerFactory, LogLevel.Information, testName);
+        public IDisposable StartLog(out ILoggerFactory loggerFactory, [CallerMemberName] string testName = null) => StartLog(out loggerFactory, LogLevel.Debug, testName);
 
         // For back compat
         public IDisposable StartLog(out ILoggerFactory loggerFactory, LogLevel minLogLevel, [CallerMemberName] string testName = null)
