@@ -65,7 +65,7 @@ namespace Microsoft.Extensions.Logging.Testing
                     TestOutputHelper,
                     ResolvedTestClassName,
                     out var loggerFactory,
-                    logLevelAttribute?.LogLevel ?? LogLevel.Trace,
+                    logLevelAttribute?.LogLevel ?? LogLevel.Debug,
                     out var resolvedTestName,
                     out var logOutputDirectory,
                     testName);
