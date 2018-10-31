@@ -580,6 +580,40 @@ namespace Microsoft.Extensions.Logging.Test
                     },
                     ("Category.Sub", LogLevel.Trace, true, false)
                 },
+                { // Wildcards allowed in category names
+                    new LoggerFilterOptions()
+                    {
+                        MinLevel = LogLevel.Critical,
+                        Rules =
+                        {
+                            new LoggerFilterRule(typeof(TestLoggerProvider).FullName, "Category.*.Sub", LogLevel.Trace, null),
+                            new LoggerFilterRule(null, null, LogLevel.Critical, null)
+                        }
+                    },
+                    ("Category.B.Sub", LogLevel.Trace, true, false)
+                },
+                { // Wildcards allowed in the beginning of category names
+                    new LoggerFilterOptions()
+                    {
+                        MinLevel = LogLevel.Critical,
+                        Rules =
+                        {
+                            new LoggerFilterRule(typeof(TestLoggerProvider).FullName, "*.Sub", LogLevel.Trace, null),
+                        }
+                    },
+                    ("Category.B.Sub", LogLevel.Trace, true, false)
+                },
+                { // Wildcards allowed in the end of category names
+                    new LoggerFilterOptions()
+                    {
+                        MinLevel = LogLevel.Critical,
+                        Rules =
+                        {
+                            new LoggerFilterRule(typeof(TestLoggerProvider).FullName, "Cat*", LogLevel.Trace, null),
+                        }
+                    },
+                    ("Category.B.Sub", LogLevel.Trace, true, false)
+                },
             };
     }
 }

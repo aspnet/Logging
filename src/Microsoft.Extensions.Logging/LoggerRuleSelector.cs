@@ -7,6 +7,8 @@ namespace Microsoft.Extensions.Logging
 {
     internal class LoggerRuleSelector
     {
+        private static readonly char[] WildcardChar = { '*' };
+
         public void Select(LoggerFilterOptions options, Type providerType, string category, out LogLevel? minLevel, out Func<string, string, LogLevel, bool> filter)
         {
             filter = null;
@@ -47,9 +49,17 @@ namespace Microsoft.Extensions.Logging
                 return false;
             }
 
-            if (rule.CategoryName != null && !category.StartsWith(rule.CategoryName, StringComparison.OrdinalIgnoreCase))
+            if (rule.CategoryName != null)
             {
-                return false;
+                var categoryParts = rule.CategoryName.Split(WildcardChar, 2);
+                var prefix = categoryParts[0];
+                var suffix = categoryParts.Length > 1 ? categoryParts[1] : string.Empty;
+
+                if (!category.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ||
+                    !category.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
             }
 
             if (current?.ProviderName != null)
