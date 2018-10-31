@@ -51,7 +51,12 @@ namespace Microsoft.Extensions.Logging
 
             if (rule.CategoryName != null)
             {
-                var categoryParts = rule.CategoryName.Split(WildcardChar, 2);
+                var categoryParts = rule.CategoryName.Split(WildcardChar);
+                if (categoryParts.Length > 2)
+                {
+                    throw new InvalidOperationException("Only one wildcard character is allowed in category name.");
+                }
+
                 var prefix = categoryParts[0];
                 var suffix = categoryParts.Length > 1 ? categoryParts[1] : string.Empty;
 
