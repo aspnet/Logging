@@ -91,8 +91,10 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
 
                     _currentBatch.Clear();
                 }
-
-                await IntervalAsync(_interval, _cancellationTokenSource.Token);
+                else
+                {
+                    await IntervalAsync(_interval, _cancellationTokenSource.Token);
+                }
             }
         }
 
