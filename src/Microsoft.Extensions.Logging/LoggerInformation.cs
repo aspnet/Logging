@@ -5,7 +5,7 @@ using System;
 
 namespace Microsoft.Extensions.Logging
 {
-    internal struct LoggerInformation
+    internal struct MessageLogger
     {
         public ILogger Logger { get; set; }
 
@@ -16,10 +16,6 @@ namespace Microsoft.Extensions.Logging
         public LogLevel? MinLevel { get; set; }
 
         public Func<string, string, LogLevel, bool> Filter { get; set; }
-
-        public bool ExternalScope { get; set; }
-
-        public bool CreateScopes => !ExternalScope && IsEnabled(LogLevel.Critical);
 
         public bool IsEnabled(LogLevel level)
         {
@@ -35,5 +31,40 @@ namespace Microsoft.Extensions.Logging
 
             return true;
         }
+    }
+
+    internal struct ScopeLogger
+    {
+        public ILogger Logger { get; set; }
+
+        public IExternalScopeProvider ExternalScopeProvider { get; set; }
+
+        public IDisposable CreateScope<TState>(TState state)
+        {
+            if (ExternalScopeProvider != null)
+            {
+                return ExternalScopeProvider.Push(state);
+            }
+            return Logger.BeginScope<TState>(state);
+        }
+    }
+
+    internal struct LoggerInformation
+    {
+        public LoggerInformation(ILoggerProvider provider, string category) : this()
+        {
+            ProviderType = provider.GetType();
+            Logger = provider.CreateLogger(category);
+            Category = category;
+            ExternalScope = provider is ISupportExternalScope;
+        }
+
+        public ILogger Logger { get; set; }
+
+        public string Category { get; set; }
+
+        public Type ProviderType { get; set; }
+
+        public bool ExternalScope { get; set; }
     }
 }
