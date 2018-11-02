@@ -139,7 +139,7 @@ namespace Microsoft.Extensions.Logging
         private (MessageLogger[] MessageLoggers, ScopeLogger[] ScopeLoggers) ApplyFilters(LoggerInformation[] loggers)
         {
             var messageLoggers = new List<MessageLogger>();
-            var scopeLoggers = _filterOptions.CaptureScopes? new List<ScopeLogger>() : null;
+            var scopeLoggers = _filterOptions.CaptureScopes ? new List<ScopeLogger>() : null;
 
             foreach (var loggerInformation in loggers)
             {
