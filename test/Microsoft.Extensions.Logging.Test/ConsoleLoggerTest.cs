@@ -854,7 +854,7 @@ namespace Microsoft.Extensions.Logging.Test
             // Arrange
             var (logger, sink, errorSink) = SetUp(null);
 
-            logger.LogAsErrorLevel = LogLevel.Warning;
+            logger.LogToStandardErrorThreshold = LogLevel.Warning;
 
             // Act
             logger.LogInformation("Info");
@@ -1081,7 +1081,7 @@ namespace Microsoft.Extensions.Logging.Test
         [Fact]
         public void ConsoleLoggerOptions_LogAsErrorLevel_IsReadFromLoggingConfiguration()
         {
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new[] { new KeyValuePair<string, string>("Console:LogAsErrorLevel", "Warning") }).Build();
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new[] { new KeyValuePair<string, string>("Console:LogToStandardErrorThreshold", "Warning") }).Build();
 
             var loggerProvider = new ServiceCollection()
                 .AddLogging(builder => builder
@@ -1092,7 +1092,7 @@ namespace Microsoft.Extensions.Logging.Test
 
             var consoleLoggerProvider = Assert.IsType<ConsoleLoggerProvider>(loggerProvider);
             var logger = (ConsoleLogger)consoleLoggerProvider.CreateLogger("Category");
-            Assert.Equal(LogLevel.Warning, logger.LogAsErrorLevel);
+            Assert.Equal(LogLevel.Warning, logger.LogToStandardErrorThreshold);
         }
 
         [Fact]
@@ -1104,9 +1104,9 @@ namespace Microsoft.Extensions.Logging.Test
             var logger = (ConsoleLogger)loggerProvider.CreateLogger("Name");
 
             // Act & Assert
-            Assert.Equal(LogLevel.None, logger.LogAsErrorLevel);
-            monitor.Set(new ConsoleLoggerOptions() { LogAsErrorLevel = LogLevel.Error});
-            Assert.Equal(LogLevel.Error, logger.LogAsErrorLevel);
+            Assert.Equal(LogLevel.None, logger.LogToStandardErrorThreshold);
+            monitor.Set(new ConsoleLoggerOptions() { LogToStandardErrorThreshold = LogLevel.Error});
+            Assert.Equal(LogLevel.Error, logger.LogToStandardErrorThreshold);
         }
 
         [Fact]

@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.Logging.Console
         private bool _disableColors;
         private IExternalScopeProvider _scopeProvider;
         private string _timestampFormat;
-        private LogLevel _logAsErrorLevel;
+        private LogLevel _logToStandardErrorThreshold;
 
         public ConsoleLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
             : this(filter, includeScopes, false)
@@ -57,14 +57,14 @@ namespace Microsoft.Extensions.Logging.Console
             _includeScopes = options.IncludeScopes;
             _disableColors = options.DisableColors;
             _timestampFormat = options.TimestampFormat;
-            _logAsErrorLevel = options.LogAsErrorLevel;
+            _logToStandardErrorThreshold = options.LogToStandardErrorThreshold;
             var scopeProvider = GetScopeProvider();
             foreach (var logger in _loggers.Values)
             {
                 logger.ScopeProvider = scopeProvider;
                 logger.DisableColors = options.DisableColors;
                 logger.TimestampFormat = options.TimestampFormat;
-                logger.LogAsErrorLevel = options.LogAsErrorLevel;
+                logger.LogToStandardErrorThreshold = options.LogToStandardErrorThreshold;
             }
         }
 
@@ -128,7 +128,7 @@ namespace Microsoft.Extensions.Logging.Console
                 {
                     DisableColors = disableColors,
                     TimestampFormat = _timestampFormat,
-                    LogAsErrorLevel = _logAsErrorLevel
+                    LogToStandardErrorThreshold = _logToStandardErrorThreshold
                 };
         }
 

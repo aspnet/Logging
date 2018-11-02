@@ -9,7 +9,7 @@
     {
       "IncludeScopes": "true",
       "TimestampFormat": "[HH:mm:ss] ",
-      "LogAsErrorLevel": "Warning"
+      "LogToStandardErrorThreshold": "Warning"
     }
   }
 }
