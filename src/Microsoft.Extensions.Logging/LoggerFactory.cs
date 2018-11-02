@@ -95,7 +95,7 @@ namespace Microsoft.Extensions.Logging
                 foreach (var existingLogger in _loggers)
                 {
                     var logger = existingLogger.Value;
-                    var loggerInformation = existingLogger.Value.Loggers;
+                    var loggerInformation = logger.Loggers;
 
                     var newLoggerIndex = loggerInformation.Length;
                     Array.Resize(ref loggerInformation, loggerInformation.Length + 1);
