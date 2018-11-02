@@ -126,7 +126,7 @@ namespace Microsoft.Extensions.Logging.Console
 
             return new ConsoleLogger(name, GetFilter(name, _settings), includeScopes? _scopeProvider: null, _messageQueue)
                 {
-                    DisableColors = _disableColors,
+                    DisableColors = disableColors,
                     TimestampFormat = _timestampFormat,
                     LogAsErrorLevel = _logAsErrorLevel
                 };
