@@ -154,30 +154,17 @@ namespace Microsoft.Extensions.Logging
                     continue;
                 }
 
-                messageLoggers.Add(new MessageLogger
-                {
-                    Logger = loggerInformation.Logger,
-                    Category = loggerInformation.Category,
-                    ProviderType = loggerInformation.ProviderType,
-                    Filter = filter,
-                    MinLevel = minLevel
-                });
+                messageLoggers.Add(new MessageLogger(loggerInformation.Logger, loggerInformation.Category, loggerInformation.ProviderType, minLevel, filter));
 
                 if (!loggerInformation.ExternalScope)
                 {
-                    scopeLoggers?.Add(new ScopeLogger
-                    {
-                        Logger = loggerInformation.Logger
-                    });
+                    scopeLoggers?.Add(new ScopeLogger(logger: loggerInformation.Logger, externalScopeProvider: null));
                 }
             }
 
             if (_scopeProvider != null)
             {
-                scopeLoggers?.Add(new ScopeLogger
-                {
-                    ExternalScopeProvider = _scopeProvider
-                });
+                scopeLoggers?.Add(new ScopeLogger(logger: null, externalScopeProvider: _scopeProvider));
             }
 
             return (messageLoggers.ToArray(), scopeLoggers?.ToArray());

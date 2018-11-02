@@ -5,17 +5,26 @@ using System;
 
 namespace Microsoft.Extensions.Logging
 {
-    internal struct MessageLogger
+    internal readonly struct MessageLogger
     {
-        public ILogger Logger { get; set; }
+        public MessageLogger(ILogger logger, string category, Type providerType, LogLevel? minLevel, Func<string, string, LogLevel, bool> filter)
+        {
+            Logger = logger;
+            Category = category;
+            ProviderType = providerType;
+            MinLevel = minLevel;
+            Filter = filter;
+        }
 
-        public string Category { get; set; }
+        public ILogger Logger { get; }
 
-        public Type ProviderType { get; set; }
+        public string Category { get; }
 
-        public LogLevel? MinLevel { get; set; }
+        public Type ProviderType { get; }
 
-        public Func<string, string, LogLevel, bool> Filter { get; set; }
+        public LogLevel? MinLevel { get; }
+
+        public Func<string, string, LogLevel, bool> Filter { get; }
 
         public bool IsEnabled(LogLevel level)
         {
@@ -33,11 +42,17 @@ namespace Microsoft.Extensions.Logging
         }
     }
 
-    internal struct ScopeLogger
+    internal readonly struct ScopeLogger
     {
-        public ILogger Logger { get; set; }
+        public ScopeLogger(ILogger logger, IExternalScopeProvider externalScopeProvider)
+        {
+            Logger = logger;
+            ExternalScopeProvider = externalScopeProvider;
+        }
 
-        public IExternalScopeProvider ExternalScopeProvider { get; set; }
+        public ILogger Logger { get; }
+
+        public IExternalScopeProvider ExternalScopeProvider { get; }
 
         public IDisposable CreateScope<TState>(TState state)
         {
@@ -49,7 +64,7 @@ namespace Microsoft.Extensions.Logging
         }
     }
 
-    internal struct LoggerInformation
+    internal readonly struct LoggerInformation
     {
         public LoggerInformation(ILoggerProvider provider, string category) : this()
         {
@@ -59,12 +74,12 @@ namespace Microsoft.Extensions.Logging
             ExternalScope = provider is ISupportExternalScope;
         }
 
-        public ILogger Logger { get; set; }
+        public ILogger Logger { get; }
 
-        public string Category { get; set; }
+        public string Category { get; }
 
-        public Type ProviderType { get; set; }
+        public Type ProviderType { get; }
 
-        public bool ExternalScope { get; set; }
+        public bool ExternalScope { get; }
     }
 }
