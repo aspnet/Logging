@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging.Console.Internal;
 
 namespace Microsoft.Extensions.Logging.Console
 {
+    [Obsolete("Use ConsoleLoggerProvider to construct console loggers")]
     public class ConsoleLogger : ILogger
     {
         private static readonly string _loglevelPadding = ": ";

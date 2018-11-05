@@ -35,7 +35,9 @@ namespace Microsoft.Extensions.Logging.EventLog
         /// <inheritdoc />
         public ILogger CreateLogger(string name)
         {
-            return new EventLogLogger(name, _settings ?? new EventLogSettings());
+#pragma warning disable 618
+            return new EventLogLogger(name, _settings ?? new EventLogSettings(), _scopeProvider);
+#pragma warning restore 618
         }
 
         public void Dispose()

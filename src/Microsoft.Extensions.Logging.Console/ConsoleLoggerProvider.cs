@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Logging.Console
 {
+#pragma warning disable 618
     [ProviderAlias("Console")]
     public class ConsoleLoggerProvider : ILoggerProvider, ISupportExternalScope
     {
@@ -25,11 +26,13 @@ namespace Microsoft.Extensions.Logging.Console
         private bool _disableColors;
         private IExternalScopeProvider _scopeProvider;
 
+        [Obsolete("Use LoggerFactory to configure filtering and ConsoleLoggerOptions to configure logging options")]
         public ConsoleLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
             : this(filter, includeScopes, false)
         {
         }
 
+        [Obsolete("Use LoggerFactory to configure filtering and ConsoleLoggerOptions to configure logging options")]
         public ConsoleLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes, bool disableColors)
         {
             if (filter == null)
@@ -62,6 +65,7 @@ namespace Microsoft.Extensions.Logging.Console
             }
         }
 
+        [Obsolete("Use LoggerFactory to configure filtering and ConsoleLoggerOptions to configure logging options")]
         public ConsoleLoggerProvider(IConsoleLoggerSettings settings)
         {
             if (settings == null)
@@ -181,4 +185,5 @@ namespace Microsoft.Extensions.Logging.Console
             _scopeProvider = scopeProvider;
         }
     }
+#pragma warning restore 618
 }

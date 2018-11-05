@@ -8,6 +8,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices
     /// <summary>
     /// Settings for Azure diagnostics logging.
     /// </summary>
+    [Obsolete("Use AzureBlobLoggerOptions and AzureFileLoggerOptions to configure options.")]
     public class AzureAppServicesDiagnosticsSettings
     {
         private TimeSpan _blobCommitPeriod = TimeSpan.FromSeconds(5);

@@ -53,7 +53,9 @@ namespace Microsoft.Extensions.Logging.TraceSource
         /// <returns></returns>
         public ILogger CreateLogger(string name)
         {
+#pragma warning disable 618
             return new TraceSourceLogger(GetOrAddTraceSource(name));
+#pragma warning restore 618
         }
 
         private DiagnosticsTraceSource GetOrAddTraceSource(string name)

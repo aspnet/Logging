@@ -7,6 +7,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Extensions.Logging.Console
 {
+    [Obsolete("Use ConsoleLoggerOptions")]
     public class ConsoleLoggerSettings : IConsoleLoggerSettings
     {
         public IChangeToken ChangeToken { get; set; }
