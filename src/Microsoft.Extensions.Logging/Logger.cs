@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.Logging
 {
     internal class Logger : ILogger
     {
-        public LoggerInformation[] Loggers { get;set; }
+        public LoggerInformation[] Loggers { get; set; }
         public MessageLogger[] MessageLoggers { get; set; }
         public ScopeLogger[] ScopeLoggers { get; set; }
 

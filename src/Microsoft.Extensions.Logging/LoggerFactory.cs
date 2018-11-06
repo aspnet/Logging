@@ -49,8 +49,9 @@ namespace Microsoft.Extensions.Logging
             lock (_sync)
             {
                 _filterOptions = filterOptions;
-                foreach (var logger in _loggers.Values)
+                foreach (var registeredLogger in _loggers)
                 {
+                    var logger = registeredLogger.Value;
                     (logger.MessageLoggers, logger.ScopeLoggers) = ApplyFilters(logger.Loggers);
                 }
             }
