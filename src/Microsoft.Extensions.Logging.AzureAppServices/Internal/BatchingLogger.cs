@@ -46,7 +46,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Internal
             {
                 scopeProvider.ForEachScope((scope, stringBuilder) =>
                 {
-                    builder.Append(" => ").Append(scope);
+                    stringBuilder.Append(" => ").Append(scope);
                 }, builder);
 
                 builder.AppendLine(":");

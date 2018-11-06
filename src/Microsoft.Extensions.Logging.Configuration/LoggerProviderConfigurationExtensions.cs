@@ -1,12 +1,14 @@
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Logging.Configuration
 {
     /// <summary>
-    /// Provides set of helpers to initialize options objects from logger provider configuration.
+    /// Provides a set of helpers to initialize options objects from logger provider configuration.
     /// </summary>
     public static class LoggerProviderOptions
     {

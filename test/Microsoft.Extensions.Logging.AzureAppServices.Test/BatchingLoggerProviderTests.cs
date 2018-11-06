@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.Logging.AzureAppServices.Test
     {
         private DateTimeOffset _timestampOne = new DateTimeOffset(2016, 05, 04, 03, 02, 01, TimeSpan.Zero);
         private string _nl = Environment.NewLine;
-        private Regex _timeStampRegex = new Regex(@"^\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d.\d\d\d .\d\d:\d\d ");
+        private Regex _timeStampRegex = new Regex(@"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3} .\d{2}:\d{2} ");
 
         [Fact]
         public async Task LogsInIntervals()
