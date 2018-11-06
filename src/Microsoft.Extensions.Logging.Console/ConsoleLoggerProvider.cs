@@ -26,13 +26,13 @@ namespace Microsoft.Extensions.Logging.Console
         private bool _disableColors;
         private IExternalScopeProvider _scopeProvider;
 
-        [Obsolete("Use LoggerFactory to configure filtering and ConsoleLoggerOptions to configure logging options")]
+        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is using LoggerFactory to configure filtering and ConsoleLoggerOptions to configure logging options")]
         public ConsoleLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes)
             : this(filter, includeScopes, false)
         {
         }
 
-        [Obsolete("Use LoggerFactory to configure filtering and ConsoleLoggerOptions to configure logging options")]
+        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is using LoggerFactory to configure filtering and ConsoleLoggerOptions to configure logging options")]
         public ConsoleLoggerProvider(Func<string, LogLevel, bool> filter, bool includeScopes, bool disableColors)
         {
             if (filter == null)
@@ -65,7 +65,7 @@ namespace Microsoft.Extensions.Logging.Console
             }
         }
 
-        [Obsolete("Use LoggerFactory to configure filtering and ConsoleLoggerOptions to configure logging options")]
+        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is using LoggerFactory to configure filtering and ConsoleLoggerOptions to configure logging options")]
         public ConsoleLoggerProvider(IConsoleLoggerSettings settings)
         {
             if (settings == null)

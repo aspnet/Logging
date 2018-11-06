@@ -49,7 +49,7 @@ namespace Microsoft.Extensions.Logging
         /// Adds a console logger that is enabled for <see cref="LogLevel"/>.Information or higher.
         /// </summary>
         /// <param name="factory">The <see cref="ILoggerFactory"/> to use.</param>
-        [Obsolete("Use AddConsole(this ILoggingBuilder builder) overload.")]
+        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is AddConsole(this ILoggingBuilder builder) overload.")]
         public static ILoggerFactory AddConsole(this ILoggerFactory factory)
         {
             return factory.AddConsole(includeScopes: false);
@@ -61,7 +61,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="factory">The <see cref="ILoggerFactory"/> to use.</param>
         /// <param name="includeScopes">A value which indicates whether log scope information should be displayed
         /// in the output.</param>
-        [Obsolete("Use AddConsole(this ILoggingBuilder builder) overload.")]
+        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is AddConsole(this ILoggingBuilder builder) overload.")]
         public static ILoggerFactory AddConsole(this ILoggerFactory factory, bool includeScopes)
         {
             factory.AddConsole((n, l) => l >= LogLevel.Information, includeScopes);
@@ -73,7 +73,7 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="factory">The <see cref="ILoggerFactory"/> to use.</param>
         /// <param name="minLevel">The minimum <see cref="LogLevel"/> to be logged</param>
-        [Obsolete("Use AddConsole(this ILoggingBuilder builder) overload.")]
+        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is AddConsole(this ILoggingBuilder builder) overload.")]
         public static ILoggerFactory AddConsole(this ILoggerFactory factory, LogLevel minLevel)
         {
             factory.AddConsole(minLevel, includeScopes: false);
@@ -87,7 +87,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="minLevel">The minimum <see cref="LogLevel"/> to be logged</param>
         /// <param name="includeScopes">A value which indicates whether log scope information should be displayed
         /// in the output.</param>
-        [Obsolete("Use AddConsole(this ILoggingBuilder builder) overload.")]
+        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is AddConsole(this ILoggingBuilder builder) overload.")]
         public static ILoggerFactory AddConsole(
             this ILoggerFactory factory,
             LogLevel minLevel,
@@ -102,7 +102,7 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         /// <param name="factory">The <see cref="ILoggerFactory"/> to use.</param>
         /// <param name="filter">The category filter to apply to logs.</param>
-        [Obsolete("Use AddConsole(this ILoggingBuilder builder) overload.")]
+        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is AddConsole(this ILoggingBuilder builder) overload.")]
         public static ILoggerFactory AddConsole(
             this ILoggerFactory factory,
             Func<string, LogLevel, bool> filter)
@@ -118,7 +118,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="filter">The category filter to apply to logs.</param>
         /// <param name="includeScopes">A value which indicates whether log scope information should be displayed
         /// in the output.</param>
-        [Obsolete("Use AddConsole(this ILoggingBuilder builder) overload.")]
+        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is AddConsole(this ILoggingBuilder builder) overload.")]
         public static ILoggerFactory AddConsole(
             this ILoggerFactory factory,
             Func<string, LogLevel, bool> filter,
@@ -134,7 +134,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="factory">The <see cref="ILoggerFactory"/> to use.</param>
         /// <param name="settings">The settings to apply to created <see cref="ConsoleLogger"/>'s.</param>
         /// <returns></returns>
-        [Obsolete("Use AddConsole(this ILoggingBuilder builder) overload.")]
+        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is AddConsole(this ILoggingBuilder builder) overload.")]
         public static ILoggerFactory AddConsole(
             this ILoggerFactory factory,
             IConsoleLoggerSettings settings)
@@ -148,7 +148,7 @@ namespace Microsoft.Extensions.Logging
         /// <param name="factory">The <see cref="ILoggerFactory"/> to use.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/> to use for <see cref="IConsoleLoggerSettings"/>.</param>
         /// <returns></returns>
-        [Obsolete("Use AddConsole(this ILoggingBuilder builder) overload.")]
+        [Obsolete("This method is obsolete and will be removed in a future version. The recommended alternative is AddConsole(this ILoggingBuilder builder) overload.")]
         public static ILoggerFactory AddConsole(this ILoggerFactory factory, IConfiguration configuration)
         {
             var settings = new ConfigurationConsoleLoggerSettings(configuration);
