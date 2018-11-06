@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Testing.xunit;
 using Microsoft.Extensions.Logging.EventLog;
 using Microsoft.Extensions.Logging.EventLog.Internal;
 using Xunit;
-#pragma warning disable 618
+
+// EventLogLogger is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
 
 namespace Microsoft.Extensions.Logging
 {
