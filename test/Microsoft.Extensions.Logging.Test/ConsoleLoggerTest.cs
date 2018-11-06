@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using Xunit;
+#pragma warning disable 618
 
 namespace Microsoft.Extensions.Logging.Test
 {

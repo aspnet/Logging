@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging.EventSource;
 using Newtonsoft.Json;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
+#pragma warning disable 618
 
 namespace Microsoft.Extensions.Logging.Test
 {

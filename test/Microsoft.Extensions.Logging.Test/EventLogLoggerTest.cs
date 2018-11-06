@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Testing.xunit;
 using Microsoft.Extensions.Logging.EventLog;
 using Microsoft.Extensions.Logging.EventLog.Internal;
 using Xunit;
+#pragma warning disable 618
 
 namespace Microsoft.Extensions.Logging
 {
